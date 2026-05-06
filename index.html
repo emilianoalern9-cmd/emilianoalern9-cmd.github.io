@@ -6,7 +6,6 @@
 <title>Índice de Seres Místicos </title>
 <link rel="icon" href="img2/icono4.png" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<!-- Precarga del GIF de ayuda -->
 <link rel="preload" as="image" href="img2/anuncio1.gif">
 <style>
 /* ========== TEMA OSCURO (FONDO SÓLIDO, SIN DEGRADADO PESADO) ========== */
@@ -1449,8 +1448,6 @@ function setupBadgeHover(badge, text){
 }
 function crearBadge(ico,tit,cls){
   const d=document.createElement("div"); d.className=`mini-badge ${cls}`; d.textContent=ico;
-  // Eliminamos el title nativo para que no aparezca tooltip blanco adicional
-  // d.title = tit;  // <-- eliminado
   setupBadgeHover(d, tit);
   d.addEventListener("click",e=>{ e.stopPropagation(); });
   return d;
@@ -1716,20 +1713,98 @@ modalTitle.closest("#detalle").addEventListener("touchstart",e=>{ touchStartX=e.
 modalTitle.closest("#detalle").addEventListener("touchend",e=>{ if(navegacionBloqueada)return; const d=e.changedTouches[0].screenX-touchStartX; if(Math.abs(d)>50){ navegarModal(d>0?-1:1); e.preventDefault(); } });
 function adjustTitleFontSize(){ const ruler=document.createElement('span'); ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none'; document.body.appendChild(ruler); const minFontSize=0.7; document.querySelectorAll('.card b').forEach(t=>{ const a=t.clientWidth; if(a<=0) return; ruler.textContent=t.textContent; let fs=0.9; ruler.style.fontSize=fs+'rem'; while(fs>minFontSize&&ruler.offsetWidth>a){ fs-=0.005; ruler.style.fontSize=fs+'rem'; } if(ruler.offsetWidth>a){ t.classList.add('wrap-name'); t.style.fontSize=minFontSize+'rem'; } else { t.classList.remove('wrap-name'); t.style.fontSize=fs+'rem'; } }); ruler.remove(); }
 function adjustModalTitleFontSize(){ const h3=modalTitle; if(!h3) return; const availableWidth=h3.clientWidth; if(availableWidth<=0) return; const minFontSize=0.8; const testEl=document.createElement('span'); testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;'; testEl.textContent=h3.textContent; document.body.appendChild(testEl); let fs=1.4; testEl.style.fontSize=fs+'rem'; while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){ fs-=0.05; testEl.style.fontSize=fs+'rem'; } if(testEl.scrollWidth>testEl.clientWidth){ h3.classList.add('wrap-name'); h3.style.fontSize=minFontSize+'rem'; } else { h3.classList.remove('wrap-name'); h3.style.fontSize=fs+'rem'; } testEl.remove(); }
+
+// ========== NUEVA LÓGICA DE CARGA MÚLTIPLE ==========
+async function cargarArchivosDesdeCarpeta() {
+  let todosLosDatos = [];
+  let indice = 1;
+  let hayError = false;
+  
+  // Intentar cargar secuencialmente Datos1.json, Datos2.json, ...
+  while (!hayError) {
+    const url = `dtsk/Datos${indice}.json`;
+    try {
+      const respuesta = await fetch(url, { cache: 'no-store' });
+      if (!respuesta.ok) {
+        // Si falla (404 u otro), detenemos la carga
+        hayError = true;
+        break;
+      }
+      const datos = await respuesta.json();
+      if (Array.isArray(datos)) {
+        todosLosDatos.push(...datos);
+      } else {
+        todosLosDatos.push(datos);
+      }
+      indice++;
+    } catch (error) {
+      // Error de red o archivo no encontrado
+      hayError = true;
+      break;
+    }
+  }
+  return todosLosDatos;
+}
+
 async function cargarDatos(){
-  try{
-    const res=await fetch('datos.json',{cache:'no-store'}); if(!res.ok) throw new Error('HTTP '+res.status);
-    especies=await res.json(); dataLoaded=true;
+  try {
+    // Cargar desde carpeta dtsk/ los archivos DatosX.json
+    let datosCombinados = await cargarArchivosDesdeCarpeta();
+    if (datosCombinados.length === 0) {
+      console.warn("No se encontraron archivos DatosX.json en la carpeta dtsk/");
+      // Opcional: intentar cargar datos.json original como respaldo
+      const res = await fetch('datos.json', { cache: 'no-store' });
+      if (res.ok) {
+        const respaldo = await res.json();
+        datosCombinados = Array.isArray(respaldo) ? respaldo : [respaldo];
+      }
+    }
+    
+    // Normalizar cada criatura: asegurar posX, posY, zoom y un id único
+    especies = datosCombinados.map((criatura, idx) => {
+      // Normalizar propiedades de posición y zoom
+      if (criatura.posX === undefined) {
+        if (criatura.posx !== undefined) criatura.posX = criatura.posx;
+        else criatura.posX = 0;
+      }
+      if (criatura.posY === undefined) {
+        if (criatura.posy !== undefined) criatura.posY = criatura.posy;
+        else criatura.posY = 0;
+      }
+      if (criatura.zoom === undefined) criatura.zoom = 1;
+      
+      // Asegurar que tenga un id (si no viene, asignar uno basado en índice)
+      if (!criatura.id) {
+        criatura.id = `criatura_${idx}_${Date.now()}_${Math.random()}`;
+      }
+      return criatura;
+    });
+    
+    dataLoaded = true;
     buildIndexes();
-    loadFavoritos(); loadRevisados(); loadModoRevision(); loadPersistedState();
-    updateSearchSuggestions(); updateClearSearchState(); regenerarMenus(); await render();
+    loadFavoritos(); 
+    loadRevisados(); 
+    loadModoRevision(); 
+    loadPersistedState();
+    updateSearchSuggestions(); 
+    updateClearSearchState(); 
+    regenerarMenus(); 
+    await render();
     window.addEventListener('resize',()=>{ if(dataLoaded) adjustTitleFontSize(); if(overlayEl.classList.contains("show")) adjustModalTitleFontSize(); actualizarImagenEsquina(); });
     actualizarImagenEsquina();
     const hash=window.location.hash.substring(1); if(hash.startsWith("id=")){ const id=decodeURIComponent(hash.substring(3)); const cr=especies.find(e=>e.id===id); if(cr) setTimeout(()=>abrirDetalle(cr),300); }
     window.scrollTo({top:0,behavior:'instant'});
-  } catch(err){ console.error(err); }
+  } catch(err){ 
+    console.error("Error cargando datos:", err);
+    // Fallback para que la página no quede completamente rota
+    especies = [];
+    dataLoaded = true;
+    render();
+  }
 }
-initMenus(); cargarDatos();
+
+initMenus(); 
+cargarDatos();
 </script>
 </body>
 </html>
