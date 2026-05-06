@@ -1,12 +1,19 @@
-name: Pages
-on: push
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 jobs:
   deploy:
     runs-on: ubuntu-22.04
-    permissions:
-      id-token: write
-      pages: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'   # sube todo el repositorio (index.html)
       - uses: actions/deploy-pages@v4
