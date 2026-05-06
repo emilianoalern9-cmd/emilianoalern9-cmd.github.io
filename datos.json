@@ -1,0 +1,50 @@
+[
+  {
+    "id": "Kraken",
+    "nombre": "Kraken",
+    "tipo": "Mitológico",
+    "elemento": "Acuático",
+    "avistamiento": "Tradición oral",
+    "morfologia": "Pez",
+    "subcategorias": "serpiente marina,monstruo marino",
+    "ubicacion": "Océano Atlántico Norte",
+    "epoca": "Era de los vikingos",
+    "descripcion": "Criatura marina gigante con tentáculos, capaz de hundir barcos.",
+    "links": ["https://es.wikipedia.org/wiki/Kraken"],
+    "posX": 0,
+    "posY": 0,
+    "zoom": 1.0
+  },
+  {
+    "id": "C9P4",
+    "nombre": "Chupacabras",
+    "tipo": "Criptido",
+    "elemento": "Terrestre",
+    "avistamiento": "Avistamiento",
+    "morfologia": "Mamífero",
+    "subcategorias": "criptido americano",
+    "ubicacion": "América Latina",
+    "epoca": "Siglo XX",
+    "descripcion": "Ser bípedo con espinas en la espalda que ataca al ganado.",
+    "links": [],
+    "posX": 0,
+    "posY": 0,
+    "zoom": 1.0
+  },
+  {
+    "id": "F3X8",
+    "nombre": "Fénix",
+    "tipo": "Mitológico",
+    "elemento": "Aéreo",
+    "avistamiento": "Documentado",
+    "morfologia": "Ave",
+    "subcategorias": "ave mitológica",
+    "ubicacion": "Medio Oriente",
+    "epoca": "Antigüedad",
+    "descripcion": "Ave de fuego que renace de sus cenizas cada 500 años.",
+    "links": ["https://es.wikipedia.org/wiki/F%C3%A9nix", "https://mitologia.fandom.com/es/wiki/F%C3%A9nix"],
+    "posX": 0,
+    "posY": 0,
+    "zoom": 1.0
+  }
+]
