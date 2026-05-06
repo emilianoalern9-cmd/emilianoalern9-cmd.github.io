@@ -1565,7 +1565,7 @@ function generarMenuAvistamiento(){ generarMenuCategoria("avistamiento","menu-av
 function generarMenuOrden(){
   const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}];
   ordenMenu.innerHTML=ops.map(o=>`<button>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join('');
-  [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(btnOrden.disabled) return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); ordenMenu.classList.remove("show"); invalidateBaseCache(); }; });
+  [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(btnOrden.disabled) return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); }; });
 }
 function generarRevFilterMenu(){
   revFilterMenu.innerHTML=""; const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];
@@ -1591,14 +1591,14 @@ function generarMenuConfig(){
       navegacionBloqueada = true;   // Bloquea flechas y swipe para la ficha aleatoria
       abrirDetalle(f[Math.floor(Math.random()*f.length)]);
     }
-    configMenu.classList.remove("show");
+    closeAllMenus();
   });
-  addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{ e.stopPropagation(); abrirMenuItemsPerPage(); });
-  const csvB=addBtn("📎 Exportar CSV",()=>{ if(!aplicarFiltrosCompletos().length) return; closeAllMenus(); createMenuOverlay(999,()=>{ closeTempMenus(); }); if(csvMenu) actualizarMenuCSV(); else crearMenuCSV(); csvMenu.classList.add("show"); configMenu.classList.remove("show"); });
+  addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{ e.stopPropagation(); closeAllMenus(); abrirMenuItemsPerPage(); });
+  const csvB=addBtn("📎 Exportar CSV",()=>{ if(!aplicarFiltrosCompletos().length) return; closeAllMenus(); createMenuOverlay(999,()=>{ closeTempMenus(); }); if(csvMenu) actualizarMenuCSV(); else crearMenuCSV(); csvMenu.classList.add("show"); });
   if(!aplicarFiltrosCompletos().length) csvB.disabled=true;
   const modoTexto=modoRevision==="manual"?"Manual":modoRevision==="automatico"?"Automático":"Bloqueo";
-  addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{ e.stopPropagation(); abrirMenuModoRevision(); });
-  addBtn("📖 Ayuda",(e)=>{ e.stopPropagation(); abrirMenuAyuda(); configMenu.classList.remove("show"); });
+  addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{ e.stopPropagation(); closeAllMenus(); abrirMenuModoRevision(); });
+  addBtn("📖 Ayuda",(e)=>{ e.stopPropagation(); closeAllMenus(); abrirMenuAyuda(); });
 }
 function crearMenuCSV(){ if(csvMenu) csvMenu.remove(); csvMenu=document.createElement("div"); csvMenu.className="csv-menu"; document.body.appendChild(csvMenu); actualizarMenuCSV(); csvMenu.addEventListener("click",e=>e.stopPropagation()); }
 function actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn){ const marcados=cg.querySelectorAll("input[type='checkbox']:checked").length, total=cg.querySelectorAll("input[type='checkbox']").length; sa.disabled=(marcados===total); da.disabled=(marcados===0); acceptBtn.disabled=!selectedFields.length; }
