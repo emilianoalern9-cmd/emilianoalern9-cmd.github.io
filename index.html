@@ -68,7 +68,7 @@ body::before{
   width:auto;
   height:100%;
   pointer-events:all;
-  z-index:102;
+  z-index:0;  /* ← antes 102, ahora detrás del contenedor */
   opacity:.9;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));
   cursor:pointer;
@@ -84,7 +84,7 @@ body::before{
   .search-wrapper input { width: 90px !important; font-size: 0.65rem !important; }
   .filtros-panel { gap: 4px; }
 }
-.container{max-width:1400px;margin:0 auto;position:relative}
+.container{max-width:1400px;margin:0 auto;position:relative; z-index:1;}
 h2{
   font-family:'Cinzel',serif;
   font-size:1.6rem;
@@ -584,35 +584,24 @@ h2{
   opacity:1;
   transition:opacity .2s;
 }
-.card{display:flex;flex-direction:column;position:relative;overflow:hidden}
-.card::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
-  transform:translateX(-100%);
-  transition:transform 0s;
-  pointer-events:none;
-  z-index:10;
-  will-change:transform;
+.card{
+  background:var(--card-bg);
+  border-radius:20px;
+  cursor:pointer;
+  border:1px solid var(--border-color);
+  transition:transform .2s ease, border-color .1s;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
 }
-.card:hover::before{
-  animation:shineBarrido 1.5s ease-in-out infinite;
+.card:hover{
+  transform:translateY(-2px);
+  background:rgba(18,15,30,.9);
+  border-color:var(--accent);
 }
-@keyframes shineBarrido{
-  0%{transform:translateX(-100%);}
-  20%{transform:translateX(-20%);}
-  80%{transform:translateX(80%);}
-  100%{transform:translateX(100%);}
-}
-/* Para que la animación se detenga al salir, el estado normal no tiene animación */
-.card:not(:hover)::before{
-  animation:none;
-  transform:translateX(-100%);
-}
+/* ===== ANIMACIÓN DE BARRIDO ELIMINADA ===== */
+
 .img-container{
   width:100%;
   height:150px;
@@ -670,22 +659,6 @@ h2{
   max-height: calc(2 * 1.2em + 12px);
   line-height: 1.2;
   padding-bottom: 6px;
-}
-.card{
-  background:var(--card-bg);
-  border-radius:20px;
-  cursor:pointer;
-  border:1px solid var(--border-color);
-  transition:transform .2s ease, border-color .1s;
-  display:flex;
-  flex-direction:column;
-  position:relative;
-  overflow:hidden;
-}
-.card:hover{
-  transform:translateY(-2px);
-  background:rgba(18,15,30,.9);
-  border-color:var(--accent);
 }
 .modal-header h3{
   white-space:nowrap;
@@ -833,7 +806,13 @@ h2{
 .modal-header-actions button:active{transform:scale(.95)}
 #cerrar{font-size:1.5rem;cursor:pointer;color:var(--accent)}
 .modal-body{display:flex;gap:20px;padding:16px 20px;overflow-y:auto;flex:1}
-.info-scroll{flex:1;overflow-y:auto;padding-right:8px;max-height:65vh}
+.info-scroll{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;       /* ← evita scroll horizontal */
+  padding-right:8px;
+  max-height:65vh;
+}
 .image-fixed{flex:.6;min-width:120px;text-align:center}
 .image-fixed img{max-width:100%;max-height:180px;object-fit:contain;border-radius:20px;border:1px solid var(--border-color);background:#000}
 .info-grid{background:rgba(0,0,0,.4);border-radius:20px;padding:10px 14px;margin-bottom:12px}
@@ -841,7 +820,14 @@ h2{
 .info-label{font-weight:700;color:var(--accent);min-width:90px}
 .modal-description{line-height:1.5;font-size:.85rem;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word}
 .links-list{margin-top:12px;border-top:1px dashed var(--border-color);padding-top:8px}
-.link-item{display:block;color:var(--accent);font-size:.75rem;margin-bottom:4px;text-decoration:none}
+.link-item{
+  display:block;
+  color:var(--accent);
+  font-size:.75rem;
+  margin-bottom:4px;
+  text-decoration:none;
+  word-break:break-word;   /* ← enlaces largos se parten en varias líneas */
+}
 .link-item:active{text-decoration:underline}
 @media(max-width:700px){
   .modal-body{flex-direction:column}
@@ -1559,7 +1545,7 @@ function abrirDetalle(e){
 function actualizarFlechasModal(){ if(!currentOrderedList.length||navegacionBloqueada) return; modalPrevArrow.classList.toggle("disabled",currentModalIndex===0); modalNextArrow.classList.toggle("disabled",currentModalIndex===currentOrderedList.length-1); }
 function navegarModal(d){ if(navegacionBloqueada||!currentOrderedList.length) return; let ni=currentModalIndex+d; if(ni<0) ni=0; if(ni>=currentOrderedList.length) ni=currentOrderedList.length-1; if(ni!==currentModalIndex){ currentModalIndex=ni; currentModalCreature=currentOrderedList[ni]; actualizarModal(); actualizarFlechasModal(); } }
 async function closeModal(){
-  // CORRECCIÓN 1: Restaurar la navegación normal antes de evaluar
+  // CORRECCIÓN: Restaurar la navegación normal antes de evaluar
   const eraAleatorio = navegacionBloqueada;
   navegacionBloqueada = false;
 
@@ -1755,7 +1741,7 @@ modalTitle.closest("#detalle").addEventListener("touchend",e=>{ if(navegacionBlo
 function adjustTitleFontSize(){ const ruler=document.createElement('span'); ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none'; document.body.appendChild(ruler); const minFontSize=0.7; document.querySelectorAll('.card b').forEach(t=>{ const a=t.clientWidth; if(a<=0) return; ruler.textContent=t.textContent; let fs=0.9; ruler.style.fontSize=fs+'rem'; while(fs>minFontSize&&ruler.offsetWidth>a){ fs-=0.005; ruler.style.fontSize=fs+'rem'; } if(ruler.offsetWidth>a){ t.classList.add('wrap-name'); t.style.fontSize=minFontSize+'rem'; } else { t.classList.remove('wrap-name'); t.style.fontSize=fs+'rem'; } }); ruler.remove(); }
 function adjustModalTitleFontSize(){ const h3=modalTitle; if(!h3) return; const availableWidth=h3.clientWidth; if(availableWidth<=0) return; const minFontSize=0.8; const testEl=document.createElement('span'); testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;'; testEl.textContent=h3.textContent; document.body.appendChild(testEl); let fs=1.4; testEl.style.fontSize=fs+'rem'; while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){ fs-=0.05; testEl.style.fontSize=fs+'rem'; } if(testEl.scrollWidth>testEl.clientWidth){ h3.classList.add('wrap-name'); h3.style.fontSize=minFontSize+'rem'; } else { h3.classList.remove('wrap-name'); h3.style.fontSize=fs+'rem'; } testEl.remove(); }
 
-// ========== NUEVA LÓGICA DE CARGA MÚLTIPLE ==========
+// ========== NUEVA LÓGICA DE CARGA MÚltiple ==========
 async function cargarArchivosDesdeCarpeta() {
   let todosLosDatos = [];
   let indice = 1;
