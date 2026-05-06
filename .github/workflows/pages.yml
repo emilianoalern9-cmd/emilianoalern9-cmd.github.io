@@ -1,0 +1,9 @@
+name: Pages
+on: push
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/deploy-pages@v4
