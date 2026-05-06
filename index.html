@@ -589,7 +589,7 @@ h2{
   border-radius:20px;
   cursor:pointer;
   border:1px solid var(--border-color);
-  transition:transform .2s ease, border-color .1s;
+  /* transition: transform .2s ease, border-color .2s ease, background .2s ease; */ /* ← DESACTIVADO PARA PRUEBA */
   display:flex;
   flex-direction:column;
   position:relative;
@@ -710,8 +710,8 @@ h2{
   border:1px solid var(--border-color);
   white-space:nowrap;
   z-index:10001;
-  pointer-events:none;
-  transition:opacity .2s;
+  pointer-events:none;       /* ← evita interferir con clics */
+  transition:opacity .2s;    /* ← suaviza la desaparición */
   box-shadow:0 2px 6px rgba(0,0,0,.3);
 }
 .no-results{
@@ -895,7 +895,7 @@ let especies=[],filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],
     selectedFields=[...csvFields.filter(f=>f!=='nombre')],
     csvMenu=null,ubicacionModal=null,epocaModal=null,subcategoriasModal=null,ordenActual="nombre_asc",touchStartX=0,
     tempPerPage=24,tempModoRevision="manual", panelVisible=true, menuOverlay=null,
-    headerOriginalZIndex='100', activeTooltip=null, tooltipTimeout=null;
+    headerOriginalZIndex='100';
 
 const opcionesMorfologia=["Humano","Humanoide","Mamífero","Híbrido","Ave","Reptil","Pez","Insecto","Amorfo","Etéreo","Artificial","Otro"];
 const opcionesTipo=["Mitológico","Criptido","Difuso"];
@@ -930,38 +930,9 @@ function loadLocal(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 function persistState(){saveLocal('catalogo_filtros',filtrosState);saveLocal('catalogo_orden',ordenActual);saveLocal('catalogo_perpage',perPage);saveLocal('catalogo_onlyFav',onlyFavorites);saveRevFilterState()}
 function actualizarFiltroActivo(btn,activo){btn.classList.toggle('active-filter',activo);}
 
-// ========== TOOLTIP GLOBAL ==========
-function hideTooltip(){
-  if(activeTooltip){
-    activeTooltip.style.opacity='0';
-    setTimeout(()=>{ if(activeTooltip && activeTooltip.parentNode) activeTooltip.remove(); activeTooltip=null; },200);
-  }
-  if(tooltipTimeout){ clearTimeout(tooltipTimeout); tooltipTimeout=null; }
-}
-function showTooltip(text, x, y, duration=1500){
-  hideTooltip();
-  const tt=document.createElement("div");
-  tt.className="temp-tooltip";
-  tt.textContent=text;
-  tt.style.position="fixed";
-  tt.style.left=x+"px";
-  tt.style.top=y+"px";
-  tt.style.opacity="1";
-  document.body.appendChild(tt);
-  activeTooltip=tt;
-  tooltipTimeout = setTimeout(()=>{ if(activeTooltip === tt) hideTooltip(); }, duration);
-}
-document.addEventListener("click", (e)=> {
-  if(activeTooltip && e.target.closest('.temp-tooltip')) return;
-  hideTooltip();
-});
-function closeAllMenusAndTooltip(){
-  closeAllMenus();
-  hideTooltip();
-}
-const originalCloseAllMenus = closeAllMenus;
-window.closeAllMenus = function(){ originalCloseAllMenus(); hideTooltip(); };
-closeAllMenus = window.closeAllMenus;
+// ========== TOOLTIP GLOBAL (DESACTIVADO PARA PRUEBA) ==========
+function showTooltip(){}
+function hideTooltip(){}
 
 // ========== ÍNDICES INVERTIDOS ==========
 let idxMorfologia, idxTipo, idxElemento, idxAvistamiento, idxUbicacion, idxEpoca, idxSubcategorias;
@@ -1404,36 +1375,11 @@ headerCornerImg.addEventListener('click',(e)=>{ e.stopPropagation(); abrirVentan
 
 // ========== UTILIDADES ==========
 function levenshteinDistance(a,b){ if(!a.length)return b.length; if(!b.length)return a.length; const m=[]; for(let i=0;i<=b.length;i++) m[i]=[i]; for(let j=0;j<=a.length;j++) m[0][j]=j; for(let i=1;i<=b.length;i++) for(let j=1;j<=a.length;j++) m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[j-1]===b[i-1]?0:1)); return m[b.length][a.length]; }
-function showTemporaryTooltip(el,text, duration=1500){
-  if(!el) return;
-  const rect = el.getBoundingClientRect();
-  let x = rect.left + rect.width/2;
-  let y = rect.top - 8;
-  if(y < 0) y = rect.bottom + 8;
-  x = Math.min(Math.max(x, 10), window.innerWidth-10);
-  showTooltip(text, x-25, y-5, duration);
-}
-function setupBadgeHover(badge, text){
-  let hoverTimeout=null;
-  badge.addEventListener("mouseenter", (e)=>{
-    if(hoverTimeout) clearTimeout(hoverTimeout);
-    hoverTimeout = setTimeout(()=>{
-      const rect = badge.getBoundingClientRect();
-      let x = rect.left + rect.width/2 - 25;
-      let y = rect.top - 8;
-      if(y < 0) y = rect.bottom + 8;
-      x = Math.min(Math.max(x, 10), window.innerWidth-50);
-      showTooltip(text, x, y-5, 2000);
-    }, 300);
-  });
-  badge.addEventListener("mouseleave", ()=>{
-    if(hoverTimeout){ clearTimeout(hoverTimeout); hoverTimeout=null; }
-    hideTooltip();
-  });
-}
+function showTemporaryTooltip(el,text, duration=1500){ /* desactivado */ }
+function setupBadgeHover(badge, text){ /* desactivado */ }
 function crearBadge(ico,tit,cls){
   const d=document.createElement("div"); d.className=`mini-badge ${cls}`; d.textContent=ico;
-  setupBadgeHover(d, tit);
+  // setupBadgeHover(d, tit);  ← desactivado
   d.addEventListener("click",e=>{ e.stopPropagation(); });
   return d;
 }
@@ -1525,9 +1471,9 @@ function copiarLinkAlPortapapeles(){
   const url = new URL(window.location.href);
   url.hash = `id=${encodeURIComponent(currentModalCreature.id)}`;
   navigator.clipboard.writeText(url.href).then(()=>{
-    showTemporaryTooltip(modalCopyLinkBtn, "Enlace copiado");
+    // showTemporaryTooltip(modalCopyLinkBtn, "Enlace copiado");  ← desactivado
   }).catch(()=>{
-    showTemporaryTooltip(modalCopyLinkBtn, "No se pudo copiar");
+    // showTemporaryTooltip(modalCopyLinkBtn, "No se pudo copiar"); ← desactivado
   });
 }
 modalCopyLinkBtn.onclick = copiarLinkAlPortapapeles;
