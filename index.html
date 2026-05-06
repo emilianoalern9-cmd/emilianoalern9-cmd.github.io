@@ -68,8 +68,8 @@ body::before{
   width:auto;
   height:100%;
   pointer-events:all;
-  z-index:0;  /* ← antes 102, ahora detrás del contenedor */
-  opacity:1;
+  z-index:2;               /* ← por encima del contenedor */
+  opacity:1;               /* ← completamente sólida */
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));
   cursor:pointer;
   object-fit: contain;
@@ -84,7 +84,7 @@ body::before{
   .search-wrapper input { width: 90px !important; font-size: 0.65rem !important; }
   .filtros-panel { gap: 4px; }
 }
-.container{max-width:1400px;margin:0 auto;position:relative; z-index:1;}
+.container{max-width:1400px;margin:0 auto;position:relative;z-index:1}  /* z-index inferior a la imagen de la esquina */
 h2{
   font-family:'Cinzel',serif;
   font-size:1.6rem;
@@ -601,7 +601,6 @@ h2{
   border-color:var(--accent);
 }
 /* ===== ANIMACIÓN DE BARRIDO ELIMINADA ===== */
-
 .img-container{
   width:100%;
   height:150px;
@@ -1741,19 +1740,17 @@ modalTitle.closest("#detalle").addEventListener("touchend",e=>{ if(navegacionBlo
 function adjustTitleFontSize(){ const ruler=document.createElement('span'); ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none'; document.body.appendChild(ruler); const minFontSize=0.7; document.querySelectorAll('.card b').forEach(t=>{ const a=t.clientWidth; if(a<=0) return; ruler.textContent=t.textContent; let fs=0.9; ruler.style.fontSize=fs+'rem'; while(fs>minFontSize&&ruler.offsetWidth>a){ fs-=0.005; ruler.style.fontSize=fs+'rem'; } if(ruler.offsetWidth>a){ t.classList.add('wrap-name'); t.style.fontSize=minFontSize+'rem'; } else { t.classList.remove('wrap-name'); t.style.fontSize=fs+'rem'; } }); ruler.remove(); }
 function adjustModalTitleFontSize(){ const h3=modalTitle; if(!h3) return; const availableWidth=h3.clientWidth; if(availableWidth<=0) return; const minFontSize=0.8; const testEl=document.createElement('span'); testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;'; testEl.textContent=h3.textContent; document.body.appendChild(testEl); let fs=1.4; testEl.style.fontSize=fs+'rem'; while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){ fs-=0.05; testEl.style.fontSize=fs+'rem'; } if(testEl.scrollWidth>testEl.clientWidth){ h3.classList.add('wrap-name'); h3.style.fontSize=minFontSize+'rem'; } else { h3.classList.remove('wrap-name'); h3.style.fontSize=fs+'rem'; } testEl.remove(); }
 
-// ========== NUEVA LÓGICA DE CARGA MÚltiple ==========
+// ========== NUEVA LÓGICA DE CARGA MÚLTIPLE ==========
 async function cargarArchivosDesdeCarpeta() {
   let todosLosDatos = [];
   let indice = 1;
   let hayError = false;
   
-  // Intentar cargar secuencialmente Datos1.json, Datos2.json, ...
   while (!hayError) {
     const url = `dtsk/Datos${indice}.json`;
     try {
       const respuesta = await fetch(url, { cache: 'no-store' });
       if (!respuesta.ok) {
-        // Si falla (404 u otro), detenemos la carga
         hayError = true;
         break;
       }
@@ -1765,7 +1762,6 @@ async function cargarArchivosDesdeCarpeta() {
       }
       indice++;
     } catch (error) {
-      // Error de red o archivo no encontrado
       hayError = true;
       break;
     }
@@ -1775,11 +1771,9 @@ async function cargarArchivosDesdeCarpeta() {
 
 async function cargarDatos(){
   try {
-    // Cargar desde carpeta dtsk/ los archivos DatosX.json
     let datosCombinados = await cargarArchivosDesdeCarpeta();
     if (datosCombinados.length === 0) {
       console.warn("No se encontraron archivos DatosX.json en la carpeta dtsk/");
-      // Opcional: intentar cargar datos.json original como respaldo
       const res = await fetch('datos.json', { cache: 'no-store' });
       if (res.ok) {
         const respaldo = await res.json();
@@ -1787,9 +1781,7 @@ async function cargarDatos(){
       }
     }
     
-    // Normalizar cada criatura: asegurar posX, posY, zoom y un id único
     especies = datosCombinados.map((criatura, idx) => {
-      // Normalizar propiedades de posición y zoom
       if (criatura.posX === undefined) {
         if (criatura.posx !== undefined) criatura.posX = criatura.posx;
         else criatura.posX = 0;
@@ -1800,7 +1792,6 @@ async function cargarDatos(){
       }
       if (criatura.zoom === undefined) criatura.zoom = 1;
       
-      // Asegurar que tenga un id (si no viene, asignar uno basado en índice)
       if (!criatura.id) {
         criatura.id = `criatura_${idx}_${Date.now()}_${Math.random()}`;
       }
@@ -1823,7 +1814,6 @@ async function cargarDatos(){
     window.scrollTo({top:0,behavior:'instant'});
   } catch(err){ 
     console.error("Error cargando datos:", err);
-    // Fallback para que la página no quede completamente rota
     especies = [];
     dataLoaded = true;
     render();
