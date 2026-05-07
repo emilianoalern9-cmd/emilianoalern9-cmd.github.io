@@ -51,29 +51,62 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .filtros-panel{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;align-items:center;justify-content:flex-start}
 .filtros-panel.oculto{display:none}
 .filtro-group{position:relative}
-.filtro-boton,.btn-limpiar,.export-btn,.random-btn,.theme-btn,.view-btn,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:40px;padding:5px 10px;font-family:'Cinzel',serif;font-weight:600;color:var(--text-primary);font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;white-space:nowrap;line-height:1;outline:none}
-.filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn button:disabled,.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
+.filtro-boton,.btn-limpiar,.export-btn,.random-btn,.theme-btn,.view-btn,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{
+  background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:40px;
+  padding:5px 10px;font-family:'Cinzel',serif;font-weight:600;color:var(--text-primary);
+  font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;
+  white-space:nowrap;line-height:1;outline:none
+}
+/* 👇 Se agregó .config-btn:disabled para que también se vea semitransparente */
+.filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn:disabled,.config-btn button:disabled,.limpiar-categoria:disabled{
+  opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none
+}
 .search-clear{cursor:pointer;font-size:.9rem;font-weight:700;color:var(--accent);background:none;border:none;padding:0 2px;transition:opacity .2s}
 .search-clear.disabled{opacity:.5;pointer-events:none;cursor:default}
 .search-clear:active:not(.disabled){transform:scale(.9)}
 .filtro-menu input:disabled,.rev-filter-menu input:disabled{opacity:.5;cursor:not-allowed}
 .filtro-menu label:has(input:disabled),.rev-filter-menu label:has(input:disabled){opacity:.6;cursor:default}
 @media(hover:hover){
-  .filtro-boton:hover:not(:disabled),.btn-limpiar:hover:not(:disabled),.export-btn:hover,.random-btn:hover,.theme-btn:hover,.view-btn:hover,.fav-filter-btn:hover:not(:disabled),.pagination-btn:hover:not(:disabled),.config-btn:hover,.help-btn:hover{background:var(--accent-hover);color:#1a1625;border-color:var(--accent)}
-  .filtro-menu button:hover,.rev-filter-menu label:hover:has(input:not(:disabled)),.orden-menu button:hover,.items-menu button:hover,.csv-menu button:hover,.config-menu button:hover,.config-submenu button:hover{background:var(--accent-hover);color:#1a1625}
+  .filtro-boton:hover:not(:disabled),.btn-limpiar:hover:not(:disabled),.export-btn:hover,.random-btn:hover,.theme-btn:hover,.view-btn:hover,.fav-filter-btn:hover:not(:disabled),.pagination-btn:hover:not(:disabled),.config-btn:hover:not(:disabled),.help-btn:hover{
+    background:var(--accent-hover);color:#1a1625;border-color:var(--accent)
+  }
+  .filtro-menu button:hover,.rev-filter-menu label:hover:has(input:not(:disabled)),.orden-menu button:hover:not(:disabled),.items-menu button:hover,.csv-menu button:hover,.config-menu button:hover,.config-submenu button:hover{
+    background:var(--accent-hover);color:#1a1625
+  }
 }
-.filtro-boton:active:not(:disabled),.btn-limpiar:active:not(:disabled),.export-btn:active,.random-btn:active,.theme-btn:active,.view-btn:active,.fav-filter-btn:active:not(:disabled),.pagination-btn:active:not(:disabled),.config-btn:active,.help-btn:active{background:var(--accent-hover);color:#1a1625;border-color:var(--accent);transform:scale(.98)}
+.filtro-boton:active:not(:disabled),.btn-limpiar:active:not(:disabled),.export-btn:active,.random-btn:active,.theme-btn:active,.view-btn:active,.fav-filter-btn:active:not(:disabled),.pagination-btn:active:not(:disabled),.config-btn:active:not(:disabled),.help-btn:active{
+  background:var(--accent-hover);color:#1a1625;border-color:var(--accent);transform:scale(.98)
+}
 .filtro-boton.active-filter{border-color:var(--filter-active-border);box-shadow:var(--filter-active-shadow)}
 .fav-filter-btn.active,.theme-btn.active{background:var(--accent);color:#1a1625;border-color:var(--accent-hover);box-shadow:0 0 4px var(--accent)}
 /* Menús flotantes generales */
-.filtro-menu,.orden-menu,.items-menu,.csv-menu,.config-menu,.rev-filter-menu,.help-menu{position:absolute;top:110%;left:0;background:rgba(25,20,40,.9);backdrop-filter:blur(8px);border:1px solid var(--border-color);border-radius:20px;padding:8px 12px;min-width:180px;z-index:200;box-shadow:0 8px 20px rgba(0,0,0,.4);display:none;flex-direction:column;gap:4px}
+.filtro-menu,.orden-menu,.items-menu,.csv-menu,.config-menu,.rev-filter-menu,.help-menu{
+  position:absolute;top:110%;left:0;
+  background:rgba(25,20,40,.9);backdrop-filter:blur(8px);
+  border:1px solid var(--border-color);border-radius:20px;
+  padding:8px 12px;min-width:180px;z-index:200;
+  box-shadow:0 8px 20px rgba(0,0,0,.4);
+  display:none;flex-direction:column;gap:4px
+}
 .config-menu{min-width:200px}
 .help-menu{min-width:240px;white-space:normal}
 .help-menu p{font-size:.7rem;margin-bottom:4px;color:#fff;line-height:1.3}
 .help-menu hr{margin:4px 0;border-color:var(--border-color)}
 .config-submenu{position:absolute;top:0;left:100%;margin-left:5px;background:rgba(25,20,40,.9);backdrop-filter:blur(8px);border:1px solid var(--border-color);border-radius:20px;padding:6px;min-width:100px;display:none;flex-direction:column;gap:4px;z-index:210}
 .config-submenu.show,.filtro-menu.show,.orden-menu.show,.items-menu.show,.csv-menu.show,.config-menu.show,.rev-filter-menu.show,.help-menu.show{display:flex}
-.filtro-menu label,.rev-filter-menu label,.orden-menu button,.items-menu button,.csv-menu button,.config-menu button,.config-submenu button{background:none;border:none;text-align:left;padding:4px 8px;font-family:'Cinzel',serif;font-size:.7rem;color:#fff;cursor:pointer;border-radius:30px;transition:all .2s;display:flex;align-items:center;width:100%;justify-content:space-between}
+/* 👇 Estilo para botón deshabilitado en menú de orden: sin hover, cursor default */
+.orden-menu button:disabled {
+  background:none !important;
+  color:var(--text-primary) !important;
+  cursor:default !important;
+  opacity:0.7;
+}
+.filtro-menu label,.rev-filter-menu label,.orden-menu button,.items-menu button,.csv-menu button,.config-menu button,.config-submenu button{
+  background:none;border:none;text-align:left;padding:4px 8px;
+  font-family:'Cinzel',serif;font-size:.7rem;color:#fff;
+  cursor:pointer;border-radius:30px;transition:all .2s;
+  display:flex;align-items:center;width:100%;justify-content:space-between
+}
 .filtro-menu input,.rev-filter-menu input{accent-color:var(--accent);width:14px;height:14px;margin-right:6px;flex-shrink:0}
 .filtro-menu .label-text,.rev-filter-menu .label-text{flex-grow:1;margin-right:6px}
 .filtro-menu span.count,.rev-filter-menu span.count{color:#b8a87a;font-size:.6rem;flex-shrink:0;margin-left:auto}
@@ -88,14 +121,14 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
   border:1px solid var(--border-color);border-radius:24px;
   padding:15px 18px;min-width:280px;max-width:90vw;
   z-index:1001;box-shadow:0 15px 35px rgba(0,0,0,.6);
-  display:none;flex-direction:column;gap:10px;
+  display:none;flex-direction:column;gap:10px
 }
 .temp-floating-menu.show{display:flex}
 .temp-floating-menu .temp-header{
   text-align:center;font-family:'Cinzel',serif;color:var(--accent);
   font-weight:600;font-size:.85rem;border-bottom:1px solid var(--border-color);
   padding-bottom:8px;margin-bottom:4px;display:flex;
-  justify-content:space-between;align-items:center;
+  justify-content:space-between;align-items:center
 }
 .temp-floating-menu .temp-header button{background:none;border:none;font-size:1rem;color:var(--accent);cursor:pointer;padding:0 4px;margin-left:8px}
 .temp-floating-menu .slider-container{padding:0 5px}
@@ -103,11 +136,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .temp-floating-menu .slider-labels{display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-secondary);padding:0 2px;margin-bottom:4px}
 .temp-floating-menu .temp-value{text-align:center;font-family:'Cinzel',serif;color:var(--accent);font-size:.9rem;margin:4px 0}
 .temp-floating-menu .rev-options{display:flex;flex-direction:column;gap:8px;padding:4px 0}
-.temp-floating-menu .rev-option{
-  background:rgba(25,20,40,.85);border:1px solid var(--border-color);
-  border-radius:30px;padding:8px 14px;color:var(--text-primary);
-  cursor:pointer;font-family:'Cinzel',serif;font-size:.75rem;text-align:center;transition:all .2s
-}
+.temp-floating-menu .rev-option{background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:30px;padding:8px 14px;color:var(--text-primary);cursor:pointer;font-family:'Cinzel',serif;font-size:.75rem;text-align:center;transition:all .2s}
 .temp-floating-menu .rev-option:hover{background:var(--accent-hover);color:#1a1625}
 .temp-floating-menu .rev-option.active{background:var(--accent);color:#1a1625;border-color:var(--accent-hover);box-shadow:0 0 4px var(--accent)}
 .temp-floating-menu .temp-actions{display:flex;gap:10px;justify-content:center;margin-top:6px}
@@ -177,11 +206,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .modal-arrow.disabled{opacity:.3;pointer-events:none}
 .modal-arrow.prev{left:-20px}
 .modal-arrow.next{right:-20px}
-@media(max-width:700px){
-  .modal-arrow{width:28px;height:80px;font-size:20px}
-  .modal-arrow.prev{left:-14px}
-  .modal-arrow.next{right:-14px}
-}
+@media(max-width:700px){ .modal-arrow{width:28px;height:80px;font-size:20px} .modal-arrow.prev{left:-14px} .modal-arrow.next{right:-14px} }
 #detalle{background:var(--card-bg);border-radius:30px;border:1px solid var(--border-color);max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
 .modal-header{padding:12px 18px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center}
 .modal-header h3{margin:0}
@@ -200,11 +225,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .links-list{margin-top:12px;border-top:1px dashed var(--border-color);padding-top:8px}
 .link-item{display:block;color:var(--accent);font-size:.75rem;margin-bottom:4px;text-decoration:none;word-break:break-word}
 .link-item:active{text-decoration:underline}
-@media(max-width:700px){
-  .modal-body{flex-direction:column}
-  .image-fixed{order:2;margin-top:16px;flex:none}
-  .info-scroll{order:1;max-height:50vh}
-}
+@media(max-width:700px){ .modal-body{flex-direction:column} .image-fixed{order:2;margin-top:16px;flex:none} .info-scroll{order:1;max-height:50vh} }
 </style>
 </head>
 <body>
@@ -310,13 +331,7 @@ function persistState(){saveLocal('catalogo_filtros',filtrosState);saveLocal('ca
 let idxMorfologia,idxTipo,idxElemento,idxAvistamiento,idxUbicacion,idxEpoca,idxSubcategorias;
 function buildIndexes(){
   idxMorfologia=new Map();idxTipo=new Map();idxElemento=new Map();idxAvistamiento=new Map();idxUbicacion=new Map();idxEpoca=new Map();idxSubcategorias=new Map();
-  for(let e of especies){
-    const id=e.id;
-    addToIndex(idxMorfologia,e.morfologia,id);addToIndex(idxTipo,e.tipo,id);addToIndex(idxElemento,e.elemento,id);addToIndex(idxAvistamiento,e.avistamiento,id);
-    if(e.ubicacion)addToIndex(idxUbicacion,e.ubicacion,id);
-    if(e.epoca)addToIndex(idxEpoca,e.epoca,id);
-    if(e.subcategorias){e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)addToIndex(idxSubcategorias,t,id)})}
-  }
+  for(let e of especies){ const id=e.id; addToIndex(idxMorfologia,e.morfologia,id);addToIndex(idxTipo,e.tipo,id);addToIndex(idxElemento,e.elemento,id);addToIndex(idxAvistamiento,e.avistamiento,id); if(e.ubicacion)addToIndex(idxUbicacion,e.ubicacion,id); if(e.epoca)addToIndex(idxEpoca,e.epoca,id); if(e.subcategorias){e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)addToIndex(idxSubcategorias,t,id)})} }
 }
 function addToIndex(map,key,id){if(!map.has(key))map.set(key,new Set());map.get(key).add(id)}
 
@@ -329,47 +344,23 @@ function baseFilterPredicate(ignoreCat){
     if(ignoreCat!=='avistamiento'&&filtrosState.avistamiento.length&&!filtrosState.avistamiento.includes(e.avistamiento))return false;
     if(ignoreCat!=='ubicacion'&&filtrosState.ubicacion.length&&!filtrosState.ubicacion.includes(e.ubicacion))return false;
     if(ignoreCat!=='epoca'&&filtrosState.epoca.length&&!filtrosState.epoca.includes(e.epoca))return false;
-    if(ignoreCat!=='subcategorias'&&filtrosState.subcategorias.length){
-      const subcats=e.subcategorias?e.subcategorias.split(',').map(s=>s.trim()).filter(s=>s):[];
-      if(!filtrosState.subcategorias.some(sel=>subcats.includes(sel)))return false;
-    }
+    if(ignoreCat!=='subcategorias'&&filtrosState.subcategorias.length){ const subcats=e.subcategorias?e.subcategorias.split(',').map(s=>s.trim()).filter(s=>s):[]; if(!filtrosState.subcategorias.some(sel=>subcats.includes(sel)))return false; }
     if(onlyFavorites&&!favoritos.has(e.id))return false;
     if(searchTerm.trim()&&!e.nombre.toLowerCase().includes(searchTerm.toLowerCase()))return false;
     return true;
   };
 }
-function getBaseFilteredIds(ignoreCat=null){
-  if(baseFilterVersion===cachedBaseVersion&&ignoreCat===cachedIgnoreCat&&cachedBaseIds!==null)return cachedBaseIds;
-  const pred=baseFilterPredicate(ignoreCat),ids=new Set();
-  for(let e of especies)if(pred(e))ids.add(e.id);
-  cachedBaseIds=ids;cachedBaseVersion=baseFilterVersion;cachedIgnoreCat=ignoreCat;
-  return ids;
-}
+function getBaseFilteredIds(ignoreCat=null){ if(baseFilterVersion===cachedBaseVersion&&ignoreCat===cachedIgnoreCat&&cachedBaseIds!==null)return cachedBaseIds; const pred=baseFilterPredicate(ignoreCat),ids=new Set(); for(let e of especies)if(pred(e))ids.add(e.id); cachedBaseIds=ids;cachedBaseVersion=baseFilterVersion;cachedIgnoreCat=ignoreCat; return ids; }
 function invalidateBaseCache(){baseFilterVersion++}
 
 function contarConOpcion(categoria,opcion){
   const baseIds=getBaseFilteredIds(categoria);if(!baseIds.size)return 0;
-  let opSet;
-  switch(categoria){
-    case'morfologia':opSet=idxMorfologia.get(opcion);break;
-    case'tipo':opSet=idxTipo.get(opcion);break;
-    case'elemento':opSet=idxElemento.get(opcion);break;
-    case'avistamiento':opSet=idxAvistamiento.get(opcion);break;
-    case'ubicacion':opSet=idxUbicacion.get(opcion);break;
-    case'epoca':opSet=idxEpoca.get(opcion);break;
-    case'subcategorias':opSet=idxSubcategorias.get(opcion);break;
-    default:return 0;
-  }
+  let opSet; switch(categoria){ case'morfologia':opSet=idxMorfologia.get(opcion);break; case'tipo':opSet=idxTipo.get(opcion);break; case'elemento':opSet=idxElemento.get(opcion);break; case'avistamiento':opSet=idxAvistamiento.get(opcion);break; case'ubicacion':opSet=idxUbicacion.get(opcion);break; case'epoca':opSet=idxEpoca.get(opcion);break; case'subcategorias':opSet=idxSubcategorias.get(opcion);break; default:return 0; }
   if(!opSet||!opSet.size)return 0;
   if(baseIds.size<opSet.size){let count=0;for(let id of baseIds)if(opSet.has(id))count++;return count}
   else{let count=0;for(let id of opSet)if(baseIds.has(id))count++;return count}
 }
-function contarPorEstado(estado){
-  const baseIds=getBaseFilteredIds(null);if(!baseIds.size)return 0;
-  let count=0;
-  for(let id of baseIds){const r=revisados.has(id);if(estado==="revisado"?r:!r)count++}
-  return count;
-}
+function contarPorEstado(estado){ const baseIds=getBaseFilteredIds(null);if(!baseIds.size)return 0; let count=0; for(let id of baseIds){const r=revisados.has(id);if(estado==="revisado"?r:!r)count++} return count; }
 function buildPredicate(extraCheck=null){
   return e=>{
     if(filtrosState.morfologia.length&&!filtrosState.morfologia.includes(e.morfologia))return false;
@@ -378,10 +369,7 @@ function buildPredicate(extraCheck=null){
     if(filtrosState.avistamiento.length&&!filtrosState.avistamiento.includes(e.avistamiento))return false;
     if(filtrosState.ubicacion.length&&!filtrosState.ubicacion.includes(e.ubicacion))return false;
     if(filtrosState.epoca.length&&!filtrosState.epoca.includes(e.epoca))return false;
-    if(filtrosState.subcategorias.length){
-      const subcats=e.subcategorias?e.subcategorias.split(',').map(s=>s.trim()).filter(s=>s):[];
-      if(!filtrosState.subcategorias.some(sel=>subcats.includes(sel)))return false;
-    }
+    if(filtrosState.subcategorias.length){ const subcats=e.subcategorias?e.subcategorias.split(',').map(s=>s.trim()).filter(s=>s):[]; if(!filtrosState.subcategorias.some(sel=>subcats.includes(sel)))return false; }
     if(onlyFavorites&&!favoritos.has(e.id))return false;
     if(searchTerm.trim()&&!e.nombre.toLowerCase().includes(searchTerm.toLowerCase()))return false;
     if(revFilterState.length){const r=revisados.has(e.id);if(!(revFilterState.includes("revisado")&&revFilterState.includes("no_revisado"))&&((revFilterState.includes("revisado")&&!r)||(revFilterState.includes("no_revisado")&&r)))return false}
@@ -392,11 +380,7 @@ const aplicarFiltrosCompletos=()=>especies.filter(buildPredicate());
 function ordenarEspecies(lista){const[campo,dir]=ordenActual.split('_');const order=dir==="asc"?1:-1;return[...lista].sort((a,b)=>{let va=a[campo]||"",vb=b[campo]||"";return va<vb?-order:va>vb?order:0})}
 
 const STORAGE_VERSION=11;
-function resetAllData(){
-  localStorage.clear();filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
-  revFilterState=[];revisados.clear();favoritos.clear();onlyFavorites=false;ordenActual="nombre_asc";perPage=24;currentPage=1;searchTerm='';
-  saveLocal('catalogo_version',STORAGE_VERSION);persistState();saveRevisados();saveFavoritos();
-}
+function resetAllData(){ localStorage.clear();filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]}; revFilterState=[];revisados.clear();favoritos.clear();onlyFavorites=false;ordenActual="nombre_asc";perPage=24;currentPage=1;searchTerm=''; saveLocal('catalogo_version',STORAGE_VERSION);persistState();saveRevisados();saveFavoritos(); }
 function checkVersion(){const v=loadLocal('catalogo_version');if(v!==STORAGE_VERSION){resetAllData();return false}return true}
 function loadRevisados(){const s=loadLocal('catalogo_revisados');if(s)revisados=new Set(s)}
 function saveRevisados(){saveLocal('catalogo_revisados',[...revisados])}
@@ -407,78 +391,22 @@ function saveFavoritos(){saveLocal('catalogo_favoritos',[...favoritos]);actualiz
 function loadRevFilterState(){const s=loadLocal('catalogo_rev_filter');revFilterState=s||[]}
 function saveRevFilterState(){saveLocal('catalogo_rev_filter',revFilterState);updateRevFilterBadge()}
 
-function validarFiltrosState(){
-  if(!especies.length)return;
-  const categoriasSimples=['morfologia','tipo','elemento','avistamiento','ubicacion','epoca'];
-  for(let cat of categoriasSimples){
-    const valoresExistentes=new Set(especies.map(e=>e[cat]).filter(v=>v));
-    if(filtrosState[cat]&&filtrosState[cat].length)filtrosState[cat]=filtrosState[cat].filter(v=>valoresExistentes.has(v));
-  }
-  const todasSubs=new Set();
-  especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todasSubs.add(t)})});
-  if(filtrosState.subcategorias&&filtrosState.subcategorias.length)filtrosState.subcategorias=filtrosState.subcategorias.filter(v=>todasSubs.has(v));
-  persistState();
-}
-function loadPersistedState(){
-  if(!checkVersion())return;
-  const f=loadLocal('catalogo_filtros');if(f)filtrosState=f;
-  const o=loadLocal('catalogo_orden');ordenActual=o||"nombre_asc";
-  const pp=loadLocal('catalogo_perpage');if(pp)perPage=+pp;
-  const of=loadLocal('catalogo_onlyFav');onlyFavorites=(of===true||of==='true');
-  loadRevFilterState();
-  if(especies.length)validarFiltrosState();
-  actualizarTooltipOrden();actualizarEstadoFavoritosYBoton();
-}
+function validarFiltrosState(){ if(!especies.length)return; const categoriasSimples=['morfologia','tipo','elemento','avistamiento','ubicacion','epoca']; for(let cat of categoriasSimples){ const valoresExistentes=new Set(especies.map(e=>e[cat]).filter(v=>v)); if(filtrosState[cat]&&filtrosState[cat].length)filtrosState[cat]=filtrosState[cat].filter(v=>valoresExistentes.has(v)); } const todasSubs=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todasSubs.add(t)})}); if(filtrosState.subcategorias&&filtrosState.subcategorias.length)filtrosState.subcategorias=filtrosState.subcategorias.filter(v=>todasSubs.has(v)); persistState(); }
+function loadPersistedState(){ if(!checkVersion())return; const f=loadLocal('catalogo_filtros');if(f)filtrosState=f; const o=loadLocal('catalogo_orden');ordenActual=o||"nombre_asc"; const pp=loadLocal('catalogo_perpage');if(pp)perPage=+pp; const of=loadLocal('catalogo_onlyFav');onlyFavorites=(of===true||of==='true'); loadRevFilterState(); if(especies.length)validarFiltrosState(); actualizarTooltipOrden();actualizarEstadoFavoritosYBoton(); }
 function actualizarTooltipOrden(){const m={"nombre_asc":"Alfabético A→Z","nombre_desc":"Alfabético Z→A","morfologia_asc":"Morfología A→Z","morfologia_desc":"Morfología Z→A","tipo_asc":"Tipo A→Z","tipo_desc":"Tipo Z→A","elemento_asc":"Elemento A→Z","elemento_desc":"Elemento Z→A","avistamiento_asc":"Avistamiento A→Z","avistamiento_desc":"Avistamiento Z→A"};btnOrden.title=m[ordenActual]||"Ordenar"}
 
 function isFavorito(id){return favoritos.has(id)}
 function actualizarEstadoFavoritosYBoton(){const h=favoritos.size>0;favFilterBtn.disabled=!h;if(!h&&onlyFavorites){onlyFavorites=false;render()}}
-function toggleFavorito(id,uiOnly=false){
-  favoritos.has(id)?favoritos.delete(id):favoritos.add(id);
-  saveFavoritos();
-  if(!uiOnly){if(onlyFavorites)render();else{actualizarEstrellaEnTarjeta(id);if(currentModalCreature&&currentModalCreature.id===id&&modalFavBtn)modalFavBtn.textContent=favoritos.has(id)?"★":"☆"}}
-  updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();
-}
+function toggleFavorito(id,uiOnly=false){ favoritos.has(id)?favoritos.delete(id):favoritos.add(id); saveFavoritos(); if(!uiOnly){if(onlyFavorites)render();else{actualizarEstrellaEnTarjeta(id);if(currentModalCreature&&currentModalCreature.id===id&&modalFavBtn)modalFavBtn.textContent=favoritos.has(id)?"★":"☆"}} updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache(); }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
-function toggleRevisado(id,esAuto=false){
-  const estaba=revisados.has(id);
-  if(modoRevision==="bloqueo"){
-    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return}}
-    if(!esAuto&&!estaba)return;
-    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return;}
-  }
-  estaba?revisados.delete(id):revisados.add(id);
-  saveRevisados();actualizarIconoRevisadoTarjeta(id);
-  render();
-}
-function actualizarEstadoBotonRevisado(){
-  invalidateBaseCache();
-  const revCount=contarPorEstado("revisado");
-  const noRevCount=contarPorEstado("no_revisado");
-  const opcionesData=(revCount>0?1:0)+(noRevCount>0?1:0);
-  btnRevFilter.disabled=(opcionesData<=1);
-}
+function toggleRevisado(id,esAuto=false){ const estaba=revisados.has(id); if(modoRevision==="bloqueo"){ if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return}} if(!esAuto&&!estaba)return; if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return;} } estaba?revisados.delete(id):revisados.add(id); saveRevisados();actualizarIconoRevisadoTarjeta(id); render(); }
+function actualizarEstadoBotonRevisado(){ invalidateBaseCache(); const revCount=contarPorEstado("revisado"); const noRevCount=contarPorEstado("no_revisado"); const opcionesData=(revCount>0?1:0)+(noRevCount>0?1:0); btnRevFilter.disabled=(opcionesData<=1); }
 function marcarRevisadoPorLink(id){if(!revisados.has(id)){toggleRevisado(id,true);}}
 function actualizarIconoRevisadoTarjeta(id){const estado=revisados.has(id);const icono=estado?"◆":"◇";const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const ri=card.querySelector(".revisado-icon");if(ri){ri.innerHTML=icono;ri.classList.toggle("revisado",estado);ri.classList.toggle("no-revisado",!estado);ri.title=estado?"Revisado":"No revisado"}}if(currentModalCreature&&currentModalCreature.id===id&&modalRevisadoBtn){modalRevisadoBtn.innerHTML=icono;modalRevisadoBtn.classList.toggle("revisado",estado);modalRevisadoBtn.classList.toggle("no-revisado",!estado);modalRevisadoBtn.title=estado?"Revisado":"No revisado"}}
 function updateRevFilterBadge(){const b=btnRevFilter;b.title=revFilterState.length===0?"Filtrar por revisado":revFilterState.length===1?`Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}`:"Filtrar: revisado y no revisado";actualizarFiltroActivo(b,revFilterState.length>0)}
 
-function setImageWithFallback(imgElement,nombre,transformStyle="",isPrioritario=false){
-  const extensions=['jpg','jpeg','png'];let currentExtIndex=0;
-  if(isPrioritario){imgElement.fetchPriority="high";imgElement.loading="eager"}else{imgElement.loading="lazy"}
-  const tryNext=()=>{
-    if(currentExtIndex>=extensions.length){imgElement.style.display="none";const parent=imgElement.parentNode;if(!parent.querySelector(".img-placeholder")){const placeholder=document.createElement("img");placeholder.className="img-placeholder";placeholder.src="img2/noimg2.png";placeholder.style.cssText="width:100%;height:100%;object-fit:cover;";parent.appendChild(placeholder)}return}
-    const ext=extensions[currentExtIndex];const url=`img/${encodeURIComponent(nombre)}.${ext}`;
-    imgElement.src=url;imgElement.style.display="block";
-    if(transformStyle)imgElement.style.transform=transformStyle;
-    imgElement.onerror=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();currentExtIndex++;tryNext()};
-    imgElement.onload=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();imgElement.style.display="block"};
-  };
-  tryNext();
-}
-function crearImg(e,isPrioritario=false){
-  const img=document.createElement("img");const transformStyle=`translate(${e.posX||0}px, ${e.posY||0}px) scale(${e.zoom||1})`;
-  setImageWithFallback(img,e.nombre,transformStyle,isPrioritario);return img;
-}
+function setImageWithFallback(imgElement,nombre,transformStyle="",isPrioritario=false){ const extensions=['jpg','jpeg','png'];let currentExtIndex=0; if(isPrioritario){imgElement.fetchPriority="high";imgElement.loading="eager"}else{imgElement.loading="lazy"} const tryNext=()=>{ if(currentExtIndex>=extensions.length){imgElement.style.display="none";const parent=imgElement.parentNode;if(!parent.querySelector(".img-placeholder")){const placeholder=document.createElement("img");placeholder.className="img-placeholder";placeholder.src="img2/noimg2.png";placeholder.style.cssText="width:100%;height:100%;object-fit:cover;";parent.appendChild(placeholder)}return} const ext=extensions[currentExtIndex];const url=`img/${encodeURIComponent(nombre)}.${ext}`; imgElement.src=url;imgElement.style.display="block"; if(transformStyle)imgElement.style.transform=transformStyle; imgElement.onerror=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();currentExtIndex++;tryNext()}; imgElement.onload=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();imgElement.style.display="block"}; }; tryNext(); }
+function crearImg(e,isPrioritario=false){ const img=document.createElement("img");const transformStyle=`translate(${e.posX||0}px, ${e.posY||0}px) scale(${e.zoom||1})`; setImageWithFallback(img,e.nombre,transformStyle,isPrioritario);return img; }
 
 function createMenuOverlay(zIndex,onClick){removeMenuOverlay();const overlay=document.createElement('div');overlay.className='menu-overlay';overlay.style.zIndex=zIndex;overlay.onclick=onClick;document.body.appendChild(overlay);menuOverlay=overlay;mainHeader.style.zIndex='201'}
 function removeMenuOverlay(){if(menuOverlay){menuOverlay.remove();menuOverlay=null;mainHeader.style.zIndex=headerOriginalZIndex}}
@@ -487,18 +415,11 @@ const closeTempMenus=()=>{document.querySelectorAll(".temp-floating-menu").forEa
 
 // ==================== MODALES DE FILTRO MEJORADOS ====================
 function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
-  closeAllMenus();closeTempMenus();
-  if(modalVar) modalVar.remove();
-  createMenuOverlay(999, ()=>{closeTempMenus();});
+  closeAllMenus();closeTempMenus(); if(modalVar) modalVar.remove(); createMenuOverlay(999, ()=>{closeTempMenus();});
   const modal = document.createElement('div'); modal.className = 'temp-floating-menu'; modal.id = cat+'Modal';
   const opcionesConDatos = valores.filter(v => counts.get(v) > 0);
   let html = `<div class="temp-header">${titulo} <button id="${cat}CancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="${cat}CheckboxGrid">`;
-  opcionesConDatos.forEach(val => {
-    const count = counts.get(val);
-    const checked = filtrosState[cat].includes(val);
-    const soloUna = (opcionesConDatos.length === 1);
-    html += `<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`;
-  });
+  opcionesConDatos.forEach(val => { const count = counts.get(val); const checked = filtrosState[cat].includes(val); const soloUna = (opcionesConDatos.length === 1); html += `<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`; });
   html += `</div><div class="modal-actions" id="${cat}Actions"></div>`;
   modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show');
   if (cat === 'ubicacion') ubicacionModal = modal; else if (cat === 'epoca') epocaModal = modal; else if (cat === 'subcategorias') subcategoriasModal = modal;
@@ -508,88 +429,22 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
   const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   actionsDiv.append(sa, da, inv);
 
-  const actualizarEstadoBotones = () => {
-    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
-    const checkedCount = Array.from(checks).filter(cb => cb.checked).length;
-    sa.disabled = (checkedCount === checks.length);
-    da.disabled = (checkedCount === 0);
-  };
+  const actualizarEstadoBotones = () => { const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])'); const checkedCount = Array.from(checks).filter(cb => cb.checked).length; sa.disabled = (checkedCount === checks.length); da.disabled = (checkedCount === 0); };
+  const aplicarCambio = (nuevoArray) => { const opcionesActuales = Array.from(grid.querySelectorAll('input[type="checkbox"]')).map(cb => cb.value); const estaTodoSeleccionado = nuevoArray.length === opcionesActuales.length; const nuevoEstado = estaTodoSeleccionado ? [] : nuevoArray; if (JSON.stringify(nuevoEstado) !== JSON.stringify(filtrosState[cat])) { filtrosState[cat] = nuevoEstado; currentPage = 1; render(); persistState(); invalidateBaseCache(); } actualizarEstadoBotones(); };
 
-  const aplicarCambio = (nuevoArray) => {
-    // Normalizar: si se seleccionan todas las opciones visibles, es como si no hubiera filtro (array vacío)
-    const opcionesActuales = Array.from(grid.querySelectorAll('input[type="checkbox"]')).map(cb => cb.value);
-    const estaTodoSeleccionado = nuevoArray.length === opcionesActuales.length;
-    const nuevoEstado = estaTodoSeleccionado ? [] : nuevoArray;
-    // Solo renderizar si hay un cambio real
-    if (JSON.stringify(nuevoEstado) !== JSON.stringify(filtrosState[cat])) {
-      filtrosState[cat] = nuevoEstado;
-      currentPage = 1;
-      render();
-      persistState();
-      invalidateBaseCache();
-    }
-    actualizarEstadoBotones();
-  };
-
-  // Cambio en checkboxes en tiempo real
-  grid.addEventListener('change', () => {
-    const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-    aplicarCambio(selected);
-  });
-
-  sa.onclick = () => {
-    const all = Array.from(grid.querySelectorAll('input[type="checkbox"]:not([disabled])'));
-    all.forEach(cb => cb.checked = true);
-    aplicarCambio(all.map(cb => cb.value));
-  };
-
-  da.onclick = () => {
-    grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = false);
-    aplicarCambio([]);
-  };
-
-  inv.onclick = () => {
-    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
-    const newSelected = [];
-    checks.forEach(cb => { cb.checked = !cb.checked; if (cb.checked) newSelected.push(cb.value); });
-    aplicarCambio(newSelected);
-  };
-
+  grid.addEventListener('change', () => { const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value); aplicarCambio(selected); });
+  sa.onclick = () => { const all = Array.from(grid.querySelectorAll('input[type="checkbox"]:not([disabled])')); all.forEach(cb => cb.checked = true); aplicarCambio(all.map(cb => cb.value)); };
+  da.onclick = () => { grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = false); aplicarCambio([]); };
+  inv.onclick = () => { const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])'); const newSelected = []; checks.forEach(cb => { cb.checked = !cb.checked; if (cb.checked) newSelected.push(cb.value); }); aplicarCambio(newSelected); };
   modal.querySelector(`#${cat}CancelBtn`).onclick = () => { closeTempMenus(); };
-  actualizarEstadoBotones();
-  modal.addEventListener('click', e => e.stopPropagation());
+  actualizarEstadoBotones(); modal.addEventListener('click', e => e.stopPropagation());
 }
+function abrirModalUbicacion() { const valores = [...new Set(especies.map(e => e.ubicacion).filter(v => v))].sort(); const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('ubicacion', v))); crearModalFiltro('📍 Ubicación', 'ubicacion', valores, counts, filtrosState, ubicacionModal); }
+function abrirModalEpoca() { const valores = [...new Set(especies.map(e => e.epoca).filter(v => v))].sort(); const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('epoca', v))); crearModalFiltro('📅 Época', 'epoca', valores, counts, filtrosState, epocaModal); }
+function abrirModalSubcategorias() { const todas = new Set(); especies.forEach(e => { if(e.subcategorias) e.subcategorias.split(',').forEach(s => { let t = s.trim(); if(t) todas.add(t); }); }); const valores = Array.from(todas).sort(); const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('subcategorias', v))); crearModalFiltro('🏷️ Subcategorías', 'subcategorias', valores, counts, filtrosState, subcategoriasModal); }
 
-function abrirModalUbicacion() {
-  const valores = [...new Set(especies.map(e => e.ubicacion).filter(v => v))].sort();
-  const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('ubicacion', v)));
-  crearModalFiltro('📍 Ubicación', 'ubicacion', valores, counts, filtrosState, ubicacionModal);
-}
-function abrirModalEpoca() {
-  const valores = [...new Set(especies.map(e => e.epoca).filter(v => v))].sort();
-  const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('epoca', v)));
-  crearModalFiltro('📅 Época', 'epoca', valores, counts, filtrosState, epocaModal);
-}
-function abrirModalSubcategorias() {
-  const todas = new Set(); especies.forEach(e => { if(e.subcategorias) e.subcategorias.split(',').forEach(s => { let t = s.trim(); if(t) todas.add(t); }); });
-  const valores = Array.from(todas).sort();
-  const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('subcategorias', v)));
-  crearModalFiltro('🏷️ Subcategorías', 'subcategorias', valores, counts, filtrosState, subcategoriasModal);
-}
-
-function actualizarImagenEsquina(){
-  const ancho=window.innerWidth;const esCelular=ancho<=700;const src=esCelular?'img2/esquina.png':'img2/esquina.gif';
-  if(headerCornerImg.src!==src)headerCornerImg.src=src;
-  const headerHeight=mainHeader.offsetHeight;headerCornerImg.style.height=headerHeight+'px';headerCornerImg.style.width='auto';
-  const cornerWidth=headerCornerImg.offsetWidth;headerContainer.style.paddingRight=(cornerWidth+8)+'px';
-  headerCornerImg.onerror=()=>{headerCornerImg.style.display='none'};headerCornerImg.onload=()=>{headerCornerImg.style.display='block'};
-}
-function abrirVentanaAyudaEsquina(){
-  closeAllMenus();closeTempMenus();const existente=document.getElementById('ayudaEsquinaMenu');if(existente)existente.remove();
-  createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement('div');menu.id='ayudaEsquinaMenu';menu.className='temp-floating-menu';
-  menu.innerHTML=`<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high"></div>`;
-  document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#ayudaEsquinaCerrarBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation());
-}
+function actualizarImagenEsquina(){ const ancho=window.innerWidth;const esCelular=ancho<=700;const src=esCelular?'img2/esquina.png':'img2/esquina.gif'; if(headerCornerImg.src!==src)headerCornerImg.src=src; const headerHeight=mainHeader.offsetHeight;headerCornerImg.style.height=headerHeight+'px';headerCornerImg.style.width='auto'; const cornerWidth=headerCornerImg.offsetWidth;headerContainer.style.paddingRight=(cornerWidth+8)+'px'; headerCornerImg.onerror=()=>{headerCornerImg.style.display='none'};headerCornerImg.onload=()=>{headerCornerImg.style.display='block'}; }
+function abrirVentanaAyudaEsquina(){ closeAllMenus();closeTempMenus();const existente=document.getElementById('ayudaEsquinaMenu');if(existente)existente.remove(); createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement('div');menu.id='ayudaEsquinaMenu';menu.className='temp-floating-menu'; menu.innerHTML=`<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high"></div>`; document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#ayudaEsquinaCerrarBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation()); }
 headerCornerImg.addEventListener('click',(e)=>{e.stopPropagation();abrirVentanaAyudaEsquina()});
 
 function levenshteinDistance(a,b){if(!a.length)return b.length;if(!b.length)return a.length;const m=[];for(let i=0;i<=b.length;i++)m[i]=[i];for(let j=0;j<=a.length;j++)m[0][j]=j;for(let i=1;i<=b.length;i++)for(let j=1;j<=a.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[j-1]===b[i-1]?0:1));return m[b.length][a.length]}
@@ -599,137 +454,58 @@ function crearBadge(ico,tit,cls){const d=document.createElement("div");d.classNa
 function crearBadgesRow(e){return[crearBadge(getIconForMorfologia(e.morfologia),`Morfología: ${e.morfologia}`,"badge-morfologia"),crearBadge(getIconForTipo(e.tipo),`Tipo: ${e.tipo}`,"badge-tipo"),crearBadge(getIconForElemento(e.elemento),`Elemento: ${e.elemento}`,"badge-elemento"),crearBadge(getIconForAvistamiento(e.avistamiento),`Avistamiento: ${e.avistamiento}`,"badge-avistamiento")]}
 
 function crearCardGrid(e,idx,totalPagina){
-  const card=document.createElement("div");card.className="card";card.setAttribute("data-id",e.id);
-  const imgC=document.createElement("div");imgC.className="img-container";const esPrioritaria=idx<12||(totalPagina<=24&&idx<24);
-  imgC.appendChild(crearImg(e,esPrioritaria));const nombreB=document.createElement("b");nombreB.textContent=e.nombre;
-  const footer=document.createElement("div");footer.className="card-footer-row";const bw=document.createElement("div");bw.className="badges-wrapper";crearBadgesRow(e).forEach(b=>bw.appendChild(b));
-  const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";
-  fb.onclick=ev=>{ev.stopPropagation();toggleFavorito(e.id,false)};const ri=document.createElement("span");ri.className="revisado-icon";const est=revisados.has(e.id);
-  ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no-revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";
-  ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault();toggleRevisado(e.id)};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;
+  const card=document.createElement("div");card.className="card";card.setAttribute("data-id",e.id); const imgC=document.createElement("div");imgC.className="img-container";const esPrioritaria=idx<12||(totalPagina<=24&&idx<24); imgC.appendChild(crearImg(e,esPrioritaria));const nombreB=document.createElement("b");nombreB.textContent=e.nombre; const footer=document.createElement("div");footer.className="card-footer-row";const bw=document.createElement("div");bw.className="badges-wrapper";crearBadgesRow(e).forEach(b=>bw.appendChild(b)); const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆"; fb.onclick=ev=>{ev.stopPropagation();toggleFavorito(e.id,false)};const ri=document.createElement("span");ri.className="revisado-icon";const est=revisados.has(e.id); ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no-revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado"; ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault();toggleRevisado(e.id)};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;
 }
 
 function actualizarPaginacionHeader(tp){
-  paginationControlsDiv.innerHTML="";const createBtn=(t,d)=>{const b=document.createElement("button");b.textContent=t;b.className="pagination-btn";b.disabled=d;return b};
-  const pi=document.createElement("input");pi.type="text";pi.inputMode="numeric";pi.value=currentPage;
+  paginationControlsDiv.innerHTML="";const createBtn=(t,d)=>{const b=document.createElement("button");b.textContent=t;b.className="pagination-btn";b.disabled=d;return b}; const pi=document.createElement("input");pi.type="text";pi.inputMode="numeric";pi.value=currentPage;
   if(tp<=1){pi.readOnly=true;const s=document.createElement("span");s.textContent=`/ ${tp}`;paginationControlsDiv.append(createBtn("<<",true),createBtn("<",true),pi,s,createBtn(">",true),createBtn(">>",true));return}
   pi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();let v=parseInt(pi.value);if(isNaN(v)||v<1||v>tp)v=currentPage;if(v!==currentPage){currentPage=v;render();window.scrollTo({top:0,behavior:'smooth'})}else{pi.blur()}pi.value=currentPage}});
   pi.addEventListener("input",()=>{let raw=pi.value.replace(/[^0-9]/g,'');pi.value=raw});
   pi.addEventListener("blur",()=>{let v=parseInt(pi.value);if(isNaN(v)||v<1||v>tp)v=currentPage;if(v!==currentPage){currentPage=v;render();window.scrollTo({top:0,behavior:'smooth'})}pi.value=currentPage});
-  const s=document.createElement("span");s.textContent=`/ ${tp}`;
-  const bf=createBtn("<<",currentPage===1),bp=createBtn("<",currentPage===1),bn=createBtn(">",currentPage===tp),bl=createBtn(">>",currentPage===tp);
+  const s=document.createElement("span");s.textContent=`/ ${tp}`; const bf=createBtn("<<",currentPage===1),bp=createBtn("<",currentPage===1),bn=createBtn(">",currentPage===tp),bl=createBtn(">>",currentPage===tp);
   if(tp===2){bf.disabled=true;bl.disabled=true}
-  bf.onclick=()=>{if(!bf.disabled){currentPage=1;render();window.scrollTo({top:0,behavior:'smooth'})}};
-  bp.onclick=()=>{if(!bp.disabled){currentPage--;render();window.scrollTo({top:0,behavior:'smooth'})}};
-  bn.onclick=()=>{if(!bn.disabled){currentPage++;render();window.scrollTo({top:0,behavior:'smooth'})}};
-  bl.onclick=()=>{if(!bl.disabled){currentPage=tp;render();window.scrollTo({top:0,behavior:'smooth'})}};
-  paginationControlsDiv.append(bf,bp,pi,s,bn,bl);
+  bf.onclick=()=>{if(!bf.disabled){currentPage=1;render();window.scrollTo({top:0,behavior:'smooth'})}}; bp.onclick=()=>{if(!bp.disabled){currentPage--;render();window.scrollTo({top:0,behavior:'smooth'})}}; bn.onclick=()=>{if(!bn.disabled){currentPage++;render();window.scrollTo({top:0,behavior:'smooth'})}}; bl.onclick=()=>{if(!bl.disabled){currentPage=tp;render();window.scrollTo({top:0,behavior:'smooth'})}}; paginationControlsDiv.append(bf,bp,pi,s,bn,bl);
 }
 
 // ========== RENDER PRINCIPAL ==========
 async function render(){
   if(!dataLoaded)return;gridDiv.classList.add("fade-out");await new Promise(r=>setTimeout(r,30));
   invalidateBaseCache();const filtradas=aplicarFiltrosCompletos(),ordenadas=ordenarEspecies(filtradas);currentOrderedList=ordenadas;
-  let total=ordenadas.length;
-  const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
-
+  let total=ordenadas.length; const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
   let necesitaReRender = false;
   if (onlyFavorites && favoritosEnResultados === 0) { onlyFavorites = false; necesitaReRender = true; }
-  if (!necesitaReRender && revFilterState.includes("revisado") && !revFilterState.includes("no_revisado")) {
-    if (contarPorEstado("revisado") === 0) { revFilterState = revFilterState.filter(v => v !== "revisado"); saveRevFilterState(); necesitaReRender = true; }
-  }
-  if (!necesitaReRender && revFilterState.includes("no_revisado") && !revFilterState.includes("revisado")) {
-    if (contarPorEstado("no_revisado") === 0) { revFilterState = revFilterState.filter(v => v !== "no_revisado"); saveRevFilterState(); necesitaReRender = true; }
-  }
+  if (!necesitaReRender && revFilterState.includes("revisado") && !revFilterState.includes("no_revisado")) { if (contarPorEstado("revisado") === 0) { revFilterState = revFilterState.filter(v => v !== "revisado"); saveRevFilterState(); necesitaReRender = true; } }
+  if (!necesitaReRender && revFilterState.includes("no_revisado") && !revFilterState.includes("revisado")) { if (contarPorEstado("no_revisado") === 0) { revFilterState = revFilterState.filter(v => v !== "no_revisado"); saveRevFilterState(); necesitaReRender = true; } }
   if (necesitaReRender) { persistState(); render(); return; }
 
-  const tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp;
-  const hayResultados=total>0;
-  if(!hayResultados){
-    document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=true});
-    btnOrden.disabled=true;favFilterBtn.disabled=true;btnLimpiar.disabled=true;configBtn.disabled=true;
-  }else{
-    document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false});
-    btnOrden.disabled=(total===1);
+  const tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp; const hayResultados=total>0;
+  if(!hayResultados){ document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=true}); btnOrden.disabled=true;favFilterBtn.disabled=true;btnLimpiar.disabled=true;configBtn.disabled=true; }
+  else{
+    document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false}); btnOrden.disabled=(total===1);
     favFilterBtn.disabled = (favoritos.size === 0) || (favoritosEnResultados === 0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
-
-    const opcionesConDatosCount = (categoria) => {
-      if (categoria === 'revisado') {
-        let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c;
-      }
-      if (categoria === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;
-      if (categoria === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;
-      if (categoria === 'subcategorias') {
-        const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
-        return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length;
-      }
-      const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
-      return opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
-    };
-    const categorias = [
-      {id:'btnMorfologia', cat:'morfologia'},{id:'btnTipo', cat:'tipo'},{id:'btnElemento', cat:'elemento'},
-      {id:'btnAvistamiento', cat:'avistamiento'},{id:'btnUbicacion', cat:'ubicacion'},{id:'btnEpoca', cat:'epoca'},
-      {id:'btnSubcategorias', cat:'subcategorias'},{id:'btnRevFilter', cat:'revisado'}
-    ];
-    categorias.forEach(({id, cat}) => {
-      const btn = document.getElementById(id);
-      if (btn) { const n = opcionesConDatosCount(cat); btn.disabled = (n === 0 || n === 1); }
-    });
+    const opcionesConDatosCount = (categoria) => { if (categoria === 'revisado') { let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c; } if (categoria === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length; if (categoria === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length; if (categoria === 'subcategorias') { const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})}); return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length; } const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria]; return opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0; };
+    const categorias = [ {id:'btnMorfologia', cat:'morfologia'},{id:'btnTipo', cat:'tipo'},{id:'btnElemento', cat:'elemento'},{id:'btnAvistamiento', cat:'avistamiento'},{id:'btnUbicacion', cat:'ubicacion'},{id:'btnEpoca', cat:'epoca'},{id:'btnSubcategorias', cat:'subcategorias'},{id:'btnRevFilter', cat:'revisado'} ];
+    categorias.forEach(({id, cat}) => { const btn = document.getElementById(id); if (btn) { const n = opcionesConDatosCount(cat); btn.disabled = (n === 0 || n === 1); } });
   }
   const start=(currentPage-1)*perPage,paginated=ordenadas.slice(start,start+perPage),end=Math.min(start+perPage,total);
   resultSpan.innerText=`${start+1}-${end} / ${total}`;gridDiv.className='grid';gridDiv.innerHTML="";
-  if(!paginated.length){
-    const nd=document.createElement("div");nd.className="no-results";
-    nd.innerHTML=`<div>🜁 No se encontraron criaturas con esos filtros.</div><img src="img2/non.jpeg" alt="No hay resultados" loading="lazy">`;
-    gridDiv.appendChild(nd);
-  }else{const frag=document.createDocumentFragment();paginated.forEach((e,i)=>frag.appendChild(crearCardGrid(e,i,paginated.length)));gridDiv.appendChild(frag)}
-  actualizarPaginacionHeader(tp);gridDiv.classList.remove("fade-out");
-  updateFilterBadges();regenerarMenus();updateSearchSuggestions();adjustTitleFontSize();actualizarImagenEsquina();
+  if(!paginated.length){ const nd=document.createElement("div");nd.className="no-results"; nd.innerHTML=`<div>🜁 No se encontraron criaturas con esos filtros.</div><img src="img2/non.jpeg" alt="No hay resultados" loading="lazy">`; gridDiv.appendChild(nd); }
+  else{const frag=document.createDocumentFragment();paginated.forEach((e,i)=>frag.appendChild(crearCardGrid(e,i,paginated.length)));gridDiv.appendChild(frag)}
+  actualizarPaginacionHeader(tp);gridDiv.classList.remove("fade-out"); updateFilterBadges();regenerarMenus();updateSearchSuggestions();adjustTitleFontSize();actualizarImagenEsquina();
 }
 
-function actualizarModal(){
-  if(!currentModalCreature)return;const e=currentModalCreature;modalTitle.innerText=e.nombre;adjustModalTitleFontSize();
-  setImageWithFallback(modalImg,e.nombre,"",true);const linksHtml=e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:"";
-  const subcatsHtml=e.subcategorias?`<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>`:'';
-  modalInfoScroll.innerHTML=`<div class="info-grid"><div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div><div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div><div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div><div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div><div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div><div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>${subcatsHtml}</div><div class="modal-description">${e.descripcion}</div>${linksHtml}`;
-  const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no-revisado",!est);modalRevisadoBtn.style.color="var(--accent)";
-  modalRevisadoBtn.onclick=()=>{if(modoRevision==="bloqueo"){if(revisados.has(e.id))toggleRevisado(e.id,false)}else toggleRevisado(e.id,false)};
-  if(modalFavBtn)modalFavBtn.textContent=isFavorito(e.id)?"★":"☆";modalPrevArrow.style.display=modalNextArrow.style.display=navegacionBloqueada?"none":"flex";actualizarFlechasModal();
-  requestAnimationFrame(()=>{adjustModalTitleFontSize()});
-}
-function copiarLinkAlPortapapeles(){
-  if(!currentModalCreature)return;const url=new URL(window.location.href);url.hash=`id=${encodeURIComponent(currentModalCreature.id)}`;
-  navigator.clipboard.writeText(url.href).then(()=>{showTemporaryTooltip(modalCopyLinkBtn,"Enlace copiado")}).catch(()=>{showTemporaryTooltip(modalCopyLinkBtn,"No se pudo copiar")});
-}
+function actualizarModal(){ if(!currentModalCreature)return;const e=currentModalCreature;modalTitle.innerText=e.nombre;adjustModalTitleFontSize(); setImageWithFallback(modalImg,e.nombre,"",true);const linksHtml=e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:""; const subcatsHtml=e.subcategorias?`<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>`:''; modalInfoScroll.innerHTML=`<div class="info-grid"><div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div><div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div><div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div><div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div><div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div><div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>${subcatsHtml}</div><div class="modal-description">${e.descripcion}</div>${linksHtml}`; const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no-revisado",!est);modalRevisadoBtn.style.color="var(--accent)"; modalRevisadoBtn.onclick=()=>{if(modoRevision==="bloqueo"){if(revisados.has(e.id))toggleRevisado(e.id,false)}else toggleRevisado(e.id,false)}; if(modalFavBtn)modalFavBtn.textContent=isFavorito(e.id)?"★":"☆";modalPrevArrow.style.display=modalNextArrow.style.display=navegacionBloqueada?"none":"flex";actualizarFlechasModal(); requestAnimationFrame(()=>{adjustModalTitleFontSize()}); }
+function copiarLinkAlPortapapeles(){ if(!currentModalCreature)return;const url=new URL(window.location.href);url.hash=`id=${encodeURIComponent(currentModalCreature.id)}`; navigator.clipboard.writeText(url.href).then(()=>{showTemporaryTooltip(modalCopyLinkBtn,"Enlace copiado")}).catch(()=>{showTemporaryTooltip(modalCopyLinkBtn,"No se pudo copiar")}); }
 modalCopyLinkBtn.onclick=copiarLinkAlPortapapeles;
-
-function abrirDetalle(e){
-  currentModalCreature=e;currentModalIndex=currentOrderedList.findIndex(c=>c.id===e.id);
-  actualizarModal();actualizarFlechasModal();overlayEl.style.display="flex";document.body.classList.add("modal-open");
-  setTimeout(()=>{overlayEl.classList.add("show");adjustModalTitleFontSize()},10);
-}
+function abrirDetalle(e){ currentModalCreature=e;currentModalIndex=currentOrderedList.findIndex(c=>c.id===e.id); actualizarModal();actualizarFlechasModal();overlayEl.style.display="flex";document.body.classList.add("modal-open"); setTimeout(()=>{overlayEl.classList.add("show");adjustModalTitleFontSize()},10); }
 function actualizarFlechasModal(){if(!currentOrderedList.length||navegacionBloqueada)return;modalPrevArrow.classList.toggle("disabled",currentModalIndex===0);modalNextArrow.classList.toggle("disabled",currentModalIndex===currentOrderedList.length-1)}
 function navegarModal(d){if(navegacionBloqueada||!currentOrderedList.length)return;let ni=currentModalIndex+d;if(ni<0)ni=0;if(ni>=currentOrderedList.length)ni=currentOrderedList.length-1;if(ni!==currentModalIndex){currentModalIndex=ni;currentModalCreature=currentOrderedList[ni];actualizarModal();actualizarFlechasModal()}}
-async function closeModal(){
-  const eraAleatorio=navegacionBloqueada;navegacionBloqueada=false;
-  if(!eraAleatorio&&currentModalCreature){
-    const idx=currentOrderedList.findIndex(c=>c.id===currentModalCreature.id);
-    if(idx!==-1){const newPage=Math.floor(idx/perPage)+1;if(newPage!==currentPage){currentPage=newPage;await render()}
-    requestAnimationFrame(()=>{const card=document.querySelector(`.card[data-id="${currentModalCreature.id}"]`);if(card)card.scrollIntoView({behavior:'smooth',block:'center'})})}
-  }
-  overlayEl.classList.remove("show");document.body.classList.remove("modal-open");setTimeout(()=>{if(!overlayEl.classList.contains("show"))overlayEl.style.display="none"},300);
-}
+async function closeModal(){ const eraAleatorio=navegacionBloqueada;navegacionBloqueada=false; if(!eraAleatorio&&currentModalCreature){ const idx=currentOrderedList.findIndex(c=>c.id===currentModalCreature.id); if(idx!==-1){const newPage=Math.floor(idx/perPage)+1;if(newPage!==currentPage){currentPage=newPage;await render()} requestAnimationFrame(()=>{const card=document.querySelector(`.card[data-id="${currentModalCreature.id}"]`);if(card)card.scrollIntoView({behavior:'smooth',block:'center'})})} } overlayEl.classList.remove("show");document.body.classList.remove("modal-open");setTimeout(()=>{if(!overlayEl.classList.contains("show"))overlayEl.style.display="none"},300); }
 window.marcarRevisadoPorLink=marcarRevisadoPorLink;
 
-function updateFilterBadges(){
-  const mc=filtrosState.morfologia.length,tc=filtrosState.tipo.length,ec=filtrosState.elemento.length,ac=filtrosState.avistamiento.length,uc=filtrosState.ubicacion.length,epc=filtrosState.epoca.length,sc=filtrosState.subcategorias.length;
-  $("btnMorfologia").title=`Morfología${mc?` (${mc})`:''}`;$("btnTipo").title=`Tipo${tc?` (${tc})`:''}`;$("btnElemento").title=`Elemento${ec?` (${ec})`:''}`;$("btnAvistamiento").title=`Avistamiento${ac?` (${ac})`:''}`;
-  $("btnUbicacion").title=`Ubicación${uc?` (${uc})`:''}`;$("btnEpoca").title=`Época${epc?` (${epc})`:''}`;$("btnSubcategorias").title=`Subcategorías${sc?` (${sc})`:''}`;
-  actualizarFiltroActivo($("btnMorfologia"),mc>0);actualizarFiltroActivo($("btnTipo"),tc>0);actualizarFiltroActivo($("btnElemento"),ec>0);actualizarFiltroActivo($("btnAvistamiento"),ac>0);
-  actualizarFiltroActivo($("btnUbicacion"),uc>0);actualizarFiltroActivo($("btnEpoca"),epc>0);actualizarFiltroActivo($("btnSubcategorias"),sc>0);
-  favFilterBtn.classList.toggle('active',onlyFavorites);updateRevFilterBadge();actualizarBotonLimpiar();
-}
+function updateFilterBadges(){ const mc=filtrosState.morfologia.length,tc=filtrosState.tipo.length,ec=filtrosState.elemento.length,ac=filtrosState.avistamiento.length,uc=filtrosState.ubicacion.length,epc=filtrosState.epoca.length,sc=filtrosState.subcategorias.length; $("btnMorfologia").title=`Morfología${mc?` (${mc})`:''}`;$("btnTipo").title=`Tipo${tc?` (${tc})`:''}`;$("btnElemento").title=`Elemento${ec?` (${ec})`:''}`;$("btnAvistamiento").title=`Avistamiento${ac?` (${ac})`:''}`; $("btnUbicacion").title=`Ubicación${uc?` (${uc})`:''}`;$("btnEpoca").title=`Época${epc?` (${epc})`:''}`;$("btnSubcategorias").title=`Subcategorías${sc?` (${sc})`:''}`; actualizarFiltroActivo($("btnMorfologia"),mc>0);actualizarFiltroActivo($("btnTipo"),tc>0);actualizarFiltroActivo($("btnElemento"),ec>0);actualizarFiltroActivo($("btnAvistamiento"),ac>0); actualizarFiltroActivo($("btnUbicacion"),uc>0);actualizarFiltroActivo($("btnEpoca"),epc>0);actualizarFiltroActivo($("btnSubcategorias"),sc>0); favFilterBtn.classList.toggle('active',onlyFavorites);updateRevFilterBadge();actualizarBotonLimpiar(); }
 function actualizarBotonLimpiar(){const filtrosActivos=Object.values(filtrosState).some(a=>a.length)||revFilterState.length>0;btnLimpiar.disabled=currentOrderedList.length===0||!filtrosActivos}
 
 let searchTimeout;
@@ -737,106 +513,25 @@ function onSearchInput(){clearTimeout(searchTimeout);searchTimeout=setTimeout(()
 function updateSearchSuggestions(){const term=searchInput.value.trim();let cand=aplicarFiltrosCompletos(),sug=[];if(!term){sug=ordenarEspecies(cand).slice(0,6).map(e=>e.nombre)}else{const wd=cand.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term.toLowerCase(),e.nombre.toLowerCase()),exact:e.nombre.toLowerCase().includes(term.toLowerCase())}));wd.sort((a,b)=>a.exact!==b.exact?a.exact?-1:1:a.dist-b.dist);sug=wd.slice(0,6).map(s=>s.nombre)}searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('')}
 function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
 
-function generarMenuCategoria(cat,menuId,opciones){
-  const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++});
-  opciones.forEach(val=>{
-    const count=contarConOpcion(cat,val);
-    if(count===0)return;
-    const label=document.createElement("label");
-    const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val);
-    if(opcionesVisibles===1&&count>0)cb.disabled=true;
-    cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()});
-    label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts);
-    const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);
-  });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);bc.onclick=()=>{filtrosState[cat]=[];render();persistState();invalidateBaseCache()};menu.appendChild(bc);
-}
+function generarMenuCategoria(cat,menuId,opciones){ const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++}); opciones.forEach(val=>{ const count=contarConOpcion(cat,val); if(count===0)return; const label=document.createElement("label"); const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()}); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label); }); const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);bc.onclick=()=>{filtrosState[cat]=[];render();persistState();invalidateBaseCache()};menu.appendChild(bc); }
 function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfologia",opcionesMorfologia)}
 function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
 function generarMenuElemento(){generarMenuCategoria("elemento","menu-elemento",opcionesElemento)}
 function generarMenuAvistamiento(){generarMenuCategoria("avistamiento","menu-avistamiento",opcionesAvistamiento)}
 // Menú de ordenamiento con la opción activa deshabilitada
-function generarMenuOrden(){
-  const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}];
-  ordenMenu.innerHTML=ops.map(o=>`<button${ordenActual===o.v?' disabled':''}>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join('');
-  [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(b.disabled)return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); } });
-}
-function generarRevFilterMenu(){
-  revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++});
-  ops.forEach(opt=>{
-    const count=contarPorEstado(opt.id);
-    if(count===0)return;
-    const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id);
-    if(opcionesVisibles===1&&count>0)cb.disabled=true;
-    cb.addEventListener("change",()=>{
-      if(cb.disabled)return;
-      let newRev = revFilterState.slice();
-      if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); }
-      else { newRev = newRev.filter(v=>v!==opt.id); }
-      // Normalizar: si ambos están seleccionados, es como no tener filtro
-      if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = [];
-      if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){
-        revFilterState = newRev;
-        saveRevFilterState();
-        currentPage=1; render(); invalidateBaseCache();
-      }
-    });
-    label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);
-    const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label);
-  });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);
-  bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache();};
-  revFilterMenu.appendChild(bc);
-}
+function generarMenuOrden(){ const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}]; ordenMenu.innerHTML=ops.map(o=>`<button${ordenActual===o.v?' disabled':''}>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join(''); [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(b.disabled)return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); } }); }
+function generarRevFilterMenu(){ revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++}); ops.forEach(opt=>{ const count=contarPorEstado(opt.id); if(count===0)return; const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{ if(cb.disabled)return; let newRev = revFilterState.slice(); if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); } else { newRev = newRev.filter(v=>v!==opt.id); } if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = []; if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){ revFilterState = newRev; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); } }); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label); }); const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0); bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache();}; revFilterMenu.appendChild(bc); }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
 function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96];const idx=valores.indexOf(perPage);const sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempPerPage===perPage)};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
 function regenerarMenuConfigBtn(){generarMenuConfig()}
-function generarMenuConfig(){
-  configMenu.innerHTML="";const addBtn=(html,click)=>{const b=document.createElement("button");b.innerHTML=html;b.onclick=click;configMenu.appendChild(b);return b};
-  addBtn("🎲 Azar",()=>{const f=aplicarFiltrosCompletos();if(f.length){navegacionBloqueada=true;abrirDetalle(f[Math.floor(Math.random()*f.length)])}closeAllMenus()});
-  addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{e.stopPropagation();closeAllMenus();abrirMenuItemsPerPage()});
-  addBtn("📎 Exportar CSV",(e)=>{e.stopPropagation();closeAllMenus();crearMenuCSV();csvMenu.classList.add("show")});
-  const modoTexto=modoRevision==="automatico"?"Automático":"Bloqueo";
-  addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{e.stopPropagation();modoRevision=(modoRevision==="automatico")?"bloqueo":"automatico";saveModoRevision();regenerarMenuConfigBtn();closeAllMenus()});
-  addBtn("📖 Ayuda",(e)=>{e.stopPropagation();closeAllMenus();abrirMenuAyuda()});
-}
-function crearMenuCSV(){
-  if(csvMenu)csvMenu.remove();
-  csvMenu=document.createElement("div");csvMenu.id="csvModal";csvMenu.className="temp-floating-menu";
-  actualizarMenuCSV();document.body.appendChild(csvMenu);
-  csvMenu.addEventListener("click",e=>e.stopPropagation());
-}
+function generarMenuConfig(){ configMenu.innerHTML="";const addBtn=(html,click)=>{const b=document.createElement("button");b.innerHTML=html;b.onclick=click;configMenu.appendChild(b);return b}; addBtn("🎲 Azar",()=>{const f=aplicarFiltrosCompletos();if(f.length){navegacionBloqueada=true;abrirDetalle(f[Math.floor(Math.random()*f.length)])}closeAllMenus()}); addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{e.stopPropagation();closeAllMenus();abrirMenuItemsPerPage()}); addBtn("📎 Exportar CSV",(e)=>{e.stopPropagation();closeAllMenus();crearMenuCSV();csvMenu.classList.add("show")}); const modoTexto=modoRevision==="automatico"?"Automático":"Bloqueo"; addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{e.stopPropagation();modoRevision=(modoRevision==="automatico")?"bloqueo":"automatico";saveModoRevision();regenerarMenuConfigBtn();closeAllMenus()}); addBtn("📖 Ayuda",(e)=>{e.stopPropagation();closeAllMenus();abrirMenuAyuda()}); }
+function crearMenuCSV(){ if(csvMenu)csvMenu.remove(); csvMenu=document.createElement("div");csvMenu.id="csvModal";csvMenu.className="temp-floating-menu"; actualizarMenuCSV();document.body.appendChild(csvMenu); csvMenu.addEventListener("click",e=>e.stopPropagation()); }
 function actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn){const marcados=cg.querySelectorAll("input[type='checkbox']:checked").length,total=cg.querySelectorAll("input[type='checkbox']").length;sa.disabled=(marcados===total);da.disabled=(marcados===0);acceptBtn.disabled=!selectedFields.length}
-function actualizarMenuCSV(){
-  if(!csvMenu)return;const camposVisibles=csvFields.filter(f=>f!=='nombre');
-  csvMenu.innerHTML=`<div class="temp-header">📎 Seleccionar campos a exportar (nombre siempre incluido) <button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
-  const cg=csvMenu.querySelector(".csv-checkbox-group");
-  const acceptBtn=document.createElement("button");acceptBtn.textContent="✓";acceptBtn.title="Aceptar y exportar";acceptBtn.className="accept";acceptBtn.disabled=!selectedFields.length;
-  acceptBtn.onclick=()=>{exportarCSV();closeTempMenus()};
-  const actionsDiv=document.createElement("div");actionsDiv.className="temp-actions";
-  const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";sa.onclick=()=>{selectedFields=[...camposVisibles];cg.querySelectorAll("input").forEach(c=>c.checked=true);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";da.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>c.checked=false);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";inv.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>{if(!c.checked)selectedFields.push(c.value);c.checked=!c.checked});actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  actionsDiv.append(sa,da,inv,acceptBtn);csvMenu.appendChild(actionsDiv);
-  csvMenu.querySelector('#csvCloseBtn').onclick=()=>closeTempMenus();
-  actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);
-  cg.addEventListener("change",()=>{selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)});
-}
-function exportarCSV(){
-  if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return;
-  const ordenadas=ordenarEspecies(filtradas);const headers=['nombre',...selectedFields];if(!headers.length)return;
-  const rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))});
-  const blob=new Blob([rows.join("\n")],{type:"text/csv"}),link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="indice_seres.csv";link.click();URL.revokeObjectURL(link.href);
-}
+function actualizarMenuCSV(){ if(!csvMenu)return;const camposVisibles=csvFields.filter(f=>f!=='nombre'); csvMenu.innerHTML=`<div class="temp-header">📎 Seleccionar campos a exportar (nombre siempre incluido) <button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`; const cg=csvMenu.querySelector(".csv-checkbox-group"); const acceptBtn=document.createElement("button");acceptBtn.textContent="✓";acceptBtn.title="Aceptar y exportar";acceptBtn.className="accept";acceptBtn.disabled=!selectedFields.length; acceptBtn.onclick=()=>{exportarCSV();closeTempMenus()}; const actionsDiv=document.createElement("div");actionsDiv.className="temp-actions"; const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";sa.onclick=()=>{selectedFields=[...camposVisibles];cg.querySelectorAll("input").forEach(c=>c.checked=true);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)}; const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";da.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>c.checked=false);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)}; const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";inv.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>{if(!c.checked)selectedFields.push(c.value);c.checked=!c.checked});actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)}; actionsDiv.append(sa,da,inv,acceptBtn);csvMenu.appendChild(actionsDiv); csvMenu.querySelector('#csvCloseBtn').onclick=()=>closeTempMenus(); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); cg.addEventListener("change",()=>{selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)}); }
+function exportarCSV(){ if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return; const ordenadas=ordenarEspecies(filtradas);const headers=['nombre',...selectedFields];if(!headers.length)return; const rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))}); const blob=new Blob([rows.join("\n")],{type:"text/csv"}),link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="indice_seres.csv";link.click();URL.revokeObjectURL(link.href); }
 function regenerarMenus(){generarMenuMorfologia();generarMenuTipo();generarMenuElemento();generarMenuAvistamiento();generarMenuOrden();generarMenuConfig();generarRevFilterMenu();if(csvMenu)csvMenu.remove();crearMenuCSV()}
 function repositionMenu(menu,button){if(!menu||!button)return;const r=button.getBoundingClientRect(),mr=menu.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;mr.height>vh-r.bottom&&r.top>mr.height?(menu.style.top='auto',menu.style.bottom='110%'):(menu.style.top='110%',menu.style.bottom='auto');r.left+mr.width>vw?(menu.style.left='auto',menu.style.right='0'):(menu.style.left='0',menu.style.right='auto')}
-function initMenus(){
-  document.querySelectorAll(".filtro-group").forEach(g=>{const b=g.querySelector(".filtro-boton,.config-btn,.help-btn");const m=g.querySelector(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu,.help-menu");if(b&&m&&(b.id!=='btnUbicacion'&&b.id!=='btnEpoca'&&b.id!=='btnSubcategorias')){b.addEventListener("click",e=>{e.stopPropagation();const wasOpen=m.classList.contains("show");closeAllMenus();if(!wasOpen){m.classList.add("show");createMenuOverlay(199,()=>{closeAllMenus()});setTimeout(()=>repositionMenu(m,b),10)}})}});
-  document.getElementById('btnUbicacion').addEventListener("click",(e)=>{e.stopPropagation();abrirModalUbicacion()});
-  document.getElementById('btnEpoca').addEventListener("click",(e)=>{e.stopPropagation();abrirModalEpoca()});
-  document.getElementById('btnSubcategorias').addEventListener("click",(e)=>{e.stopPropagation();abrirModalSubcategorias()});
-  document.addEventListener("click",e=>{if(!e.target.closest(".filtro-group")&&!e.target.closest("#ordenGroup")&&!e.target.closest("#configGroup")&&!e.target.closest(".csv-menu")&&!e.target.closest(".temp-floating-menu")){closeAllMenus();closeTempMenus()}});
-}
+function initMenus(){ document.querySelectorAll(".filtro-group").forEach(g=>{const b=g.querySelector(".filtro-boton,.config-btn,.help-btn");const m=g.querySelector(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu,.help-menu");if(b&&m&&(b.id!=='btnUbicacion'&&b.id!=='btnEpoca'&&b.id!=='btnSubcategorias')){b.addEventListener("click",e=>{e.stopPropagation();const wasOpen=m.classList.contains("show");closeAllMenus();if(!wasOpen){m.classList.add("show");createMenuOverlay(199,()=>{closeAllMenus()});setTimeout(()=>repositionMenu(m,b),10)}})}}); document.getElementById('btnUbicacion').addEventListener("click",(e)=>{e.stopPropagation();abrirModalUbicacion()}); document.getElementById('btnEpoca').addEventListener("click",(e)=>{e.stopPropagation();abrirModalEpoca()}); document.getElementById('btnSubcategorias').addEventListener("click",(e)=>{e.stopPropagation();abrirModalSubcategorias()}); document.addEventListener("click",e=>{if(!e.target.closest(".filtro-group")&&!e.target.closest("#ordenGroup")&&!e.target.closest("#configGroup")&&!e.target.closest(".csv-menu")&&!e.target.closest(".temp-floating-menu")){closeAllMenus();closeTempMenus()}}); }
 initMenus();
 mainTitle.addEventListener("click",()=>{panelVisible=!panelVisible;if(panelVisible){filtrosPanel.classList.remove("oculto")}else{filtrosPanel.classList.add("oculto")}actualizarImagenEsquina()});
 btnLimpiar.onclick=()=>{if(btnLimpiar.disabled)return;filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};revFilterState=[];saveRevFilterState();currentPage=1;render();persistState();invalidateBaseCache()};
@@ -852,24 +547,9 @@ modalTitle.closest("#detalle").addEventListener("touchend",e=>{if(navegacionBloq
 function adjustTitleFontSize(){const ruler=document.createElement('span');ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none';document.body.appendChild(ruler);const minFontSize=0.7;document.querySelectorAll('.card b').forEach(t=>{const a=t.clientWidth;if(a<=0)return;ruler.textContent=t.textContent;let fs=0.9;ruler.style.fontSize=fs+'rem';while(fs>minFontSize&&ruler.offsetWidth>a){fs-=0.005;ruler.style.fontSize=fs+'rem'}if(ruler.offsetWidth>a){t.classList.add('wrap-name');t.style.fontSize=minFontSize+'rem'}else{t.classList.remove('wrap-name');t.style.fontSize=fs+'rem'}});ruler.remove()}
 function adjustModalTitleFontSize(){const h3=modalTitle;if(!h3)return;const availableWidth=h3.clientWidth;if(availableWidth<=0)return;const minFontSize=0.8;const testEl=document.createElement('span');testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;';testEl.textContent=h3.textContent;document.body.appendChild(testEl);let fs=1.4;testEl.style.fontSize=fs+'rem';while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){fs-=0.05;testEl.style.fontSize=fs+'rem'}if(testEl.scrollWidth>testEl.clientWidth){h3.classList.add('wrap-name');h3.style.fontSize=minFontSize+'rem'}else{h3.classList.remove('wrap-name');h3.style.fontSize=fs+'rem'}testEl.remove()}
 const btnResetTotal = document.getElementById('btnResetTotal');
-if (btnResetTotal) {
-  btnResetTotal.addEventListener('click', () => {
-    filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
-    revFilterState = []; saveRevFilterState();
-    onlyFavorites = false; searchInput.value = ''; searchTerm = ''; updateClearSearchState();
-    currentPage = 1; render(); persistState(); invalidateBaseCache();
-  });
-}
+if (btnResetTotal) { btnResetTotal.addEventListener('click', () => { filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]}; revFilterState = []; saveRevFilterState(); onlyFavorites = false; searchInput.value = ''; searchTerm = ''; updateClearSearchState(); currentPage = 1; render(); persistState(); invalidateBaseCache(); }); }
 async function cargarArchivosDesdeCarpeta(){let todosLosDatos=[];let indice=1;let hayError=false;while(!hayError){const url=`dtsk/Datos${indice}.json`;try{const respuesta=await fetch(url,{cache:'no-store'});if(!respuesta.ok){hayError=true;break}const datos=await respuesta.json();if(Array.isArray(datos)){todosLosDatos.push(...datos)}else{todosLosDatos.push(datos)}indice++}catch(error){hayError=true;break}}return todosLosDatos}
-async function cargarDatos(){
-  try{
-    let datosCombinados=await cargarArchivosDesdeCarpeta();if(datosCombinados.length===0){const res=await fetch('datos.json',{cache:'no-store'});if(res.ok){const respaldo=await res.json();datosCombinados=Array.isArray(respaldo)?respaldo:[respaldo]}}
-    especies=datosCombinados.map((criatura,idx)=>{if(criatura.posX===undefined){criatura.posX=criatura.posx!==undefined?criatura.posx:0}if(criatura.posY===undefined){criatura.posY=criatura.posy!==undefined?criatura.posy:0}if(criatura.zoom===undefined)criatura.zoom=1;if(!criatura.id){criatura.id=`criatura_${idx}_${Date.now()}_${Math.random()}`}return criatura});
-    dataLoaded=true;buildIndexes();loadFavoritos();loadRevisados();loadModoRevision();loadPersistedState();updateSearchSuggestions();updateClearSearchState();regenerarMenus();await render();
-    window.addEventListener('resize',()=>{if(dataLoaded)adjustTitleFontSize();if(overlayEl.classList.contains("show"))adjustModalTitleFontSize();actualizarImagenEsquina()});actualizarImagenEsquina();
-    const hash=window.location.hash.substring(1);if(hash.startsWith("id=")){const id=decodeURIComponent(hash.substring(3));const cr=especies.find(e=>e.id===id);if(cr)setTimeout(()=>abrirDetalle(cr),300)}window.scrollTo({top:0,behavior:'instant'});
-  }catch(err){console.error("Error cargando datos:",err);especies=[];dataLoaded=true;render()}
-}
+async function cargarDatos(){ try{ let datosCombinados=await cargarArchivosDesdeCarpeta();if(datosCombinados.length===0){const res=await fetch('datos.json',{cache:'no-store'});if(res.ok){const respaldo=await res.json();datosCombinados=Array.isArray(respaldo)?respaldo:[respaldo]}} especies=datosCombinados.map((criatura,idx)=>{if(criatura.posX===undefined){criatura.posX=criatura.posx!==undefined?criatura.posx:0}if(criatura.posY===undefined){criatura.posY=criatura.posy!==undefined?criatura.posy:0}if(criatura.zoom===undefined)criatura.zoom=1;if(!criatura.id){criatura.id=`criatura_${idx}_${Date.now()}_${Math.random()}`}return criatura}); dataLoaded=true;buildIndexes();loadFavoritos();loadRevisados();loadModoRevision();loadPersistedState();updateSearchSuggestions();updateClearSearchState();regenerarMenus();await render(); window.addEventListener('resize',()=>{if(dataLoaded)adjustTitleFontSize();if(overlayEl.classList.contains("show"))adjustModalTitleFontSize();actualizarImagenEsquina()});actualizarImagenEsquina(); const hash=window.location.hash.substring(1);if(hash.startsWith("id=")){const id=decodeURIComponent(hash.substring(3));const cr=especies.find(e=>e.id===id);if(cr)setTimeout(()=>abrirDetalle(cr),300)}window.scrollTo({top:0,behavior:'instant'}); }catch(err){console.error("Error cargando datos:",err);especies=[];dataLoaded=true;render()} }
 async function inicializarApp(){await cargarConfiguracionCategorias();await cargarDatos()}
 inicializarApp();
 </script>
