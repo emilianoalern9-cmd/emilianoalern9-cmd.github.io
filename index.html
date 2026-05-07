@@ -1098,7 +1098,7 @@ async function render(){
     const hc=Object.values(filtrosState).some(a=>a.length), hb=searchTerm.trim()!=='';
     if(onlyFavorites&&!hc&&!hb&&favoritos.size===0) msg="No se ha guardado ningún elemento en los favoritos.";
     else if(onlyFavorites&&(hc||hb)&&total===0) msg="No hay favoritos que coincidan con los filtros actuales.";
-    nd.innerHTML = `<div>${msg}</div><img src="img2/non.jpg" alt="No hay resultados" loading="lazy">`;
+    nd.innerHTML = `<div>${msg}</div><img src="img2/non.jpeg" alt="No hay resultados" loading="lazy">`;
     gridDiv.appendChild(nd);
   } else {
     const frag=document.createDocumentFragment(); 
