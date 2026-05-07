@@ -606,29 +606,13 @@ async function render(){
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false});
     btnOrden.disabled=(total===1);favFilterBtn.disabled=(favoritos.size===0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
-    const algunaOpcionConDatos={
-      morfologia:()=>opcionesMorfologia.some(op=>contarConOpcion('morfologia',op)>0),
-      tipo:()=>opcionesTipo.some(op=>contarConOpcion('tipo',op)>0),
-      elemento:()=>opcionesElemento.some(op=>contarConOpcion('elemento',op)>0),
-      avistamiento:()=>opcionesAvistamiento.some(op=>contarConOpcion('avistamiento',op)>0),
-      ubicacion:()=>[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].some(op=>contarConOpcion('ubicacion',op)>0),
-      epoca:()=>[...new Set(especies.map(e=>e.epoca).filter(v=>v))].some(op=>contarConOpcion('epoca',op)>0),
-      subcategorias:()=>{const todas=new Set();especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});return Array.from(todas).some(op=>contarConOpcion('subcategorias',op)>0)},
-      revisado:()=>contarPorEstado("revisado")>0||contarPorEstado("no_revisado")>0
-    };
-    for(let[cat,fn]of Object.entries(algunaOpcionConDatos)){
-      const btnId=cat==='revisado'?'btnRevFilter':`btn${cat.charAt(0).toUpperCase()+cat.slice(1)}`;
-      const btn=document.getElementById(btnId);if(btn)btn.disabled=!fn();
-    }
   }
   const start=(currentPage-1)*perPage,paginated=ordenadas.slice(start,start+perPage),end=Math.min(start+perPage,total);
   resultSpan.innerText=`${start+1}-${end} / ${total}`;gridDiv.className='grid';gridDiv.innerHTML="";
   if(!paginated.length){
-    const nd=document.createElement("div");nd.className="no-results";let msg="🜁 No se encontraron criaturas con esos filtros.";
-    const hc=Object.values(filtrosState).some(a=>a.length),hb=searchTerm.trim()!=='';
-    if(onlyFavorites&&!hc&&!hb&&favoritos.size===0)msg="No se ha guardado ningún elemento en los favoritos.";
-    else if(onlyFavorites&&(hc||hb)&&total===0)msg="No hay favoritos que coincidan con los filtros actuales.";
-    nd.innerHTML=`<div>${msg}</div><img src="img2/non.jpeg" alt="No hay resultados" loading="lazy">`;gridDiv.appendChild(nd);
+    const nd=document.createElement("div");nd.className="no-results";
+    nd.innerHTML=`<div>🜁 No se encontraron criaturas con esos filtros.</div><img src="img2/non.jpeg" alt="No hay resultados" loading="lazy">`;
+    gridDiv.appendChild(nd);
   }else{const frag=document.createDocumentFragment();paginated.forEach((e,i)=>frag.appendChild(crearCardGrid(e,i,paginated.length)));gridDiv.appendChild(frag)}
   actualizarPaginacionHeader(tp);gridDiv.classList.remove("fade-out");
   updateFilterBadges();regenerarMenus();updateSearchSuggestions();adjustTitleFontSize();actualizarImagenEsquina();
@@ -721,7 +705,6 @@ function generarMenuConfig(){
   addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{e.stopPropagation();closeAllMenus();abrirMenuModoRevision()});
   addBtn("📖 Ayuda",(e)=>{e.stopPropagation();closeAllMenus();abrirMenuAyuda()});
 }
-/* NUEVO CSV MENU COMO temp-floating-menu */
 function crearMenuCSV(){
   if(csvMenu)csvMenu.remove();
   csvMenu=document.createElement("div");csvMenu.id="csvModal";csvMenu.className="temp-floating-menu";
@@ -745,8 +728,8 @@ function actualizarMenuCSV(){
   cg.addEventListener("change",()=>{selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)});
 }
 function exportarCSV(){
-  if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length){alert("No hay datos para exportar.");return}
-  const ordenadas=ordenarEspecies(filtradas);const headers=['nombre',...selectedFields];if(!headers.length){alert("Debe seleccionar al menos un campo adicional.");return}
+  if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return;
+  const ordenadas=ordenarEspecies(filtradas);const headers=['nombre',...selectedFields];if(!headers.length)return;
   const rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))});
   const blob=new Blob([rows.join("\n")],{type:"text/csv"}),link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="indice_seres.csv";link.click();URL.revokeObjectURL(link.href);
 }
@@ -777,7 +760,7 @@ function adjustModalTitleFontSize(){const h3=modalTitle;if(!h3)return;const avai
 async function cargarArchivosDesdeCarpeta(){let todosLosDatos=[];let indice=1;let hayError=false;while(!hayError){const url=`dtsk/Datos${indice}.json`;try{const respuesta=await fetch(url,{cache:'no-store'});if(!respuesta.ok){hayError=true;break}const datos=await respuesta.json();if(Array.isArray(datos)){todosLosDatos.push(...datos)}else{todosLosDatos.push(datos)}indice++}catch(error){hayError=true;break}}return todosLosDatos}
 async function cargarDatos(){
   try{
-    let datosCombinados=await cargarArchivosDesdeCarpeta();if(datosCombinados.length===0){console.warn("No se encontraron archivos DatosX.json en la carpeta dtsk/");const res=await fetch('datos.json',{cache:'no-store'});if(res.ok){const respaldo=await res.json();datosCombinados=Array.isArray(respaldo)?respaldo:[respaldo]}}
+    let datosCombinados=await cargarArchivosDesdeCarpeta();if(datosCombinados.length===0){const res=await fetch('datos.json',{cache:'no-store'});if(res.ok){const respaldo=await res.json();datosCombinados=Array.isArray(respaldo)?respaldo:[respaldo]}}
     especies=datosCombinados.map((criatura,idx)=>{if(criatura.posX===undefined){criatura.posX=criatura.posx!==undefined?criatura.posx:0}if(criatura.posY===undefined){criatura.posY=criatura.posy!==undefined?criatura.posy:0}if(criatura.zoom===undefined)criatura.zoom=1;if(!criatura.id){criatura.id=`criatura_${idx}_${Date.now()}_${Math.random()}`}return criatura});
     dataLoaded=true;buildIndexes();loadFavoritos();loadRevisados();loadModoRevision();loadPersistedState();updateSearchSuggestions();updateClearSearchState();regenerarMenus();await render();
     window.addEventListener('resize',()=>{if(dataLoaded)adjustTitleFontSize();if(overlayEl.classList.contains("show"))adjustModalTitleFontSize();actualizarImagenEsquina()});actualizarImagenEsquina();
