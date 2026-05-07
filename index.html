@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img2/anuncio1.gif">
 <style>
-/* ========== TEMA OSCURO ========== */
 :root {
   --bg-color: #0f0c18;
   --header-bg: rgba(10, 8, 18, 0.95);
@@ -167,7 +166,6 @@ h2{
   border-color:var(--accent-hover);
   box-shadow:0 0 4px var(--accent);
 }
-/* ========== MENÚS FLOTANTES ========== */
 .filtro-menu,.orden-menu,.items-menu,.csv-menu,.config-menu,.rev-filter-menu,.help-menu{
   position:absolute;
   top:110%;
@@ -222,11 +220,7 @@ h2{
   text-align:center;
 }
 .limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none;}
-
-/* ========== OVERLAY BLOQUEADOR ========== */
 .menu-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent;z-index:199;}
-
-/* ========== MENÚS FLOTANTES TEMPORALES (MODALES) ========== */
 .temp-floating-menu{
   position:fixed;
   top:50%;
@@ -302,8 +296,6 @@ h2{
 .temp-floating-menu .temp-actions button:hover:not(:disabled){background:var(--accent-hover);color:#1a1625;transform:scale(.96);}
 .temp-floating-menu .temp-actions button:active:not(:disabled){transform:scale(.92);}
 .temp-floating-menu .temp-actions button:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;}
-
-/* Grid para checkboxes dentro de modales */
 .modal-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 50vh; overflow-y: auto; padding: 4px 8px; margin-bottom: 16px; }
 .modal-checkbox-grid label { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; cursor: pointer; color: var(--text-primary); background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 20px; }
 .modal-checkbox-grid label.disabled { opacity: 0.5; cursor: not-allowed; }
@@ -312,12 +304,10 @@ h2{
 .modal-actions button:hover:not(:disabled) { background: var(--accent-hover); color: #1a1625; transform: scale(0.96); }
 .modal-actions button:active:not(:disabled) { transform: scale(0.92); }
 .modal-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .help-content { color: var(--text-primary); font-size: 0.7rem; line-height: 1.4; overflow-y: auto; max-height: 60vh; }
 .help-content p { margin-bottom: 6px; }
 .help-content hr { border-color: var(--border-color); margin: 8px 0; }
 .help-content img { display: block; margin: 10px auto; max-width: 200px; width: 100%; height: auto; }
-
 .csv-menu{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);min-width:340px;max-width:90vw;max-height:80vh;overflow-y:auto;z-index:1001;padding:15px;border-radius:24px;backdrop-filter:blur(8px);}
 .csv-menu .csv-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-family:'Cinzel',serif; color:var(--accent); border-bottom:1px solid var(--border-color); padding-bottom:6px; font-weight:600;}
 .csv-menu .csv-header span{flex-grow:1; text-align:left;}
@@ -329,7 +319,6 @@ h2{
 .csv-menu .csv-actions button:hover:not(:disabled){background:var(--accent-hover);color:#1a1625;transform:scale(.96);}
 .csv-menu .csv-actions button:active:not(:disabled){transform:scale(.92);}
 .csv-menu .csv-actions button:disabled{opacity:.5;cursor:not-allowed;}
-
 .search-wrapper{display:inline-flex;align-items:center;gap:4px;background:rgba(25,20,40,.85);border-radius:40px;padding:2px 8px;}
 .search-wrapper input{background:transparent;border:none;padding:4px 0;font-family:'Inter',sans-serif;font-size:.7rem;color:var(--text-primary);outline:none;width:140px;}
 .result-count{background:rgba(0,0,0,.4);padding:2px 8px;border-radius:40px;font-size:.7rem;color:var(--accent);display:inline-flex;align-items:center;gap:4px;}
@@ -533,12 +522,10 @@ let especies=[],filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],
     tempPerPage=24,tempModoRevision="manual", panelVisible=true, menuOverlay=null,
     headerOriginalZIndex='100';
 
-// Configuración dinámica de categorías
 let categoriasConfig = null;
 let opcionesMorfologia, opcionesTipo, opcionesElemento, opcionesAvistamiento;
 let iconMap;
 
-// Valores por defecto mientras se carga el JSON
 const defaultCategorias = {
   morfologia: {
     options: ["Humano","Humanoide","Mamífero","Híbrido","Ave","Reptil","Pez","Insecto","Amorfo","Etéreo","Artificial","Otro"],
@@ -575,44 +562,22 @@ const $=id=>document.getElementById(id),gridDiv=$("grid"),resultSpan=$("resultTe
 
 function actualizarFiltroActivo(btn,activo){btn.classList.toggle('active-filter',activo);}
 
-// ========== TOOLTIP GLOBAL (SEGURO) ==========
-let tooltipElement = null;
-let tooltipTimeout = null;
-
-function crearTooltipElement() {
-  if (tooltipElement) return;
-  tooltipElement = document.createElement("div");
-  tooltipElement.className = "temp-tooltip";
-  tooltipElement.style.opacity = "0";
-  document.body.appendChild(tooltipElement);
-}
-
+let tooltipElement = null, tooltipTimeout = null;
+function crearTooltipElement() { if (tooltipElement) return; tooltipElement = document.createElement("div"); tooltipElement.className = "temp-tooltip"; tooltipElement.style.opacity = "0"; document.body.appendChild(tooltipElement); }
 function showTooltip(text, x, y, duration = 1500) {
-  crearTooltipElement();
-  if (tooltipTimeout) clearTimeout(tooltipTimeout);
-  tooltipElement.textContent = text;
-  tooltipElement.style.left = x + "px";
-  tooltipElement.style.top = y + "px";
-  tooltipElement.style.opacity = "1";
+  crearTooltipElement(); if (tooltipTimeout) clearTimeout(tooltipTimeout);
+  tooltipElement.textContent = text; tooltipElement.style.left = x + "px"; tooltipElement.style.top = y + "px"; tooltipElement.style.opacity = "1";
   const rect = tooltipElement.getBoundingClientRect();
   let finalX = x, finalY = y;
   if (finalX + rect.width > window.innerWidth - 10) finalX = window.innerWidth - rect.width - 10;
   if (finalY + rect.height > window.innerHeight - 10) finalY = window.innerHeight - rect.height - 10;
-  if (finalX < 10) finalX = 10;
-  if (finalY < 10) finalY = 10;
-  tooltipElement.style.left = finalX + "px";
-  tooltipElement.style.top = finalY + "px";
+  if (finalX < 10) finalX = 10; if (finalY < 10) finalY = 10;
+  tooltipElement.style.left = finalX + "px"; tooltipElement.style.top = finalY + "px";
   tooltipTimeout = setTimeout(() => hideTooltip(), duration);
 }
-
-function hideTooltip() {
-  if (!tooltipElement) return;
-  tooltipElement.style.opacity = "0";
-  if (tooltipTimeout) { clearTimeout(tooltipTimeout); tooltipTimeout = null; }
-}
+function hideTooltip() { if (!tooltipElement) return; tooltipElement.style.opacity = "0"; if (tooltipTimeout) { clearTimeout(tooltipTimeout); tooltipTimeout = null; } }
 document.addEventListener("click", (e) => { if (tooltipElement && e.target !== tooltipElement) hideTooltip(); });
 
-// ========== CARGA DE CATEGORÍAS DESDE JSON ==========
 async function cargarConfiguracionCategorias() {
   try {
     const resp = await fetch('categorias.json', { cache: 'no-store' });
@@ -620,34 +585,20 @@ async function cargarConfiguracionCategorias() {
       categoriasConfig = await resp.json();
       for (let cat of ['morfologia','tipo','elemento','avistamiento']) {
         categoriasConfig[cat] = { ...defaultCategorias[cat], ...categoriasConfig[cat] };
-        if (categoriasConfig[cat].icons) {
-          categoriasConfig[cat].icons = { ...defaultCategorias[cat].icons, ...categoriasConfig[cat].icons };
-        }
+        if (categoriasConfig[cat].icons) categoriasConfig[cat].icons = { ...defaultCategorias[cat].icons, ...categoriasConfig[cat].icons };
       }
-    } else {
-      categoriasConfig = defaultCategorias;
-    }
-  } catch (e) {
-    categoriasConfig = defaultCategorias;
-  }
+    } else categoriasConfig = defaultCategorias;
+  } catch (e) { categoriasConfig = defaultCategorias; }
   opcionesMorfologia = categoriasConfig.morfologia.options;
   opcionesTipo = categoriasConfig.tipo.options;
   opcionesElemento = categoriasConfig.elemento.options;
   opcionesAvistamiento = categoriasConfig.avistamiento.options;
-
-  const iconsMorf = categoriasConfig.morfologia.icons;
-  const iconsTipo = categoriasConfig.tipo.icons;
-  const iconsElem = categoriasConfig.elemento.icons;
-  const iconsAvist = categoriasConfig.avistamiento.icons;
-
   iconMap = {
-    morfologia: iconsMorf,
-    tipo: iconsTipo,
-    elemento: iconsElem,
-    avistamiento: (v) => iconsAvist[v] || "❓"
+    morfologia: categoriasConfig.morfologia.icons,
+    tipo: categoriasConfig.tipo.icons,
+    elemento: categoriasConfig.elemento.icons,
+    avistamiento: (v) => categoriasConfig.avistamiento.icons[v] || "❓"
   };
-
-  // Actualizar botones
   document.getElementById('btnMorfologia').textContent = categoriasConfig.morfologia.buttonIcon;
   document.getElementById('btnMorfologia').title = categoriasConfig.morfologia.buttonTitle;
   document.getElementById('btnTipo').textContent = categoriasConfig.tipo.buttonIcon;
@@ -667,26 +618,19 @@ function saveLocal(k,v){localStorage.setItem(k,JSON.stringify(v));}
 function loadLocal(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
 function persistState(){saveLocal('catalogo_filtros',filtrosState);saveLocal('catalogo_orden',ordenActual);saveLocal('catalogo_perpage',perPage);saveLocal('catalogo_onlyFav',onlyFavorites);saveRevFilterState()}
 
-// ========== ÍNDICES INVERTIDOS ==========
 let idxMorfologia, idxTipo, idxElemento, idxAvistamiento, idxUbicacion, idxEpoca, idxSubcategorias;
 function buildIndexes(){
   idxMorfologia = new Map(); idxTipo = new Map(); idxElemento = new Map(); idxAvistamiento = new Map(); idxUbicacion = new Map(); idxEpoca = new Map(); idxSubcategorias = new Map();
   for(let e of especies){
     const id = e.id;
-    addToIndex(idxMorfologia, e.morfologia, id);
-    addToIndex(idxTipo, e.tipo, id);
-    addToIndex(idxElemento, e.elemento, id);
-    addToIndex(idxAvistamiento, e.avistamiento, id);
+    addToIndex(idxMorfologia, e.morfologia, id); addToIndex(idxTipo, e.tipo, id); addToIndex(idxElemento, e.elemento, id); addToIndex(idxAvistamiento, e.avistamiento, id);
     if(e.ubicacion) addToIndex(idxUbicacion, e.ubicacion, id);
     if(e.epoca) addToIndex(idxEpoca, e.epoca, id);
-    if(e.subcategorias){
-      e.subcategorias.split(',').forEach(s=>{ let t=s.trim(); if(t) addToIndex(idxSubcategorias, t, id); });
-    }
+    if(e.subcategorias){ e.subcategorias.split(',').forEach(s=>{ let t=s.trim(); if(t) addToIndex(idxSubcategorias, t, id); }); }
   }
 }
 function addToIndex(map, key, id){ if(!map.has(key)) map.set(key, new Set()); map.get(key).add(id); }
 
-// ========== FILTRO BASE ==========
 let baseFilterVersion = 0, cachedBaseIds = null, cachedBaseVersion = -1, cachedIgnoreCat = null;
 function baseFilterPredicate(ignoreCat){
   return e=>{
@@ -707,8 +651,7 @@ function baseFilterPredicate(ignoreCat){
 }
 function getBaseFilteredIds(ignoreCat=null){
   if(baseFilterVersion === cachedBaseVersion && ignoreCat === cachedIgnoreCat && cachedBaseIds !== null) return cachedBaseIds;
-  const pred = baseFilterPredicate(ignoreCat);
-  const ids = new Set();
+  const pred = baseFilterPredicate(ignoreCat); const ids = new Set();
   for(let e of especies) if(pred(e)) ids.add(e.id);
   cachedBaseIds = ids; cachedBaseVersion = baseFilterVersion; cachedIgnoreCat = ignoreCat;
   return ids;
@@ -716,8 +659,7 @@ function getBaseFilteredIds(ignoreCat=null){
 function invalidateBaseCache(){ baseFilterVersion++; }
 
 function contarConOpcion(categoria, opcion){
-  const baseIds = getBaseFilteredIds(categoria);
-  if(!baseIds.size) return 0;
+  const baseIds = getBaseFilteredIds(categoria); if(!baseIds.size) return 0;
   let opSet;
   switch(categoria){
     case 'morfologia': opSet = idxMorfologia.get(opcion); break;
@@ -733,15 +675,12 @@ function contarConOpcion(categoria, opcion){
   if(baseIds.size < opSet.size){ let count=0; for(let id of baseIds) if(opSet.has(id)) count++; return count; }
   else { let count=0; for(let id of opSet) if(baseIds.has(id)) count++; return count; }
 }
-
 function contarPorEstado(estado){
-  const baseIds = getBaseFilteredIds(null);
-  if(!baseIds.size) return 0;
+  const baseIds = getBaseFilteredIds(null); if(!baseIds.size) return 0;
   let count=0;
   for(let id of baseIds){ const r = revisados.has(id); if(estado === "revisado" ? r : !r) count++; }
   return count;
 }
-
 function buildPredicate(extraCheck=null){
   return e=>{
     if(filtrosState.morfologia.length && !filtrosState.morfologia.includes(e.morfologia)) return false;
@@ -760,12 +699,9 @@ function buildPredicate(extraCheck=null){
     return extraCheck?extraCheck(e):true;
   };
 }
-
 const aplicarFiltrosCompletos=()=>especies.filter(buildPredicate());
-
 function ordenarEspecies(lista){ const [campo,dir]=ordenActual.split('_'); const order=dir==="asc"?1:-1; return [...lista].sort((a,b)=>{ let va=a[campo]||"", vb=b[campo]||""; return va<vb?-order:va>vb?order:0; }); }
 
-// ========== PERSISTENCIA ==========
 const STORAGE_VERSION = 11;
 function resetAllData(){
   localStorage.clear();
@@ -807,7 +743,6 @@ function loadPersistedState(){
 }
 function actualizarTooltipOrden(){ const m={"nombre_asc":"Alfabético A→Z","nombre_desc":"Alfabético Z→A","morfologia_asc":"Morfología A→Z","morfologia_desc":"Morfología Z→A","tipo_asc":"Tipo A→Z","tipo_desc":"Tipo Z→A","elemento_asc":"Elemento A→Z","elemento_desc":"Elemento Z→A","avistamiento_asc":"Avistamiento A→Z","avistamiento_desc":"Avistamiento Z→A"}; btnOrden.title=m[ordenActual]||"Ordenar"; }
 
-// ========== FAVORITOS Y REVISADOS ==========
 function isFavorito(id){ return favoritos.has(id); }
 function actualizarEstadoFavoritosYBoton(){ const h=favoritos.size>0; favFilterBtn.disabled=!h; if(!h && onlyFavorites){ onlyFavorites=false; render(); } }
 function toggleFavorito(id,uiOnly=false){
@@ -831,22 +766,17 @@ function marcarRevisadoPorLink(id){ if(!revisados.has(id)){ toggleRevisado(id,tr
 function actualizarIconoRevisadoTarjeta(id){ const estado=revisados.has(id); const icono=estado?"◆":"◇"; const card=document.querySelector(`.card[data-id="${id}"]`); if(card){ const ri=card.querySelector(".revisado-icon"); if(ri){ ri.innerHTML=icono; ri.classList.toggle("revisado",estado); ri.classList.toggle("no-revisado",!estado); ri.title=estado?"Revisado":"No revisado"; } } if(currentModalCreature && currentModalCreature.id===id && modalRevisadoBtn){ modalRevisadoBtn.innerHTML=icono; modalRevisadoBtn.classList.toggle("revisado",estado); modalRevisadoBtn.classList.toggle("no-revisado",!estado); modalRevisadoBtn.title=estado?"Revisado":"No revisado"; } }
 function updateRevFilterBadge(){ const b=btnRevFilter; b.title=revFilterState.length===0?"Filtrar por revisado":revFilterState.length===1?`Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}`:"Filtrar: revisado y no revisado"; actualizarFiltroActivo(b,revFilterState.length>0); }
 
-// ========== CARGA DE IMAGEN ==========
 function setImageWithFallback(imgElement, nombre, transformStyle="", isPrioritario=false){
   const extensions=['jpg','jpeg','png']; let currentExtIndex=0;
-  if(isPrioritario){ imgElement.fetchPriority = "high"; imgElement.loading = "eager"; }
-  else { imgElement.loading = "lazy"; }
+  if(isPrioritario){ imgElement.fetchPriority = "high"; imgElement.loading = "eager"; } else { imgElement.loading = "lazy"; }
   const tryNext=()=>{
     if(currentExtIndex>=extensions.length){
       imgElement.style.display="none";
       const parent=imgElement.parentNode;
       if(!parent.querySelector(".img-placeholder")){
-  const placeholder = document.createElement("img");
-  placeholder.className = "img-placeholder";
-  placeholder.src = "img2/noimg2.png";
-  placeholder.style.cssText = "width:100%;height:100%;object-fit:cover;";
-  parent.appendChild(placeholder);
-}
+        const placeholder = document.createElement("img"); placeholder.className = "img-placeholder"; placeholder.src = "img2/noimg2.png"; placeholder.style.cssText = "width:100%;height:100%;object-fit:cover;";
+        parent.appendChild(placeholder);
+      }
       return;
     }
     const ext=extensions[currentExtIndex];
@@ -865,30 +795,22 @@ function crearImg(e, isPrioritario=false){
   return img;
 }
 
-// ========== OVERLAY Y MENÚS ==========
 function createMenuOverlay(zIndex, onClick){ removeMenuOverlay(); const overlay=document.createElement('div'); overlay.className='menu-overlay'; overlay.style.zIndex=zIndex; overlay.onclick=onClick; document.body.appendChild(overlay); menuOverlay=overlay; mainHeader.style.zIndex='201'; }
 function removeMenuOverlay(){ if(menuOverlay){ menuOverlay.remove(); menuOverlay=null; mainHeader.style.zIndex=headerOriginalZIndex; } }
 function closeAllMenus(){
   document.querySelectorAll(".filtro-menu,.config-menu,.orden-menu,.csv-menu,.config-submenu,.rev-filter-menu,.help-menu").forEach(m=>m.classList.remove("show"));
-  removeMenuOverlay();
-  hideTooltip();
+  removeMenuOverlay(); hideTooltip();
 }
 const closeTempMenus=()=>{ document.querySelectorAll(".temp-floating-menu").forEach(m=>{ m.classList.remove("show"); setTimeout(()=>{ if(!m.classList.contains("show")) m.remove(); },300); }); if(csvMenu) csvMenu.classList.remove("show"); if(ubicacionModal) ubicacionModal.classList.remove("show"); if(epocaModal) epocaModal.classList.remove("show"); if(subcategoriasModal) subcategoriasModal.classList.remove("show"); removeMenuOverlay(); hideTooltip(); };
 
-// ========== MODAL DE UBICACIÓN ==========
 function abrirModalUbicacion(){
-  closeAllMenus(); closeTempMenus();
-  if(ubicacionModal) ubicacionModal.remove();
+  closeAllMenus(); closeTempMenus(); if(ubicacionModal) ubicacionModal.remove();
   createMenuOverlay(999, ()=>{ closeTempMenus(); });
-  const modal = document.createElement('div');
-  modal.className = 'temp-floating-menu'; modal.id = 'ubicacionModal';
+  const modal = document.createElement('div'); modal.className = 'temp-floating-menu'; modal.id = 'ubicacionModal';
   const valores = [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].sort();
   const counts = new Map(); valores.forEach(v=>{ counts.set(v, contarConOpcion('ubicacion', v)); });
   let html = `<div class="temp-header">📍 Ubicación <button id="ubicacionCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="ubicacionCheckboxGrid">`;
-  valores.forEach(val=>{
-    const count = counts.get(val); const checked = filtrosState.ubicacion.includes(val);
-    html += `<label><input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a; font-size:0.6rem;">(${count})</span></label>`;
-  });
+  valores.forEach(val=>{ const count = counts.get(val); const checked = filtrosState.ubicacion.includes(val); html += `<label><input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a; font-size:0.6rem;">(${count})</span></label>`; });
   html += `</div><div class="modal-actions" id="ubicacionActions"></div>`;
   modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show'); ubicacionModal = modal;
   const grid = modal.querySelector('#ubicacionCheckboxGrid'); const actionsDiv = modal.querySelector('#ubicacionActions');
@@ -897,36 +819,23 @@ function abrirModalUbicacion(){
   const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   const accept = document.createElement('button'); accept.textContent = '✓'; accept.title = 'Aceptar';
   actionsDiv.append(sa, da, inv, accept);
-  const actualizarEstadoBotones = ()=>{
-    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
-    const checkedCount = Array.from(checks).filter(cb=>cb.checked).length;
-    sa.disabled = (checkedCount === checks.length); da.disabled = (checkedCount === 0); accept.disabled = false;
-  };
+  const actualizarEstadoBotones = ()=>{ const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])'); const checkedCount = Array.from(checks).filter(cb=>cb.checked).length; sa.disabled = (checkedCount === checks.length); da.disabled = (checkedCount === 0); accept.disabled = false; };
   sa.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=true); actualizarEstadoBotones(); };
   da.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=false); actualizarEstadoBotones(); };
   inv.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!cb.checked); actualizarEstadoBotones(); };
-  accept.onclick = ()=>{
-    const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
-    filtrosState.ubicacion = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus();
-  };
+  accept.onclick = ()=>{ const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value); filtrosState.ubicacion = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus(); };
   modal.querySelector('#ubicacionCancelBtn').onclick = ()=>{ closeTempMenus(); };
   actualizarEstadoBotones(); modal.addEventListener('click', e=>e.stopPropagation());
 }
 
-// ========== MODAL DE ÉPOCA ==========
 function abrirModalEpoca(){
-  closeAllMenus(); closeTempMenus();
-  if(epocaModal) epocaModal.remove();
+  closeAllMenus(); closeTempMenus(); if(epocaModal) epocaModal.remove();
   createMenuOverlay(999, ()=>{ closeTempMenus(); });
-  const modal = document.createElement('div');
-  modal.className = 'temp-floating-menu'; modal.id = 'epocaModal';
+  const modal = document.createElement('div'); modal.className = 'temp-floating-menu'; modal.id = 'epocaModal';
   const valores = [...new Set(especies.map(e=>e.epoca).filter(v=>v))].sort();
   const counts = new Map(); valores.forEach(v=>{ counts.set(v, contarConOpcion('epoca', v)); });
   let html = `<div class="temp-header">📅 Época <button id="epocaCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="epocaCheckboxGrid">`;
-  valores.forEach(val=>{
-    const count = counts.get(val); const checked = filtrosState.epoca.includes(val);
-    html += `<label><input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a; font-size:0.6rem;">(${count})</span></label>`;
-  });
+  valores.forEach(val=>{ const count = counts.get(val); const checked = filtrosState.epoca.includes(val); html += `<label><input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a; font-size:0.6rem;">(${count})</span></label>`; });
   html += `</div><div class="modal-actions" id="epocaActions"></div>`;
   modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show'); epocaModal = modal;
   const grid = modal.querySelector('#epocaCheckboxGrid'); const actionsDiv = modal.querySelector('#epocaActions');
@@ -935,38 +844,24 @@ function abrirModalEpoca(){
   const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   const accept = document.createElement('button'); accept.textContent = '✓'; accept.title = 'Aceptar';
   actionsDiv.append(sa, da, inv, accept);
-  const actualizarEstadoBotones = ()=>{
-    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
-    const checkedCount = Array.from(checks).filter(cb=>cb.checked).length;
-    sa.disabled = (checkedCount === checks.length); da.disabled = (checkedCount === 0); accept.disabled = false;
-  };
+  const actualizarEstadoBotones = ()=>{ const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])'); const checkedCount = Array.from(checks).filter(cb=>cb.checked).length; sa.disabled = (checkedCount === checks.length); da.disabled = (checkedCount === 0); accept.disabled = false; };
   sa.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=true); actualizarEstadoBotones(); };
   da.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=false); actualizarEstadoBotones(); };
   inv.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!cb.checked); actualizarEstadoBotones(); };
-  accept.onclick = ()=>{
-    const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
-    filtrosState.epoca = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus();
-  };
+  accept.onclick = ()=>{ const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value); filtrosState.epoca = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus(); };
   modal.querySelector('#epocaCancelBtn').onclick = ()=>{ closeTempMenus(); };
   actualizarEstadoBotones(); modal.addEventListener('click', e=>e.stopPropagation());
 }
 
-// ========== MODAL DE SUBCATEGORÍAS ==========
 function abrirModalSubcategorias(){
-  closeAllMenus(); closeTempMenus();
-  if(subcategoriasModal) subcategoriasModal.remove();
+  closeAllMenus(); closeTempMenus(); if(subcategoriasModal) subcategoriasModal.remove();
   createMenuOverlay(999, ()=>{ closeTempMenus(); });
-  const modal = document.createElement('div');
-  modal.className = 'temp-floating-menu'; modal.id = 'subcategoriasModal';
-  const todas = new Set();
-  especies.forEach(e=>{ if(e.subcategorias) e.subcategorias.split(',').forEach(s=>{ let t=s.trim(); if(t) todas.add(t); }); });
+  const modal = document.createElement('div'); modal.className = 'temp-floating-menu'; modal.id = 'subcategoriasModal';
+  const todas = new Set(); especies.forEach(e=>{ if(e.subcategorias) e.subcategorias.split(',').forEach(s=>{ let t=s.trim(); if(t) todas.add(t); }); });
   const valores = Array.from(todas).sort();
   const counts = new Map(); valores.forEach(v=>{ counts.set(v, contarConOpcion('subcategorias', v)); });
   let html = `<div class="temp-header">🏷️ Subcategorías <button id="subcategoriasCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="subcategoriasCheckboxGrid">`;
-  valores.forEach(val=>{
-    const count = counts.get(val); const checked = filtrosState.subcategorias.includes(val);
-    html += `<label><input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a; font-size:0.6rem;">(${count})</span></label>`;
-  });
+  valores.forEach(val=>{ const count = counts.get(val); const checked = filtrosState.subcategorias.includes(val); html += `<label><input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a; font-size:0.6rem;">(${count})</span></label>`; });
   html += `</div><div class="modal-actions" id="subcategoriasActions"></div>`;
   modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show'); subcategoriasModal = modal;
   const grid = modal.querySelector('#subcategoriasCheckboxGrid'); const actionsDiv = modal.querySelector('#subcategoriasActions');
@@ -975,23 +870,15 @@ function abrirModalSubcategorias(){
   const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   const accept = document.createElement('button'); accept.textContent = '✓'; accept.title = 'Aceptar';
   actionsDiv.append(sa, da, inv, accept);
-  const actualizarEstadoBotones = ()=>{
-    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
-    const checkedCount = Array.from(checks).filter(cb=>cb.checked).length;
-    sa.disabled = (checkedCount === checks.length); da.disabled = (checkedCount === 0); accept.disabled = false;
-  };
+  const actualizarEstadoBotones = ()=>{ const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])'); const checkedCount = Array.from(checks).filter(cb=>cb.checked).length; sa.disabled = (checkedCount === checks.length); da.disabled = (checkedCount === 0); accept.disabled = false; };
   sa.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=true); actualizarEstadoBotones(); };
   da.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=false); actualizarEstadoBotones(); };
   inv.onclick = ()=>{ grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!cb.checked); actualizarEstadoBotones(); };
-  accept.onclick = ()=>{
-    const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
-    filtrosState.subcategorias = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus();
-  };
+  accept.onclick = ()=>{ const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value); filtrosState.subcategorias = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus(); };
   modal.querySelector('#subcategoriasCancelBtn').onclick = ()=>{ closeTempMenus(); };
   actualizarEstadoBotones(); modal.addEventListener('click', e=>e.stopPropagation());
 }
 
-// ========== IMAGEN ESQUINA ==========
 function actualizarImagenEsquina(){
   const ancho=window.innerWidth; const esCelular=ancho<=700;
   const src=esCelular?'img2/esquina.png':'img2/esquina.gif';
@@ -1015,23 +902,15 @@ function abrirVentanaAyudaEsquina(){
 }
 headerCornerImg.addEventListener('click',(e)=>{ e.stopPropagation(); abrirVentanaAyudaEsquina(); });
 
-// ========== UTILIDADES ==========
 function levenshteinDistance(a,b){ if(!a.length)return b.length; if(!b.length)return a.length; const m=[]; for(let i=0;i<=b.length;i++) m[i]=[i]; for(let j=0;j<=a.length;j++) m[0][j]=j; for(let i=1;i<=b.length;i++) for(let j=1;j<=a.length;j++) m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[j-1]===b[i-1]?0:1)); return m[b.length][a.length]; }
-function showTemporaryTooltip(el,text, duration=1500){
-  if (!el) return; const rect = el.getBoundingClientRect();
-  showTooltip(text, rect.left + rect.width/2, rect.top - 10, duration);
-}
+function showTemporaryTooltip(el,text, duration=1500){ if (!el) return; const rect = el.getBoundingClientRect(); showTooltip(text, rect.left + rect.width/2, rect.top - 10, duration); }
 function setupBadgeHover(badge, text){
-  badge.addEventListener("mouseenter", () => {
-    const rect = badge.getBoundingClientRect();
-    showTooltip(text, rect.left + rect.width/2, rect.top - 10, 2000);
-  });
+  badge.addEventListener("mouseenter", () => { const rect = badge.getBoundingClientRect(); showTooltip(text, rect.left + rect.width/2, rect.top - 10, 2000); });
   badge.addEventListener("mouseleave", () => hideTooltip());
 }
 function crearBadge(ico,tit,cls){
   const d=document.createElement("div"); d.className=`mini-badge ${cls}`; d.textContent=ico;
-  setupBadgeHover(d, tit);
-  d.addEventListener("click",e=>{ e.stopPropagation(); });
+  setupBadgeHover(d, tit); d.addEventListener("click",e=>{ e.stopPropagation(); });
   return d;
 }
 function crearBadgesRow(e){
@@ -1086,24 +965,17 @@ async function render(){
   const filtradas=aplicarFiltrosCompletos(), ordenadas=ordenarEspecies(filtradas); currentOrderedList=ordenadas;
   const total=ordenadas.length, tp=Math.max(1,Math.ceil(total/perPage)); if(currentPage>tp) currentPage=tp;
   
-  // ✅ BLOQUEO GENERAL CUANDO NO HAY RESULTADOS
   const hayResultados = total > 0;
   if (!hayResultados) {
-    // Sin resultados: desactivar todos los filtros, orden, configuración, limpiar, favoritos
     document.querySelectorAll('.filtro-boton').forEach(btn => { btn.disabled = true; });
-    btnOrden.disabled = true;
-    favFilterBtn.disabled = true;
-    btnLimpiar.disabled = true;
-    configBtn.disabled = true;
+    btnOrden.disabled = true; favFilterBtn.disabled = true; btnLimpiar.disabled = true; configBtn.disabled = true;
   } else {
-    // Hay resultados: primero habilitar todo por defecto, luego deshabilitar individualmente según datos
     document.querySelectorAll('.filtro-boton').forEach(btn => { btn.disabled = false; });
     btnOrden.disabled = (total === 1);
     favFilterBtn.disabled = (favoritos.size === 0);
     btnLimpiar.disabled = (Object.values(filtrosState).every(a => a.length === 0) && revFilterState.length === 0);
     configBtn.disabled = false;
 
-    // ✅ BLOQUEO INDIVIDUAL: si TODAS las opciones de una categoría están sin datos, deshabilitar su botón
     const algunaOpcionConDatos = {
       morfologia:      () => opcionesMorfologia.some(op => contarConOpcion('morfologia', op) > 0),
       tipo:            () => opcionesTipo.some(op => contarConOpcion('tipo', op) > 0),
@@ -1117,7 +989,6 @@ async function render(){
       },
       revisado:        () => contarPorEstado("revisado") > 0 || contarPorEstado("no_revisado") > 0
     };
-
     for (let [cat, fn] of Object.entries(algunaOpcionConDatos)) {
       const btnId = cat === 'revisado' ? 'btnRevFilter' : `btn${cat.charAt(0).toUpperCase() + cat.slice(1)}`;
       const btn = document.getElementById(btnId);
@@ -1127,7 +998,6 @@ async function render(){
 
   const start=(currentPage-1)*perPage, paginated=ordenadas.slice(start,start+perPage), end=Math.min(start+perPage,total);
   resultSpan.innerText=`${start+1}-${end} / ${total}`;
-  
   gridDiv.className='grid'; gridDiv.innerHTML="";
   if(!paginated.length){
     const nd=document.createElement("div"); nd.className="no-results";
@@ -1146,7 +1016,225 @@ async function render(){
   updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); adjustTitleFontSize(); actualizarImagenEsquina();
 }
 
-/* ... resto del código exactamente como antes ... */
+function actualizarModal(){
+  if(!currentModalCreature) return; const e=currentModalCreature;
+  modalTitle.innerText=e.nombre; adjustModalTitleFontSize();
+  setImageWithFallback(modalImg, e.nombre, "", true);
+  const linksHtml=e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:"";
+  const subcatsHtml = e.subcategorias ? `<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>` : '';
+  modalInfoScroll.innerHTML=`<div class="info-grid"><div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div><div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div><div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div><div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div><div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div><div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>${subcatsHtml}</div><div class="modal-description">${e.descripcion}</div>${linksHtml}`;
+  const est=revisados.has(e.id); modalRevisadoBtn.innerHTML=est?"◆":"◇"; modalRevisadoBtn.classList.toggle("revisado",est); modalRevisadoBtn.classList.toggle("no-revisado",!est); modalRevisadoBtn.style.color="var(--accent)";
+  modalRevisadoBtn.onclick=()=>{ if(modoRevision==="bloqueo"){ if(revisados.has(e.id)) toggleRevisado(e.id,false); } else toggleRevisado(e.id,false); };
+  if(modalFavBtn) modalFavBtn.textContent=isFavorito(e.id)?"★":"☆";
+  modalPrevArrow.style.display=modalNextArrow.style.display=navegacionBloqueada?"none":"flex"; actualizarFlechasModal();
+  requestAnimationFrame(()=>{ adjustModalTitleFontSize(); });
+}
+function copiarLinkAlPortapapeles(){
+  if(!currentModalCreature) return;
+  const url = new URL(window.location.href); url.hash = `id=${encodeURIComponent(currentModalCreature.id)}`;
+  navigator.clipboard.writeText(url.href).then(()=>{ showTemporaryTooltip(modalCopyLinkBtn, "Enlace copiado"); }).catch(()=>{ showTemporaryTooltip(modalCopyLinkBtn, "No se pudo copiar"); });
+}
+modalCopyLinkBtn.onclick = copiarLinkAlPortapapeles;
+
+function abrirDetalle(e){
+  currentModalCreature = e; currentModalIndex = currentOrderedList.findIndex(c => c.id === e.id);
+  actualizarModal(); actualizarFlechasModal();
+  overlayEl.style.display="flex"; document.body.classList.add("modal-open");
+  setTimeout(()=>{ overlayEl.classList.add("show"); adjustModalTitleFontSize(); },10);
+}
+function actualizarFlechasModal(){ if(!currentOrderedList.length||navegacionBloqueada) return; modalPrevArrow.classList.toggle("disabled",currentModalIndex===0); modalNextArrow.classList.toggle("disabled",currentModalIndex===currentOrderedList.length-1); }
+function navegarModal(d){ if(navegacionBloqueada||!currentOrderedList.length) return; let ni=currentModalIndex+d; if(ni<0) ni=0; if(ni>=currentOrderedList.length) ni=currentOrderedList.length-1; if(ni!==currentModalIndex){ currentModalIndex=ni; currentModalCreature=currentOrderedList[ni]; actualizarModal(); actualizarFlechasModal(); } }
+async function closeModal(){
+  const eraAleatorio = navegacionBloqueada; navegacionBloqueada = false;
+  if (!eraAleatorio && currentModalCreature) {
+    const idx = currentOrderedList.findIndex(c => c.id === currentModalCreature.id);
+    if (idx !== -1) {
+      const newPage = Math.floor(idx / perPage) + 1;
+      if (newPage !== currentPage) { currentPage = newPage; await render(); }
+      requestAnimationFrame(() => { const card = document.querySelector(`.card[data-id="${currentModalCreature.id}"]`); if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    }
+  }
+  overlayEl.classList.remove("show"); document.body.classList.remove("modal-open");
+  setTimeout(() => { if (!overlayEl.classList.contains("show")) overlayEl.style.display = "none"; }, 300);
+}
+window.marcarRevisadoPorLink=marcarRevisadoPorLink;
+
+function updateFilterBadges(){
+  const mc=filtrosState.morfologia.length, tc=filtrosState.tipo.length, ec=filtrosState.elemento.length, ac=filtrosState.avistamiento.length,
+        uc=filtrosState.ubicacion.length, epc=filtrosState.epoca.length, sc=filtrosState.subcategorias.length;
+  $("btnMorfologia").title=`Morfología${mc?` (${mc})`:''}`; $("btnTipo").title=`Tipo${tc?` (${tc})`:''}`; $("btnElemento").title=`Elemento${ec?` (${ec})`:''}`; $("btnAvistamiento").title=`Avistamiento${ac?` (${ac})`:''}`;
+  $("btnUbicacion").title=`Ubicación${uc?` (${uc})`:''}`; $("btnEpoca").title=`Época${epc?` (${epc})`:''}`; $("btnSubcategorias").title=`Subcategorías${sc?` (${sc})`:''}`;
+  actualizarFiltroActivo($("btnMorfologia"),mc>0); actualizarFiltroActivo($("btnTipo"),tc>0); actualizarFiltroActivo($("btnElemento"),ec>0); actualizarFiltroActivo($("btnAvistamiento"),ac>0);
+  actualizarFiltroActivo($("btnUbicacion"),uc>0); actualizarFiltroActivo($("btnEpoca"),epc>0); actualizarFiltroActivo($("btnSubcategorias"),sc>0);
+  favFilterBtn.classList.toggle('active',onlyFavorites); updateRevFilterBadge(); actualizarBotonLimpiar();
+}
+function actualizarBotonLimpiar(){
+  const filtrosActivos = Object.values(filtrosState).some(a => a.length) || revFilterState.length > 0;
+  btnLimpiar.disabled = currentOrderedList.length === 0 || !filtrosActivos;
+}
+
+let searchTimeout;
+function onSearchInput(){
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(()=>{ searchTerm=searchInput.value; currentPage=1; render(); updateClearSearchState(); updateSearchSuggestions(); invalidateBaseCache(); }, 300);
+}
+function updateSearchSuggestions(){
+  const term=searchInput.value.trim(); let cand=aplicarFiltrosCompletos(), sug=[];
+  if(!term){ sug=ordenarEspecies(cand).slice(0,6).map(e=>e.nombre); }
+  else{ const wd=cand.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term.toLowerCase(),e.nombre.toLowerCase()),exact:e.nombre.toLowerCase().includes(term.toLowerCase())})); wd.sort((a,b)=>a.exact!==b.exact?a.exact?-1:1:a.dist-b.dist); sug=wd.slice(0,6).map(s=>s.nombre); }
+  searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('');
+}
+function updateClearSearchState(){ clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim()); }
+
+function generarMenuCategoria(cat,menuId,opciones){
+  const menu=$(menuId); menu.innerHTML="";
+  let opcionesVisibles = 0; opciones.forEach(val=>{ if(contarConOpcion(cat,val)>0) opcionesVisibles++; });
+  opciones.forEach(val=>{
+    const count=contarConOpcion(cat,val);
+    const label=document.createElement("label");
+    const cb=document.createElement("input"); cb.type="checkbox"; cb.value=val; cb.checked=filtrosState[cat].includes(val);
+    if(count===0 && !cb.checked) cb.disabled=true;
+    if(opcionesVisibles === 1 && count>0) cb.disabled = true;
+    cb.addEventListener("change",()=>{ if(cb.disabled) return; if(cb.checked){ if(!filtrosState[cat].includes(val)) filtrosState[cat].push(val); } else{ filtrosState[cat]=filtrosState[cat].filter(v=>v!==val); } currentPage=1; render(); persistState(); invalidateBaseCache(); });
+    label.appendChild(cb); const ts=document.createElement("span"); ts.className="label-text"; ts.textContent=` ${val}`; label.appendChild(ts);
+    const cs=document.createElement("span"); cs.className="count"; cs.textContent=`(${count})`; label.appendChild(cs); menu.appendChild(label);
+  });
+  const bc=document.createElement("button"); bc.textContent="Limpiar esta categoría"; bc.className="limpiar-categoria"; bc.disabled=(filtrosState[cat].length===0);
+  bc.onclick=()=>{ filtrosState[cat]=[]; render(); persistState(); invalidateBaseCache(); }; menu.appendChild(bc);
+}
+function generarMenuMorfologia(){ generarMenuCategoria("morfologia","menu-morfologia",opcionesMorfologia); }
+function generarMenuTipo(){ generarMenuCategoria("tipo","menu-tipo",opcionesTipo); }
+function generarMenuElemento(){ generarMenuCategoria("elemento","menu-elemento",opcionesElemento); }
+function generarMenuAvistamiento(){ generarMenuCategoria("avistamiento","menu-avistamiento",opcionesAvistamiento); }
+function generarMenuOrden(){
+  const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}];
+  ordenMenu.innerHTML=ops.map(o=>`<button>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join('');
+  [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(btnOrden.disabled) return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); }; });
+}
+function generarRevFilterMenu(){
+  revFilterMenu.innerHTML=""; const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];
+  let opcionesVisibles = 0; ops.forEach(opt=>{ if(contarPorEstado(opt.id)>0) opcionesVisibles++; });
+  ops.forEach(opt=>{ const count=contarPorEstado(opt.id); const label=document.createElement("label"); const cb=document.createElement("input"); cb.type="checkbox"; cb.value=opt.id; cb.checked=revFilterState.includes(opt.id); if(count===0 && !cb.checked) cb.disabled=true; if(opcionesVisibles === 1 && count>0) cb.disabled = true;
+    cb.addEventListener("change",()=>{ if(cb.disabled) return; cb.checked?(!revFilterState.includes(opt.id)&&revFilterState.push(opt.id)):revFilterState=revFilterState.filter(v=>v!==opt.id); saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); }); 
+    label.appendChild(cb); const ts=document.createElement("span"); ts.className="label-text"; ts.textContent=` ${opt.label}`; label.appendChild(ts); const cs=document.createElement("span"); cs.className="count"; cs.textContent=`(${count})`; label.appendChild(cs); revFilterMenu.appendChild(label); });
+  const bc=document.createElement("button"); bc.textContent="Limpiar esta categoría"; bc.className="limpiar-categoria"; bc.disabled=(revFilterState.length===0);
+  bc.onclick=()=>{ revFilterState=[]; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); }; revFilterMenu.appendChild(bc);
+}
+function abrirMenuAyuda(){ closeAllMenus(); closeTempMenus(); const existente=document.getElementById("helpFloatingMenu"); if(existente) existente.remove(); createMenuOverlay(999,()=>{ closeTempMenus(); }); const menu=document.createElement("div"); menu.id="helpFloatingMenu"; menu.className="temp-floating-menu"; menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`; document.body.appendChild(menu); menu.classList.add('show'); menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus(); menu.addEventListener('click',e=>e.stopPropagation()); }
+function abrirMenuItemsPerPage(){ closeAllMenus(); closeTempMenus(); configMenu.classList.remove("show"); tempPerPage=perPage; createMenuOverlay(999,()=>{ closeTempMenus(); }); const menu=document.createElement("div"); menu.id="itemsPerPageMenu"; menu.className="temp-floating-menu"; const valores=[12,24,48,96]; const idx=valores.indexOf(perPage); const sliderIdx=idx>=0?idx:1; menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`; document.body.appendChild(menu); menu.classList.add('show'); const slider=menu.querySelector("#itemsSlider"), valSpan=menu.querySelector("#itemsTempVal"), acceptBtn=menu.querySelector("#itemsAcceptBtn"); const actualizarEstadoAceptar=()=>{ acceptBtn.disabled=(tempPerPage===perPage); }; slider.addEventListener("input",()=>{ tempPerPage=valores[parseInt(slider.value)]; valSpan.textContent=tempPerPage; actualizarEstadoAceptar(); }); acceptBtn.onclick=()=>{ if(acceptBtn.disabled) return; perPage=tempPerPage; currentPage=1; render(); persistState(); regenerarMenuConfigBtn(); closeTempMenus(); }; menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus(); menu.addEventListener("click",e=>e.stopPropagation()); }
+function abrirMenuModoRevision(){ closeAllMenus(); closeTempMenus(); configMenu.classList.remove("show"); tempModoRevision=modoRevision; createMenuOverlay(999,()=>{ closeTempMenus(); }); const menu=document.createElement("div"); menu.id="revModeMenu"; menu.className="temp-floating-menu"; const modos=[{id:"manual",label:"Manual"},{id:"automatico",label:"Automático"},{id:"bloqueo",label:"Bloqueo"}]; let opcionesHtml=modos.map(m=>`<button class="rev-option${tempModoRevision===m.id?' active':''}" data-mode="${m.id}">${m.label}</button>`).join(''); menu.innerHTML=`<div class="temp-header">📌 Modo revisión<button id="revCancelBtn" title="Cancelar">✕</button></div><div class="rev-options">${opcionesHtml}</div><div class="temp-actions"><button id="revAcceptBtn" title="Aceptar" disabled>✓</button></div>`; document.body.appendChild(menu); menu.classList.add('show'); const acceptBtn=menu.querySelector("#revAcceptBtn"); const actualizarEstadoAceptar=()=>{ acceptBtn.disabled=(tempModoRevision===modoRevision); }; menu.querySelectorAll(".rev-option").forEach(btn=>{ btn.addEventListener("click",()=>{ tempModoRevision=btn.dataset.mode; menu.querySelectorAll(".rev-option").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); actualizarEstadoAceptar(); }); }); acceptBtn.onclick=()=>{ if(acceptBtn.disabled) return; modoRevision=tempModoRevision; saveModoRevision(); regenerarMenuConfigBtn(); closeTempMenus(); }; menu.querySelector("#revCancelBtn").onclick=()=>closeTempMenus(); menu.addEventListener("click",e=>e.stopPropagation()); }
+function regenerarMenuConfigBtn(){ generarMenuConfig(); }
+function generarMenuConfig(){
+  configMenu.innerHTML="";
+  const addBtn=(html,click)=>{ const b=document.createElement("button"); b.innerHTML=html; b.onclick=click; configMenu.appendChild(b); return b; };
+  addBtn("🎲 Azar",()=>{ const f=aplicarFiltrosCompletos(); if(f.length){ navegacionBloqueada = true; abrirDetalle(f[Math.floor(Math.random()*f.length)]); } closeAllMenus(); });
+  addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{ e.stopPropagation(); closeAllMenus(); abrirMenuItemsPerPage(); });
+  const csvB=addBtn("📎 Exportar CSV",()=>{ if(!aplicarFiltrosCompletos().length) return; closeAllMenus(); createMenuOverlay(999,()=>{ closeTempMenus(); }); if(csvMenu) actualizarMenuCSV(); else crearMenuCSV(); csvMenu.classList.add("show"); });
+  if(!aplicarFiltrosCompletos().length) csvB.disabled=true;
+  const modoTexto=modoRevision==="manual"?"Manual":modoRevision==="automatico"?"Automático":"Bloqueo";
+  addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{ e.stopPropagation(); closeAllMenus(); abrirMenuModoRevision(); });
+  addBtn("📖 Ayuda",(e)=>{ e.stopPropagation(); closeAllMenus(); abrirMenuAyuda(); });
+}
+function crearMenuCSV(){ if(csvMenu) csvMenu.remove(); csvMenu=document.createElement("div"); csvMenu.className="csv-menu"; document.body.appendChild(csvMenu); actualizarMenuCSV(); csvMenu.addEventListener("click",e=>e.stopPropagation()); }
+function actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn){ const marcados=cg.querySelectorAll("input[type='checkbox']:checked").length, total=cg.querySelectorAll("input[type='checkbox']").length; sa.disabled=(marcados===total); da.disabled=(marcados===0); acceptBtn.disabled=!selectedFields.length; }
+function actualizarMenuCSV(){
+  if(!csvMenu) return; const camposVisibles = csvFields.filter(f=>f!=='nombre');
+  csvMenu.innerHTML=`<div class="csv-header"><span>📎 Seleccionar campos a exportar (nombre siempre incluido)</span><button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
+  const cg=csvMenu.querySelector(".csv-checkbox-group");
+  const acceptBtn=document.createElement("button"); acceptBtn.textContent="✓"; acceptBtn.title="Aceptar y exportar"; acceptBtn.className="accept"; acceptBtn.disabled=!selectedFields.length;
+  acceptBtn.onclick=()=>{ exportarCSV(); closeTempMenus(); };
+  const actionsDiv=document.createElement("div"); actionsDiv.className="csv-actions";
+  const sa=document.createElement("button"); sa.textContent="📋"; sa.title="Seleccionar todo"; sa.onclick=()=>{ selectedFields=[...camposVisibles]; cg.querySelectorAll("input").forEach(c=>c.checked=true); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); };
+  const da=document.createElement("button"); da.textContent="🗑️"; da.title="Deseleccionar todo"; da.onclick=()=>{ selectedFields=[]; cg.querySelectorAll("input").forEach(c=>c.checked=false); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); };
+  const inv=document.createElement("button"); inv.textContent="🔄"; inv.title="Invertir selección"; inv.onclick=()=>{ selectedFields=[]; cg.querySelectorAll("input").forEach(c=>{ if(!c.checked) selectedFields.push(c.value); c.checked=!c.checked; }); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); };
+  actionsDiv.append(sa,da,inv,acceptBtn); csvMenu.appendChild(actionsDiv);
+  csvMenu.querySelector('#csvCloseBtn').onclick = ()=>closeTempMenus();
+  actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);
+  cg.addEventListener("change",()=>{ selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); });
+}
+function exportarCSV(){
+  if(!dataLoaded) return; const filtradas=aplicarFiltrosCompletos(); if(!filtradas.length){ alert("No hay datos para exportar."); return; }
+  const ordenadas=ordenarEspecies(filtradas);
+  const headers = ['nombre', ...selectedFields]; if(!headers.length){ alert("Debe seleccionar al menos un campo adicional."); return; }
+  const rows=[headers.join(",")];
+  ordenadas.forEach(e=>{ rows.push(headers.map(h=>{ let v = e[h]; if(h==="links") v = e.links ? e.links.join(";") : ""; if(typeof v==="string" && (v.includes(",")||v.includes("\n"))) v=`"${v.replace(/"/g,'""')}"`; return v || ""; }).join(",")); });
+  const blob=new Blob([rows.join("\n")],{type:"text/csv"}), link=document.createElement("a"); link.href=URL.createObjectURL(blob); link.download="indice_seres.csv"; link.click(); URL.revokeObjectURL(link.href);
+}
+function regenerarMenus(){ generarMenuMorfologia(); generarMenuTipo(); generarMenuElemento(); generarMenuAvistamiento(); generarMenuOrden(); generarMenuConfig(); generarRevFilterMenu(); if(csvMenu) csvMenu.remove(); crearMenuCSV(); }
+function repositionMenu(menu,button){ if(!menu||!button) return; const r=button.getBoundingClientRect(), mr=menu.getBoundingClientRect(), vh=window.innerHeight, vw=window.innerWidth; mr.height>vh-r.bottom&&r.top>mr.height?(menu.style.top='auto',menu.style.bottom='110%'):(menu.style.top='110%',menu.style.bottom='auto'); r.left+mr.width>vw?(menu.style.left='auto',menu.style.right='0'):(menu.style.left='0',menu.style.right='auto'); }
+function initMenus(){
+  document.querySelectorAll(".filtro-group").forEach(g=>{
+    const b=g.querySelector(".filtro-boton,.config-btn,.help-btn"); const m=g.querySelector(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu,.help-menu");
+    if(b&&m && (b.id !== 'btnUbicacion' && b.id !== 'btnEpoca' && b.id !== 'btnSubcategorias')){
+      b.addEventListener("click",e=>{ e.stopPropagation(); const wasOpen=m.classList.contains("show"); closeAllMenus(); if(!wasOpen){ m.classList.add("show"); createMenuOverlay(199,()=>{ closeAllMenus(); }); setTimeout(()=>repositionMenu(m,b),10); } });
+    }
+  });
+  document.getElementById('btnUbicacion').addEventListener("click", (e)=>{ e.stopPropagation(); abrirModalUbicacion(); });
+  document.getElementById('btnEpoca').addEventListener("click", (e)=>{ e.stopPropagation(); abrirModalEpoca(); });
+  document.getElementById('btnSubcategorias').addEventListener("click", (e)=>{ e.stopPropagation(); abrirModalSubcategorias(); });
+  document.addEventListener("click",e=>{ if(!e.target.closest(".filtro-group") && !e.target.closest("#ordenGroup") && !e.target.closest("#configGroup") && !e.target.closest(".csv-menu") && !e.target.closest(".temp-floating-menu")){ closeAllMenus(); closeTempMenus(); } });
+}
+initMenus();
+mainTitle.addEventListener("click",()=>{ panelVisible=!panelVisible; if(panelVisible){ filtrosPanel.classList.remove("oculto"); } else { filtrosPanel.classList.add("oculto"); } actualizarImagenEsquina(); });
+btnLimpiar.onclick=()=>{ if(btnLimpiar.disabled) return; filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]}; revFilterState=[]; saveRevFilterState(); currentPage=1; render(); persistState(); invalidateBaseCache(); };
+favFilterBtn.onclick=()=>{ if(!favFilterBtn.disabled){ onlyFavorites=!onlyFavorites; currentPage=1; render(); persistState(); invalidateBaseCache(); } };
+searchInput.addEventListener('input',onSearchInput);
+clearSearchBtn.onclick=()=>{ if(clearSearchBtn.classList.contains("disabled")) return; searchInput.value=''; searchTerm=''; currentPage=1; render(); updateClearSearchState(); updateSearchSuggestions(); invalidateBaseCache(); };
+cerrarBtn.onclick=closeModal; overlayEl.onclick=e=>{ if(e.target===overlayEl) closeModal(); };
+modalPrevArrow.onclick=()=>navegarModal(-1); modalNextArrow.onclick=()=>navegarModal(1);
+modalFavBtn.onclick=()=>{ if(currentModalCreature) toggleFavorito(currentModalCreature.id, false); };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ if(overlayEl.classList.contains("show")) closeModal(); else { closeAllMenus(); closeTempMenus(); } } });
+modalTitle.closest("#detalle").addEventListener("touchstart",e=>{ touchStartX=e.changedTouches[0].screenX; });
+modalTitle.closest("#detalle").addEventListener("touchend",e=>{ if(navegacionBloqueada)return; const d=e.changedTouches[0].screenX-touchStartX; if(Math.abs(d)>50){ navegarModal(d>0?-1:1); e.preventDefault(); } });
+function adjustTitleFontSize(){ const ruler=document.createElement('span'); ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none'; document.body.appendChild(ruler); const minFontSize=0.7; document.querySelectorAll('.card b').forEach(t=>{ const a=t.clientWidth; if(a<=0) return; ruler.textContent=t.textContent; let fs=0.9; ruler.style.fontSize=fs+'rem'; while(fs>minFontSize&&ruler.offsetWidth>a){ fs-=0.005; ruler.style.fontSize=fs+'rem'; } if(ruler.offsetWidth>a){ t.classList.add('wrap-name'); t.style.fontSize=minFontSize+'rem'; } else { t.classList.remove('wrap-name'); t.style.fontSize=fs+'rem'; } }); ruler.remove(); }
+function adjustModalTitleFontSize(){ const h3=modalTitle; if(!h3) return; const availableWidth=h3.clientWidth; if(availableWidth<=0) return; const minFontSize=0.8; const testEl=document.createElement('span'); testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;'; testEl.textContent=h3.textContent; document.body.appendChild(testEl); let fs=1.4; testEl.style.fontSize=fs+'rem'; while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){ fs-=0.05; testEl.style.fontSize=fs+'rem'; } if(testEl.scrollWidth>testEl.clientWidth){ h3.classList.add('wrap-name'); h3.style.fontSize=minFontSize+'rem'; } else { h3.classList.remove('wrap-name'); h3.style.fontSize=fs+'rem'; } testEl.remove(); }
+
+async function cargarArchivosDesdeCarpeta() {
+  let todosLosDatos = []; let indice = 1; let hayError = false;
+  while (!hayError) {
+    const url = `dtsk/Datos${indice}.json`;
+    try {
+      const respuesta = await fetch(url, { cache: 'no-store' });
+      if (!respuesta.ok) { hayError = true; break; }
+      const datos = await respuesta.json();
+      if (Array.isArray(datos)) { todosLosDatos.push(...datos); } else { todosLosDatos.push(datos); }
+      indice++;
+    } catch (error) { hayError = true; break; }
+  }
+  return todosLosDatos;
+}
+
+async function cargarDatos(){
+  try {
+    let datosCombinados = await cargarArchivosDesdeCarpeta();
+    if (datosCombinados.length === 0) {
+      console.warn("No se encontraron archivos DatosX.json en la carpeta dtsk/");
+      const res = await fetch('datos.json', { cache: 'no-store' });
+      if (res.ok) { const respaldo = await res.json(); datosCombinados = Array.isArray(respaldo) ? respaldo : [respaldo]; }
+    }
+    especies = datosCombinados.map((criatura, idx) => {
+      if (criatura.posX === undefined) { criatura.posX = criatura.posx !== undefined ? criatura.posx : 0; }
+      if (criatura.posY === undefined) { criatura.posY = criatura.posy !== undefined ? criatura.posy : 0; }
+      if (criatura.zoom === undefined) criatura.zoom = 1;
+      if (!criatura.id) { criatura.id = `criatura_${idx}_${Date.now()}_${Math.random()}`; }
+      return criatura;
+    });
+    dataLoaded = true;
+    buildIndexes();
+    loadFavoritos(); loadRevisados(); loadModoRevision(); loadPersistedState();
+    updateSearchSuggestions(); updateClearSearchState(); regenerarMenus(); await render();
+    window.addEventListener('resize',()=>{ if(dataLoaded) adjustTitleFontSize(); if(overlayEl.classList.contains("show")) adjustModalTitleFontSize(); actualizarImagenEsquina(); });
+    actualizarImagenEsquina();
+    const hash=window.location.hash.substring(1); if(hash.startsWith("id=")){ const id=decodeURIComponent(hash.substring(3)); const cr=especies.find(e=>e.id===id); if(cr) setTimeout(()=>abrirDetalle(cr),300); }
+    window.scrollTo({top:0,behavior:'instant'});
+  } catch(err){ console.error("Error cargando datos:", err); especies = []; dataLoaded = true; render(); }
+}
+
+async function inicializarApp() {
+  await cargarConfiguracionCategorias();
+  await cargarDatos();
+}
+inicializarApp();
 </script>
 </body>
 </html>
