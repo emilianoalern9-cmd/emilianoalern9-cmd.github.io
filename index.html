@@ -1269,6 +1269,7 @@ function initMenus(){
   document.getElementById('btnSubcategorias').addEventListener("click", (e)=>{ e.stopPropagation(); abrirModalSubcategorias(); });
   document.addEventListener("click",e=>{ if(!e.target.closest(".filtro-group") && !e.target.closest("#ordenGroup") && !e.target.closest("#configGroup") && !e.target.closest(".csv-menu") && !e.target.closest(".temp-floating-menu")){ closeAllMenus(); closeTempMenus(); } });
 }
+initMenus(); // ← ¡CORRECCIÓN! Ahora se llama a la función
 mainTitle.addEventListener("click",()=>{ panelVisible=!panelVisible; if(panelVisible){ filtrosPanel.classList.remove("oculto"); } else { filtrosPanel.classList.add("oculto"); } actualizarImagenEsquina(); });
 btnLimpiar.onclick=()=>{ if(btnLimpiar.disabled) return; filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]}; revFilterState=[]; saveRevFilterState(); currentPage=1; render(); persistState(); actualizarBotonLimpiar(); invalidateBaseCache(); };
 favFilterBtn.onclick=()=>{ if(!favFilterBtn.disabled){ onlyFavorites=!onlyFavorites; currentPage=1; render(); persistState(); invalidateBaseCache(); } };
