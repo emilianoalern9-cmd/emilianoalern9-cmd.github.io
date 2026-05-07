@@ -52,7 +52,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .filtros-panel.oculto{display:none}
 .filtro-group{position:relative}
 .filtro-boton,.btn-limpiar,.export-btn,.random-btn,.theme-btn,.view-btn,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:40px;padding:5px 10px;font-family:'Cinzel',serif;font-weight:600;color:var(--text-primary);font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;white-space:nowrap;line-height:1;outline:none}
-.filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn:disabled,.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
+.filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn button:disabled,.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
 .search-clear{cursor:pointer;font-size:.9rem;font-weight:700;color:var(--accent);background:none;border:none;padding:0 2px;transition:opacity .2s}
 .search-clear.disabled{opacity:.5;pointer-events:none;cursor:default}
 .search-clear:active:not(.disabled){transform:scale(.9)}
@@ -516,9 +516,11 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
   };
 
   const aplicarCambio = (nuevoArray) => {
-    const opcionesActuales = Array.from(grid.querySelectorAll('input[type="checkbox"]:not([disabled])')).map(cb => cb.value);
+    // Normalizar: si se seleccionan todas las opciones visibles, es como si no hubiera filtro (array vacío)
+    const opcionesActuales = Array.from(grid.querySelectorAll('input[type="checkbox"]')).map(cb => cb.value);
     const estaTodoSeleccionado = nuevoArray.length === opcionesActuales.length;
     const nuevoEstado = estaTodoSeleccionado ? [] : nuevoArray;
+    // Solo renderizar si hay un cambio real
     if (JSON.stringify(nuevoEstado) !== JSON.stringify(filtrosState[cat])) {
       filtrosState[cat] = nuevoEstado;
       currentPage = 1;
@@ -529,6 +531,7 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
     actualizarEstadoBotones();
   };
 
+  // Cambio en checkboxes en tiempo real
   grid.addEventListener('change', () => {
     const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
     aplicarCambio(selected);
@@ -735,42 +738,18 @@ function updateSearchSuggestions(){const term=searchInput.value.trim();let cand=
 function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
 
 function generarMenuCategoria(cat,menuId,opciones){
-  const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;
-  // Contar cuántas opciones con datos hay
-  const opcionesVisiblesSet = opciones.filter(val => contarConOpcion(cat,val)>0);
-  opcionesVisibles = opcionesVisiblesSet.length;
+  const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++});
   opciones.forEach(val=>{
     const count=contarConOpcion(cat,val);
     if(count===0)return;
     const label=document.createElement("label");
     const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val);
     if(opcionesVisibles===1&&count>0)cb.disabled=true;
-    cb.addEventListener("change",()=>{
-      if(cb.disabled)return;
-      let nuevoArray;
-      if(cb.checked){
-        if(!filtrosState[cat].includes(val)) filtrosState[cat].push(val);
-        nuevoArray = filtrosState[cat].slice();
-      } else {
-        filtrosState[cat] = filtrosState[cat].filter(v=>v!==val);
-        nuevoArray = filtrosState[cat].slice();
-      }
-      // Normalizar: si están todos los visibles seleccionados, vaciar
-      if(nuevoArray.length === opcionesVisibles) nuevoArray = [];
-      if(JSON.stringify(nuevoArray) !== JSON.stringify(filtrosState[cat])){
-        filtrosState[cat] = nuevoArray;
-        currentPage=1; render(); persistState(); invalidateBaseCache();
-      }
-    });
+    cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()});
     label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts);
     const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);
   });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);
-  bc.onclick=()=>{
-    if(filtrosState[cat].length===0) return; // ya vacío
-    filtrosState[cat]=[]; render(); persistState(); invalidateBaseCache();
-  };
-  menu.appendChild(bc);
+  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);bc.onclick=()=>{filtrosState[cat]=[];render();persistState();invalidateBaseCache()};menu.appendChild(bc);
 }
 function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfologia",opcionesMorfologia)}
 function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
@@ -794,6 +773,7 @@ function generarRevFilterMenu(){
       let newRev = revFilterState.slice();
       if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); }
       else { newRev = newRev.filter(v=>v!==opt.id); }
+      // Normalizar: si ambos están seleccionados, es como no tener filtro
       if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = [];
       if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){
         revFilterState = newRev;
