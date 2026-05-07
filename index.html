@@ -699,7 +699,8 @@ function baseFilterPredicate(ignoreCat){
       if(!filtrosState.subcategorias.some(sel => subcats.includes(sel))) return false;
     }
     if(onlyFavorites && !favoritos.has(e.id)) return false;
-    if(searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase()) && !e.descripcion.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    // 🔍 CORREGIDO: solo buscar por nombre, no descripción
+    if(searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   };
 }
@@ -753,11 +754,13 @@ function buildPredicate(extraCheck=null){
       if(!filtrosState.subcategorias.some(sel => subcats.includes(sel))) return false;
     }
     if(onlyFavorites && !favoritos.has(e.id)) return false;
-    if(searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase()) && !e.descripcion.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    // 🔍 CORREGIDO: solo buscar por nombre
+    if(searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     if(revFilterState.length){ const r=revisados.has(e.id); if(!(revFilterState.includes("revisado")&&revFilterState.includes("no_revisado")) && ((revFilterState.includes("revisado")&&!r) || (revFilterState.includes("no_revisado")&&r))) return false;}
     return extraCheck?extraCheck(e):true;
   };
 }
+
 const aplicarFiltrosCompletos=()=>especies.filter(buildPredicate());
 
 function ordenarEspecies(lista){ const [campo,dir]=ordenActual.split('_'); const order=dir==="asc"?1:-1; return [...lista].sort((a,b)=>{ let va=a[campo]||"", vb=b[campo]||""; return va<vb?-order:va>vb?order:0; }); }
@@ -1088,9 +1091,18 @@ async function render(){
   invalidateBaseCache();
   const filtradas=aplicarFiltrosCompletos(), ordenadas=ordenarEspecies(filtradas); currentOrderedList=ordenadas;
   const total=ordenadas.length, tp=Math.max(1,Math.ceil(total/perPage)); if(currentPage>tp) currentPage=tp;
+  
+  // ✅ BLOQUEO DE FILTROS CUANDO NO HAY RESULTADOS
+  const hayResultados = total > 0;
+  document.querySelectorAll('.filtro-boton').forEach(btn => { if(btn.id !== 'btnOrden') btn.disabled = !hayResultados; });
+  document.getElementById('btnOrden').disabled = !hayResultados || total === 1;
+  document.getElementById('favFilterBtn').disabled = !hayResultados || favoritos.size === 0;
+  document.getElementById('btnLimpiar').disabled = !hayResultados || (Object.values(filtrosState).every(a => a.length === 0) && revFilterState.length === 0);
+  // los botones de paginación también deben bloquearse si total==0 (ya se maneja con tp=1)
+  
   const start=(currentPage-1)*perPage, paginated=ordenadas.slice(start,start+perPage), end=Math.min(start+perPage,total);
   resultSpan.innerText=`${start+1}-${end} / ${total}`;
-  if(total === 1) btnOrden.disabled = true; else btnOrden.disabled = false;
+  
   gridDiv.className='grid'; gridDiv.innerHTML="";
   if(!paginated.length){
     const nd=document.createElement("div"); nd.className="no-results";
@@ -1164,7 +1176,11 @@ function updateFilterBadges(){
   actualizarFiltroActivo($("btnUbicacion"),uc>0); actualizarFiltroActivo($("btnEpoca"),epc>0); actualizarFiltroActivo($("btnSubcategorias"),sc>0);
   favFilterBtn.classList.toggle('active',onlyFavorites); updateRevFilterBadge(); actualizarBotonLimpiar();
 }
-function actualizarBotonLimpiar(){ const hc=Object.values(filtrosState).some(a=>a.length)||revFilterState.length>0; btnLimpiar.disabled=!hc; }
+function actualizarBotonLimpiar(){
+  // Se desactiva si no hay criaturas en la lista ordenada actual o si no hay filtros activos
+  const filtrosActivos = Object.values(filtrosState).some(a => a.length) || revFilterState.length > 0;
+  btnLimpiar.disabled = currentOrderedList.length === 0 || !filtrosActivos;
+}
 
 let searchTimeout;
 function onSearchInput(){
@@ -1269,7 +1285,7 @@ function initMenus(){
   document.getElementById('btnSubcategorias').addEventListener("click", (e)=>{ e.stopPropagation(); abrirModalSubcategorias(); });
   document.addEventListener("click",e=>{ if(!e.target.closest(".filtro-group") && !e.target.closest("#ordenGroup") && !e.target.closest("#configGroup") && !e.target.closest(".csv-menu") && !e.target.closest(".temp-floating-menu")){ closeAllMenus(); closeTempMenus(); } });
 }
-initMenus(); // ← ¡CORRECCIÓN! Ahora se llama a la función
+initMenus();
 mainTitle.addEventListener("click",()=>{ panelVisible=!panelVisible; if(panelVisible){ filtrosPanel.classList.remove("oculto"); } else { filtrosPanel.classList.add("oculto"); } actualizarImagenEsquina(); });
 btnLimpiar.onclick=()=>{ if(btnLimpiar.disabled) return; filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]}; revFilterState=[]; saveRevFilterState(); currentPage=1; render(); persistState(); actualizarBotonLimpiar(); invalidateBaseCache(); };
 favFilterBtn.onclick=()=>{ if(!favFilterBtn.disabled){ onlyFavorites=!onlyFavorites; currentPage=1; render(); persistState(); invalidateBaseCache(); } };
