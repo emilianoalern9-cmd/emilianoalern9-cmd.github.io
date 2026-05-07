@@ -723,6 +723,18 @@ async function render(){
   updateFilterBadges();regenerarMenus();updateSearchSuggestions();adjustTitleFontSize();actualizarImagenEsquina();
 }
 
+// Función auxiliar para actualizar paginación y resultado sin regenerar la grilla
+function actualizarContadorYPaginacion() {
+  const total = currentOrderedList.length;
+  const tp = Math.max(1, Math.ceil(total / perPage));
+  if (currentPage > tp) currentPage = tp;
+  const start = (currentPage - 1) * perPage;
+  const paginated = currentOrderedList.slice(start, start + perPage);
+  const end = Math.min(start + perPage, total);
+  resultSpan.innerText = `${start + 1}-${end} / ${total}`;
+  actualizarPaginacionHeader(tp);
+}
+
 function actualizarModal(){
   if(!currentModalCreature)return;const e=currentModalCreature;modalTitle.innerText=e.nombre;adjustModalTitleFontSize();
   setImageWithFallback(modalImg,e.nombre,"",true);const linksHtml=e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:"";
@@ -772,6 +784,35 @@ function onSearchInput(){clearTimeout(searchTimeout);searchTimeout=setTimeout(()
 function updateSearchSuggestions(){const term=searchInput.value.trim();let cand=aplicarFiltrosCompletos(),sug=[];if(!term){sug=ordenarEspecies(cand).slice(0,6).map(e=>e.nombre)}else{const wd=cand.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term.toLowerCase(),e.nombre.toLowerCase()),exact:e.nombre.toLowerCase().includes(term.toLowerCase())}));wd.sort((a,b)=>a.exact!==b.exact?a.exact?-1:1:a.dist-b.dist);sug=wd.slice(0,6).map(s=>s.nombre)}searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('')}
 function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
 
+// ==================== GENERACIÓN DE MENÚS CON OPTIMIZACIÓN ====================
+function limpiarCategoriaORevisados(cat) {
+  const todasLasOpciones = (cat === 'revisado')
+    ? (revFilterState.length === 2) // ambos checkboxes marcados
+    : (filtrosState[cat].length === (cat==='morfologia'?opcionesMorfologia:cat==='tipo'?opcionesTipo:cat==='elemento'?opcionesElemento:opcionesAvistamiento).length);
+  
+  if (cat === 'revisado') {
+    revFilterState = [];
+    saveRevFilterState();
+  } else {
+    filtrosState[cat] = [];
+  }
+  currentPage = 1;
+  persistState();
+  invalidateBaseCache();
+
+  if (todasLasOpciones) {
+    // Si todas las opciones estaban marcadas, no cambia la lista, solo actualiza UI auxiliar
+    updateFilterBadges();
+    regenerarMenus();
+    updateSearchSuggestions();
+    actualizarContadorYPaginacion();
+    adjustTitleFontSize();
+    actualizarImagenEsquina();
+  } else {
+    render();
+  }
+}
+
 function generarMenuCategoria(cat,menuId,opciones){
   const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++});
   opciones.forEach(val=>{
@@ -784,7 +825,9 @@ function generarMenuCategoria(cat,menuId,opciones){
     label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts);
     const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);
   });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);bc.onclick=()=>{filtrosState[cat]=[];render();persistState();invalidateBaseCache()};menu.appendChild(bc);
+  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);
+  bc.onclick=()=>{ limpiarCategoriaORevisados(cat); };
+  menu.appendChild(bc);
 }
 function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfologia",opcionesMorfologia)}
 function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
@@ -804,7 +847,9 @@ function generarRevFilterMenu(){
     if(opcionesVisibles===1&&count>0)cb.disabled=true;
     cb.addEventListener("change",()=>{if(cb.disabled)return;cb.checked?(!revFilterState.includes(opt.id)&&revFilterState.push(opt.id)):revFilterState=revFilterState.filter(v=>v!==opt.id);saveRevFilterState();currentPage=1;render();invalidateBaseCache()});label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label);
   });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache()};revFilterMenu.appendChild(bc);
+  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);
+  bc.onclick=()=>{ limpiarCategoriaORevisados('revisado'); };
+  revFilterMenu.appendChild(bc);
 }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
 function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96];const idx=valores.indexOf(perPage);const sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempPerPage===perPage)};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
