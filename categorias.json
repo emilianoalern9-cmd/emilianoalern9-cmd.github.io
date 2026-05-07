@@ -1,0 +1,37 @@
+{
+  "morfologia": {
+    "options": ["Humano","Humanoide","Mamífero","Híbrido","Ave","Reptil","Pez","Insecto","Amorfo","Etéreo","Artificial","Otro"],
+    "icons": {
+      "Humano":"🧑", "Humanoide":"🧝", "Mamífero":"🦌", "Híbrido":"🦄", "Ave":"🕊️",
+      "Reptil":"🐍", "Pez":"🐟", "Insecto":"🐞", "Amorfo":"🌀", "Etéreo":"✨",
+      "Artificial":"🤖", "Otro":"❓"
+    },
+    "buttonIcon": "🔮",
+    "buttonTitle": "Morfología"
+  },
+  "tipo": {
+    "options": ["Mitológico","Criptido","Difuso"],
+    "icons": {
+      "Mitológico":"🏛️", "Criptido":"🐾", "Difuso":"🌫️"
+    },
+    "buttonIcon": "🌙",
+    "buttonTitle": "Tipo de ser"
+  },
+  "elemento": {
+    "options": ["Aéreo","Acuático","Terrestre","Subterráneo","Anfibio","Misceláneo"],
+    "icons": {
+      "Aéreo":"💨", "Acuático":"💧", "Terrestre":"🌿", "Subterráneo":"⛰️", "Anfibio":"🐸", "Misceláneo":"⚙️"
+    },
+    "buttonIcon": "💧",
+    "buttonTitle": "Elemento"
+  },
+  "avistamiento": {
+    "options": ["Grabado / Capturado","Documentado","Crónicas","Avistamiento","Ficción","Tradición oral","Difuso"],
+    "icons": {
+      "Grabado / Capturado":"📹", "Documentado":"📜", "Crónicas":"📖", "Avistamiento":"👁️",
+      "Ficción":"📚", "Tradición oral":"🗣️", "Difuso":"❓"
+    },
+    "buttonIcon": "👁️",
+    "buttonTitle": "Avistamiento"
+  }
+}
