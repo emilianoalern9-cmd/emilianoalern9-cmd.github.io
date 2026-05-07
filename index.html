@@ -838,12 +838,12 @@ function setImageWithFallback(imgElement, nombre, transformStyle="", isPrioritar
       imgElement.style.display="none";
       const parent=imgElement.parentNode;
       if(!parent.querySelector(".img-placeholder")){
-        const placeholder=document.createElement("div");
-        placeholder.className="mini-badge img-placeholder";
-        placeholder.style.cssText="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:rgba(0,0,0,0.6);";
-        placeholder.textContent="📜✨";
-        parent.appendChild(placeholder);
-      }
+  const placeholder = document.createElement("img");
+  placeholder.className = "img-placeholder";
+  placeholder.src = "img2/noimg2.png";
+  placeholder.style.cssText = "width:100%;height:100%;object-fit:cover;";
+  parent.appendChild(placeholder);
+}
       return;
     }
     const ext=extensions[currentExtIndex];
