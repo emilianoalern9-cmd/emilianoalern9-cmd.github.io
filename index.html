@@ -57,6 +57,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
   font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;
   white-space:nowrap;line-height:1;outline:none
 }
+/* 👇 Se agregó .config-btn:disabled para que también se vea semitransparente */
 .filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn:disabled,.config-btn button:disabled,.limpiar-categoria:disabled{
   opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none
 }
@@ -93,7 +94,13 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .help-menu hr{margin:4px 0;border-color:var(--border-color)}
 .config-submenu{position:absolute;top:0;left:100%;margin-left:5px;background:rgba(25,20,40,.9);backdrop-filter:blur(8px);border:1px solid var(--border-color);border-radius:20px;padding:6px;min-width:100px;display:none;flex-direction:column;gap:4px;z-index:210}
 .config-submenu.show,.filtro-menu.show,.orden-menu.show,.items-menu.show,.csv-menu.show,.config-menu.show,.rev-filter-menu.show,.help-menu.show{display:flex}
-.orden-menu button:disabled { background:none !important; color:var(--text-primary) !important; cursor:default !important; opacity:0.7; }
+/* 👇 Estilo para botón deshabilitado en menú de orden: sin hover, cursor default */
+.orden-menu button:disabled {
+  background:none !important;
+  color:var(--text-primary) !important;
+  cursor:default !important;
+  opacity:0.7;
+}
 .filtro-menu label,.rev-filter-menu label,.orden-menu button,.items-menu button,.csv-menu button,.config-menu button,.config-submenu button{
   background:none;border:none;text-align:left;padding:4px 8px;
   font-family:'Cinzel',serif;font-size:.7rem;color:#fff;
@@ -392,22 +399,7 @@ function isFavorito(id){return favoritos.has(id)}
 function actualizarEstadoFavoritosYBoton(){const h=favoritos.size>0;favFilterBtn.disabled=!h;if(!h&&onlyFavorites){onlyFavorites=false;render()}}
 function toggleFavorito(id,uiOnly=false){ favoritos.has(id)?favoritos.delete(id):favoritos.add(id); saveFavoritos(); if(!uiOnly){if(onlyFavorites)render();else{actualizarEstrellaEnTarjeta(id);if(currentModalCreature&&currentModalCreature.id===id&&modalFavBtn)modalFavBtn.textContent=favoritos.has(id)?"★":"☆"}} updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache(); }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
-// ✅ toggleRevisado optimizado: solo render si el filtro de revisados está activo
-function toggleRevisado(id,esAuto=false){
-  const estaba=revisados.has(id);
-  if(modoRevision==="bloqueo"){
-    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id); if(revFilterState.length>0) render(); else actualizarEstadoBotonRevisado(); return}}
-    if(!esAuto&&!estaba)return;
-    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id); if(revFilterState.length>0) render(); else actualizarEstadoBotonRevisado(); return;}
-  }
-  estaba?revisados.delete(id):revisados.add(id);
-  saveRevisados();actualizarIconoRevisadoTarjeta(id);
-  if(revFilterState.length>0) render();
-  else {
-    actualizarEstadoBotonRevisado();
-    updateFilterBadges(); // actualiza contadores de revisados y botones
-  }
-}
+function toggleRevisado(id,esAuto=false){ const estaba=revisados.has(id); if(modoRevision==="bloqueo"){ if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return}} if(!esAuto&&!estaba)return; if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return;} } estaba?revisados.delete(id):revisados.add(id); saveRevisados();actualizarIconoRevisadoTarjeta(id); render(); }
 function actualizarEstadoBotonRevisado(){ invalidateBaseCache(); const revCount=contarPorEstado("revisado"); const noRevCount=contarPorEstado("no_revisado"); const opcionesData=(revCount>0?1:0)+(noRevCount>0?1:0); btnRevFilter.disabled=(opcionesData<=1); }
 function marcarRevisadoPorLink(id){if(!revisados.has(id)){toggleRevisado(id,true);}}
 function actualizarIconoRevisadoTarjeta(id){const estado=revisados.has(id);const icono=estado?"◆":"◇";const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const ri=card.querySelector(".revisado-icon");if(ri){ri.innerHTML=icono;ri.classList.toggle("revisado",estado);ri.classList.toggle("no-revisado",!estado);ri.title=estado?"Revisado":"No revisado"}}if(currentModalCreature&&currentModalCreature.id===id&&modalRevisadoBtn){modalRevisadoBtn.innerHTML=icono;modalRevisadoBtn.classList.toggle("revisado",estado);modalRevisadoBtn.classList.toggle("no-revisado",!estado);modalRevisadoBtn.title=estado?"Revisado":"No revisado"}}
@@ -521,61 +513,14 @@ function onSearchInput(){clearTimeout(searchTimeout);searchTimeout=setTimeout(()
 function updateSearchSuggestions(){const term=searchInput.value.trim();let cand=aplicarFiltrosCompletos(),sug=[];if(!term){sug=ordenarEspecies(cand).slice(0,6).map(e=>e.nombre)}else{const wd=cand.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term.toLowerCase(),e.nombre.toLowerCase()),exact:e.nombre.toLowerCase().includes(term.toLowerCase())}));wd.sort((a,b)=>a.exact!==b.exact?a.exact?-1:1:a.dist-b.dist);sug=wd.slice(0,6).map(s=>s.nombre)}searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('')}
 function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
 
-// ✅ Menú categorías: "Limpiar esta categoría" evita render si ya estaban todos seleccionados
-function generarMenuCategoria(cat,menuId,opciones){
-  const menu=$(menuId);menu.innerHTML="";let totalVisibles=0, seleccionados=0;
-  opciones.forEach(val=>{
-    const count=contarConOpcion(cat,val);
-    if(count===0)return;
-    totalVisibles++;
-    const label=document.createElement("label");
-    const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val);
-    if(totalVisibles===1&&count>0)cb.disabled=true;
-    if(cb.checked) seleccionados++;
-    cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()});
-    label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts);
-    const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);
-  });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);
-  bc.onclick=()=>{
-    if(filtrosState[cat].length === 0) return; // ya vacío
-    // Si todos los visibles ya estaban seleccionados, no es necesario renderizar las tarjetas
-    if(seleccionados === totalVisibles) {
-      filtrosState[cat] = []; persistState(); invalidateBaseCache();
-      // Actualizamos los checkboxes visualmente y el botón
-      menu.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = false);
-      bc.disabled = true;
-      closeAllMenus();
-    } else {
-      filtrosState[cat] = []; currentPage = 1; render(); persistState(); invalidateBaseCache();
-    }
-  };
-  menu.appendChild(bc);
-}
+function generarMenuCategoria(cat,menuId,opciones){ const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++}); opciones.forEach(val=>{ const count=contarConOpcion(cat,val); if(count===0)return; const label=document.createElement("label"); const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()}); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label); }); const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);bc.onclick=()=>{filtrosState[cat]=[];render();persistState();invalidateBaseCache()};menu.appendChild(bc); }
 function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfologia",opcionesMorfologia)}
 function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
 function generarMenuElemento(){generarMenuCategoria("elemento","menu-elemento",opcionesElemento)}
 function generarMenuAvistamiento(){generarMenuCategoria("avistamiento","menu-avistamiento",opcionesAvistamiento)}
+// Menú de ordenamiento con la opción activa deshabilitada
 function generarMenuOrden(){ const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}]; ordenMenu.innerHTML=ops.map(o=>`<button${ordenActual===o.v?' disabled':''}>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join(''); [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(b.disabled)return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); } }); }
-function generarRevFilterMenu(){
-  revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++});
-  ops.forEach(opt=>{
-    const count=contarPorEstado(opt.id);
-    if(count===0)return;
-    const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id);
-    if(opcionesVisibles===1&&count>0)cb.disabled=true;
-    cb.addEventListener("change",()=>{ if(cb.disabled)return; let newRev = revFilterState.slice(); if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); } else { newRev = newRev.filter(v=>v!==opt.id); } if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = []; if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){ revFilterState = newRev; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); } });
-    label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);
-    const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label);
-  });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);
-  bc.onclick=()=>{
-    if(revFilterState.length===0) return;
-    // Si ya estaban todos los visibles seleccionados (no debería ocurrir porque entonces estaría vacío), igual limpiamos sin render
-    revFilterState=[]; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache();
-  };
-  revFilterMenu.appendChild(bc);
-}
+function generarRevFilterMenu(){ revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++}); ops.forEach(opt=>{ const count=contarPorEstado(opt.id); if(count===0)return; const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{ if(cb.disabled)return; let newRev = revFilterState.slice(); if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); } else { newRev = newRev.filter(v=>v!==opt.id); } if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = []; if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){ revFilterState = newRev; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); } }); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label); }); const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0); bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache();}; revFilterMenu.appendChild(bc); }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
 function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96];const idx=valores.indexOf(perPage);const sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempPerPage===perPage)};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
 function regenerarMenuConfigBtn(){generarMenuConfig()}
