@@ -617,7 +617,10 @@ async function render(){
     btnOrden.disabled=true;favFilterBtn.disabled=true;btnLimpiar.disabled=true;configBtn.disabled=true;
   }else{
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false});
-    btnOrden.disabled=(total===1);favFilterBtn.disabled=(favoritos.size===0);
+    btnOrden.disabled=(total===1);
+// Contar cuántos favoritos hay en los resultados actuales (sin el filtro de favoritos)
+const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
+favFilterBtn.disabled = (favoritos.size === 0) || (favoritosEnResultados === 0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
     /* 🔧 LÓGICA DE BOTONES: desactivar si 0 opciones con datos o exactamente 1 opción (menú inútil) */
     const opcionesConDatosCount = (categoria) => {
