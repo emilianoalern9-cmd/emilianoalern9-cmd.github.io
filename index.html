@@ -319,7 +319,8 @@ h2{
 .help-content img { display: block; margin: 10px auto; max-width: 200px; width: 100%; height: auto; }
 
 .csv-menu{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);min-width:340px;max-width:90vw;max-height:80vh;overflow-y:auto;z-index:1001;padding:15px;border-radius:24px;backdrop-filter:blur(8px);}
-.csv-menu .csv-header{text-align:center;margin-bottom:12px;font-family:'Cinzel',serif;color:var(--accent);border-bottom:1px solid var(--border-color);padding-bottom:6px;font-weight:600;}
+.csv-menu .csv-header{text-align:center;margin-bottom:12px;font-family:'Cinzel',serif;color:var(--accent);border-bottom:1px solid var(--border-color);padding-bottom:6px;font-weight:600; display:flex; justify-content:space-between; align-items:center;}
+.csv-menu .csv-header button{background:none; border:none; font-size:1.2rem; color:var(--accent); cursor:pointer;}
 .csv-menu .csv-checkbox-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;max-height:40vh;overflow-y:auto;margin-bottom:16px;padding-right:4px;}
 .csv-menu .csv-checkbox-group label{display:flex;align-items:center;gap:8px;font-size:.75rem;cursor:pointer;color:var(--text-primary);background:rgba(0,0,0,.2);padding:4px 8px;border-radius:20px;}
 .csv-menu .csv-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
@@ -699,7 +700,7 @@ function baseFilterPredicate(ignoreCat){
       if(!filtrosState.subcategorias.some(sel => subcats.includes(sel))) return false;
     }
     if(onlyFavorites && !favoritos.has(e.id)) return false;
-    // 🔍 CORREGIDO: solo buscar por nombre, no descripción
+    // 🔍 CORREGIDO: solo buscar por nombre
     if(searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   };
@@ -875,7 +876,7 @@ function closeAllMenus(){
 }
 const closeTempMenus=()=>{ document.querySelectorAll(".temp-floating-menu").forEach(m=>{ m.classList.remove("show"); setTimeout(()=>{ if(!m.classList.contains("show")) m.remove(); },300); }); if(csvMenu) csvMenu.classList.remove("show"); if(ubicacionModal) ubicacionModal.classList.remove("show"); if(epocaModal) epocaModal.classList.remove("show"); if(subcategoriasModal) subcategoriasModal.classList.remove("show"); removeMenuOverlay(); hideTooltip(); };
 
-// ========== MODAL DE UBICACIÓN ==========
+// ========== MODAL DE UBICACIÓN (UNIFICADO: solo ✕ en header) ==========
 function abrirModalUbicacion(){
   closeAllMenus(); closeTempMenus();
   if(ubicacionModal) ubicacionModal.remove();
@@ -896,8 +897,8 @@ function abrirModalUbicacion(){
   const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo';
   const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   const accept = document.createElement('button'); accept.textContent = '✓'; accept.title = 'Aceptar';
-  const cancel = document.createElement('button'); cancel.textContent = '✗'; cancel.title = 'Cancelar';
-  actionsDiv.append(sa, da, inv, accept, cancel);
+  // ❌ eliminado botón cancel (✗)
+  actionsDiv.append(sa, da, inv, accept);
   const actualizarEstadoBotones = ()=>{
     const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
     const checkedCount = Array.from(checks).filter(cb=>cb.checked).length;
@@ -910,12 +911,11 @@ function abrirModalUbicacion(){
     const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
     filtrosState.ubicacion = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus();
   };
-  cancel.onclick = ()=>{ closeTempMenus(); };
-  modal.querySelector('#ubicacionCancelBtn').onclick = cancel.onclick;
+  modal.querySelector('#ubicacionCancelBtn').onclick = ()=>{ closeTempMenus(); };
   actualizarEstadoBotones(); modal.addEventListener('click', e=>e.stopPropagation());
 }
 
-// ========== MODAL DE ÉPOCA ==========
+// ========== MODAL DE ÉPOCA (UNIFICADO) ==========
 function abrirModalEpoca(){
   closeAllMenus(); closeTempMenus();
   if(epocaModal) epocaModal.remove();
@@ -936,8 +936,8 @@ function abrirModalEpoca(){
   const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo';
   const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   const accept = document.createElement('button'); accept.textContent = '✓'; accept.title = 'Aceptar';
-  const cancel = document.createElement('button'); cancel.textContent = '✗'; cancel.title = 'Cancelar';
-  actionsDiv.append(sa, da, inv, accept, cancel);
+  // ❌ sin ✗
+  actionsDiv.append(sa, da, inv, accept);
   const actualizarEstadoBotones = ()=>{
     const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
     const checkedCount = Array.from(checks).filter(cb=>cb.checked).length;
@@ -950,12 +950,11 @@ function abrirModalEpoca(){
     const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
     filtrosState.epoca = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus();
   };
-  cancel.onclick = ()=>{ closeTempMenus(); };
-  modal.querySelector('#epocaCancelBtn').onclick = cancel.onclick;
+  modal.querySelector('#epocaCancelBtn').onclick = ()=>{ closeTempMenus(); };
   actualizarEstadoBotones(); modal.addEventListener('click', e=>e.stopPropagation());
 }
 
-// ========== MODAL DE SUBCATEGORÍAS ==========
+// ========== MODAL DE SUBCATEGORÍAS (UNIFICADO) ==========
 function abrirModalSubcategorias(){
   closeAllMenus(); closeTempMenus();
   if(subcategoriasModal) subcategoriasModal.remove();
@@ -978,8 +977,8 @@ function abrirModalSubcategorias(){
   const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo';
   const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   const accept = document.createElement('button'); accept.textContent = '✓'; accept.title = 'Aceptar';
-  const cancel = document.createElement('button'); cancel.textContent = '✗'; cancel.title = 'Cancelar';
-  actionsDiv.append(sa, da, inv, accept, cancel);
+  // ❌ sin ✗
+  actionsDiv.append(sa, da, inv, accept);
   const actualizarEstadoBotones = ()=>{
     const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
     const checkedCount = Array.from(checks).filter(cb=>cb.checked).length;
@@ -992,8 +991,7 @@ function abrirModalSubcategorias(){
     const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);
     filtrosState.subcategorias = selected; currentPage = 1; render(); persistState(); invalidateBaseCache(); closeTempMenus();
   };
-  cancel.onclick = ()=>{ closeTempMenus(); };
-  modal.querySelector('#subcategoriasCancelBtn').onclick = cancel.onclick;
+  modal.querySelector('#subcategoriasCancelBtn').onclick = ()=>{ closeTempMenus(); };
   actualizarEstadoBotones(); modal.addEventListener('click', e=>e.stopPropagation());
 }
 
@@ -1098,7 +1096,23 @@ async function render(){
   document.getElementById('btnOrden').disabled = !hayResultados || total === 1;
   document.getElementById('favFilterBtn').disabled = !hayResultados || favoritos.size === 0;
   document.getElementById('btnLimpiar').disabled = !hayResultados || (Object.values(filtrosState).every(a => a.length === 0) && revFilterState.length === 0);
-  // los botones de paginación también deben bloquearse si total==0 (ya se maneja con tp=1)
+  document.getElementById('configBtn').disabled = !hayResultados;
+  
+  // ✅ DESACTIVAR BOTONES DE CATEGORÍA SI TODAS LAS OPCIONES TIENEN COUNT=0
+  const categorias = [
+    {cat:'morfologia', btn:'btnMorfologia', opciones: opcionesMorfologia},
+    {cat:'tipo', btn:'btnTipo', opciones: opcionesTipo},
+    {cat:'elemento', btn:'btnElemento', opciones: opcionesElemento},
+    {cat:'avistamiento', btn:'btnAvistamiento', opciones: opcionesAvistamiento},
+    {cat:'ubicacion', btn:'btnUbicacion', opciones: [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].sort()},
+    {cat:'epoca', btn:'btnEpoca', opciones: [...new Set(especies.map(e=>e.epoca).filter(v=>v))].sort()},
+    {cat:'subcategorias', btn:'btnSubcategorias', opciones: (()=>{ const todas=new Set(); especies.forEach(e=>{ if(e.subcategorias) e.subcategorias.split(',').forEach(s=>{ let t=s.trim(); if(t) todas.add(t); }); }); return Array.from(todas).sort(); })()}
+  ];
+  categorias.forEach(({cat, btn, opciones}) => {
+    const algunaConDatos = opciones.some(op => contarConOpcion(cat, op) > 0);
+    document.getElementById(btn).disabled = !algunaConDatos;
+  });
+  // Si no hay resultados, se desactivan todos (ya están desactivados por lo anterior)
   
   const start=(currentPage-1)*perPage, paginated=ordenadas.slice(start,start+perPage), end=Math.min(start+perPage,total);
   resultSpan.innerText=`${start+1}-${end} / ${total}`;
@@ -1251,7 +1265,7 @@ function crearMenuCSV(){ if(csvMenu) csvMenu.remove(); csvMenu=document.createEl
 function actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn){ const marcados=cg.querySelectorAll("input[type='checkbox']:checked").length, total=cg.querySelectorAll("input[type='checkbox']").length; sa.disabled=(marcados===total); da.disabled=(marcados===0); acceptBtn.disabled=!selectedFields.length; }
 function actualizarMenuCSV(){
   if(!csvMenu) return; const camposVisibles = csvFields.filter(f=>f!=='nombre');
-  csvMenu.innerHTML=`<div class="csv-header"><span>📎 Seleccionar campos a exportar (nombre siempre incluido)</span></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
+  csvMenu.innerHTML=`<div class="csv-header"><span>📎 Seleccionar campos a exportar (nombre siempre incluido)</span><button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
   const cg=csvMenu.querySelector(".csv-checkbox-group");
   const acceptBtn=document.createElement("button"); acceptBtn.textContent="✓"; acceptBtn.title="Aceptar y exportar"; acceptBtn.className="accept"; acceptBtn.disabled=!selectedFields.length;
   acceptBtn.onclick=()=>{ exportarCSV(); closeTempMenus(); };
@@ -1259,8 +1273,10 @@ function actualizarMenuCSV(){
   const sa=document.createElement("button"); sa.textContent="📋"; sa.title="Seleccionar todo"; sa.onclick=()=>{ selectedFields=[...camposVisibles]; cg.querySelectorAll("input").forEach(c=>c.checked=true); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); };
   const da=document.createElement("button"); da.textContent="🗑️"; da.title="Deseleccionar todo"; da.onclick=()=>{ selectedFields=[]; cg.querySelectorAll("input").forEach(c=>c.checked=false); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); };
   const inv=document.createElement("button"); inv.textContent="🔄"; inv.title="Invertir selección"; inv.onclick=()=>{ selectedFields=[]; cg.querySelectorAll("input").forEach(c=>{ if(!c.checked) selectedFields.push(c.value); c.checked=!c.checked; }); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); };
-  const cancel=document.createElement("button"); cancel.textContent="✗"; cancel.title="Cancelar"; cancel.onclick=()=>closeTempMenus();
-  actionsDiv.append(sa,da,inv,acceptBtn,cancel); csvMenu.appendChild(actionsDiv); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);
+  // ❌ eliminado botón ✗
+  actionsDiv.append(sa,da,inv,acceptBtn); csvMenu.appendChild(actionsDiv);
+  csvMenu.querySelector('#csvCloseBtn').onclick = ()=>closeTempMenus();
+  actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);
   cg.addEventListener("change",()=>{ selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value); actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn); });
 }
 function exportarCSV(){
