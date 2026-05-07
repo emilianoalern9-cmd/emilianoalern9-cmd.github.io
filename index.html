@@ -486,76 +486,101 @@ function removeMenuOverlay(){if(menuOverlay){menuOverlay.remove();menuOverlay=nu
 function closeAllMenus(){document.querySelectorAll(".filtro-menu,.config-menu,.orden-menu,.csv-menu,.config-submenu,.rev-filter-menu,.help-menu").forEach(m=>m.classList.remove("show"));removeMenuOverlay();hideTooltip()}
 const closeTempMenus=()=>{document.querySelectorAll(".temp-floating-menu").forEach(m=>{m.classList.remove("show");setTimeout(()=>{if(!m.classList.contains("show"))m.remove()},300)});if(csvMenu)csvMenu.classList.remove("show");if(ubicacionModal)ubicacionModal.classList.remove("show");if(epocaModal)epocaModal.classList.remove("show");if(subcategoriasModal)subcategoriasModal.classList.remove("show");removeMenuOverlay();hideTooltip()};
 
-function abrirModalUbicacion(){
-  closeAllMenus();closeTempMenus();if(ubicacionModal)ubicacionModal.remove();createMenuOverlay(999,()=>{closeTempMenus()});
-  const modal=document.createElement('div');modal.className='temp-floating-menu';modal.id='ubicacionModal';
-  const valores=[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].sort();const counts=new Map();valores.forEach(v=>{counts.set(v,contarConOpcion('ubicacion',v))});
-  const opcionesConDatos=valores.filter(v=>counts.get(v)>0);
-  let html=`<div class="temp-header">📍 Ubicación <button id="ubicacionCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="ubicacionCheckboxGrid">`;
-  opcionesConDatos.forEach(val=>{const count=counts.get(val);const checked=filtrosState.ubicacion.includes(val);const soloUna=(opcionesConDatos.length===1);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
-  html+=`</div><div class="modal-actions" id="ubicacionActions"></div>`;
-  modal.innerHTML=html;document.body.appendChild(modal);modal.classList.add('show');ubicacionModal=modal;
-  const grid=modal.querySelector('#ubicacionCheckboxGrid'),actionsDiv=modal.querySelector('#ubicacionActions');
-  const sa=document.createElement('button');sa.textContent='📋';sa.title='Seleccionar todo';
-  const da=document.createElement('button');da.textContent='🗑️';da.title='Deseleccionar todo';
-  const inv=document.createElement('button');inv.textContent='🔄';inv.title='Invertir selección';
-  const accept=document.createElement('button');accept.textContent='✓';accept.title='Aceptar';
-  actionsDiv.append(sa,da,inv,accept);
-  const actualizarEstadoBotones=()=>{const checks=grid.querySelectorAll('input[type="checkbox"]:not([disabled])');const checkedCount=Array.from(checks).filter(cb=>cb.checked).length;sa.disabled=(checkedCount===checks.length);da.disabled=(checkedCount===0);accept.disabled=false};
-  sa.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=true);actualizarEstadoBotones()};
-  da.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=false);actualizarEstadoBotones()};
-  inv.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!cb.checked);actualizarEstadoBotones()};
-  accept.onclick=()=>{const selected=Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);filtrosState.ubicacion=selected;currentPage=1;render();persistState();invalidateBaseCache();closeTempMenus()};
-  modal.querySelector('#ubicacionCancelBtn').onclick=()=>{closeTempMenus()};
-  actualizarEstadoBotones();modal.addEventListener('click',e=>e.stopPropagation());
+// ==================== MODALES DE FILTRO (SIN BOTÓN ACEPTAR, CAMBIOS EN TIEMPO REAL) ====================
+function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
+  closeAllMenus();closeTempMenus();
+  if(modalVar) modalVar.remove();
+  createMenuOverlay(999, ()=>{closeTempMenus();});
+  const modal = document.createElement('div'); modal.className = 'temp-floating-menu'; modal.id = cat+'Modal';
+  const opcionesConDatos = valores.filter(v => counts.get(v) > 0);
+  let html = `<div class="temp-header">${titulo} <button id="${cat}CancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="${cat}CheckboxGrid">`;
+  opcionesConDatos.forEach(val => {
+    const count = counts.get(val);
+    const checked = filtrosState[cat].includes(val);
+    const soloUna = (opcionesConDatos.length === 1);
+    html += `<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`;
+  });
+  html += `</div><div class="modal-actions" id="${cat}Actions"></div>`;
+  modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show');
+  if (cat === 'ubicacion') ubicacionModal = modal; else if (cat === 'epoca') epocaModal = modal; else if (cat === 'subcategorias') subcategoriasModal = modal;
+  const grid = modal.querySelector(`#${cat}CheckboxGrid`), actionsDiv = modal.querySelector(`#${cat}Actions`);
+  const sa = document.createElement('button'); sa.textContent = '📋'; sa.title = 'Seleccionar todo';
+  const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo';
+  const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
+  actionsDiv.append(sa, da, inv);
+
+  const actualizarEstadoBotones = () => {
+    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
+    const checkedCount = Array.from(checks).filter(cb => cb.checked).length;
+    sa.disabled = (checkedCount === checks.length);
+    da.disabled = (checkedCount === 0);
+  };
+
+  // Aplicar filtro inmediatamente al marcar/desmarcar
+  grid.addEventListener('change', () => {
+    const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    filtrosState[cat] = selected;
+    currentPage = 1;
+    render();
+    persistState();
+    invalidateBaseCache();
+    actualizarEstadoBotones();
+  });
+
+  sa.onclick = () => {
+    grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = true);
+    const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:not([disabled])')).map(cb => cb.value);
+    filtrosState[cat] = selected;
+    currentPage = 1;
+    render();
+    persistState();
+    invalidateBaseCache();
+    actualizarEstadoBotones();
+  };
+
+  da.onclick = () => {
+    grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = false);
+    filtrosState[cat] = [];
+    currentPage = 1;
+    render();
+    persistState();
+    invalidateBaseCache();
+    actualizarEstadoBotones();
+  };
+
+  inv.onclick = () => {
+    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
+    const newSelected = [];
+    checks.forEach(cb => { cb.checked = !cb.checked; if (cb.checked) newSelected.push(cb.value); });
+    filtrosState[cat] = newSelected;
+    currentPage = 1;
+    render();
+    persistState();
+    invalidateBaseCache();
+    actualizarEstadoBotones();
+  };
+
+  modal.querySelector(`#${cat}CancelBtn`).onclick = () => { closeTempMenus(); };
+  actualizarEstadoBotones();
+  modal.addEventListener('click', e => e.stopPropagation());
 }
 
-function abrirModalEpoca(){
-  closeAllMenus();closeTempMenus();if(epocaModal)epocaModal.remove();createMenuOverlay(999,()=>{closeTempMenus()});
-  const modal=document.createElement('div');modal.className='temp-floating-menu';modal.id='epocaModal';
-  const valores=[...new Set(especies.map(e=>e.epoca).filter(v=>v))].sort();const counts=new Map();valores.forEach(v=>{counts.set(v,contarConOpcion('epoca',v))});
-  const opcionesConDatos=valores.filter(v=>counts.get(v)>0);
-  let html=`<div class="temp-header">📅 Época <button id="epocaCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="epocaCheckboxGrid">`;
-  opcionesConDatos.forEach(val=>{const count=counts.get(val);const checked=filtrosState.epoca.includes(val);const soloUna=(opcionesConDatos.length===1);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
-  html+=`</div><div class="modal-actions" id="epocaActions"></div>`;
-  modal.innerHTML=html;document.body.appendChild(modal);modal.classList.add('show');epocaModal=modal;
-  const grid=modal.querySelector('#epocaCheckboxGrid'),actionsDiv=modal.querySelector('#epocaActions');
-  const sa=document.createElement('button');sa.textContent='📋';sa.title='Seleccionar todo';
-  const da=document.createElement('button');da.textContent='🗑️';da.title='Deseleccionar todo';
-  const inv=document.createElement('button');inv.textContent='🔄';inv.title='Invertir selección';
-  const accept=document.createElement('button');accept.textContent='✓';accept.title='Aceptar';
-  actionsDiv.append(sa,da,inv,accept);
-  const actualizarEstadoBotones=()=>{const checks=grid.querySelectorAll('input[type="checkbox"]:not([disabled])');const checkedCount=Array.from(checks).filter(cb=>cb.checked).length;sa.disabled=(checkedCount===checks.length);da.disabled=(checkedCount===0);accept.disabled=false};
-  sa.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=true);actualizarEstadoBotones()};
-  da.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=false);actualizarEstadoBotones()};
-  inv.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!cb.checked);actualizarEstadoBotones()};
-  accept.onclick=()=>{const selected=Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);filtrosState.epoca=selected;currentPage=1;render();persistState();invalidateBaseCache();closeTempMenus()};
-  modal.querySelector('#epocaCancelBtn').onclick=()=>{closeTempMenus()};
-  actualizarEstadoBotones();modal.addEventListener('click',e=>e.stopPropagation());
+// Reemplazamos las viejas funciones por llamadas a la nueva
+function abrirModalUbicacion() {
+  const valores = [...new Set(especies.map(e => e.ubicacion).filter(v => v))].sort();
+  const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('ubicacion', v)));
+  crearModalFiltro('📍 Ubicación', 'ubicacion', valores, counts, filtrosState, ubicacionModal);
 }
-
-function abrirModalSubcategorias(){
-  closeAllMenus();closeTempMenus();if(subcategoriasModal)subcategoriasModal.remove();createMenuOverlay(999,()=>{closeTempMenus()});
-  const modal=document.createElement('div');modal.className='temp-floating-menu';modal.id='subcategoriasModal';
-  const todas=new Set();especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});const valores=Array.from(todas).sort();const counts=new Map();valores.forEach(v=>{counts.set(v,contarConOpcion('subcategorias',v))});
-  const opcionesConDatos=valores.filter(v=>counts.get(v)>0);
-  let html=`<div class="temp-header">🏷️ Subcategorías <button id="subcategoriasCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="subcategoriasCheckboxGrid">`;
-  opcionesConDatos.forEach(val=>{const count=counts.get(val);const checked=filtrosState.subcategorias.includes(val);const soloUna=(opcionesConDatos.length===1);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
-  html+=`</div><div class="modal-actions" id="subcategoriasActions"></div>`;
-  modal.innerHTML=html;document.body.appendChild(modal);modal.classList.add('show');subcategoriasModal=modal;
-  const grid=modal.querySelector('#subcategoriasCheckboxGrid'),actionsDiv=modal.querySelector('#subcategoriasActions');
-  const sa=document.createElement('button');sa.textContent='📋';sa.title='Seleccionar todo';
-  const da=document.createElement('button');da.textContent='🗑️';da.title='Deseleccionar todo';
-  const inv=document.createElement('button');inv.textContent='🔄';inv.title='Invertir selección';
-  const accept=document.createElement('button');accept.textContent='✓';accept.title='Aceptar';
-  actionsDiv.append(sa,da,inv,accept);
-  const actualizarEstadoBotones=()=>{const checks=grid.querySelectorAll('input[type="checkbox"]:not([disabled])');const checkedCount=Array.from(checks).filter(cb=>cb.checked).length;sa.disabled=(checkedCount===checks.length);da.disabled=(checkedCount===0);accept.disabled=false};
-  sa.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=true);actualizarEstadoBotones()};
-  da.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=false);actualizarEstadoBotones()};
-  inv.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!cb.checked);actualizarEstadoBotones()};
-  accept.onclick=()=>{const selected=Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb=>cb.value);filtrosState.subcategorias=selected;currentPage=1;render();persistState();invalidateBaseCache();closeTempMenus()};
-  modal.querySelector('#subcategoriasCancelBtn').onclick=()=>{closeTempMenus()};
-  actualizarEstadoBotones();modal.addEventListener('click',e=>e.stopPropagation());
+function abrirModalEpoca() {
+  const valores = [...new Set(especies.map(e => e.epoca).filter(v => v))].sort();
+  const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('epoca', v)));
+  crearModalFiltro('📅 Época', 'epoca', valores, counts, filtrosState, epocaModal);
+}
+function abrirModalSubcategorias() {
+  const todas = new Set(); especies.forEach(e => { if(e.subcategorias) e.subcategorias.split(',').forEach(s => { let t = s.trim(); if(t) todas.add(t); }); });
+  const valores = Array.from(todas).sort();
+  const counts = new Map(); valores.forEach(v => counts.set(v, contarConOpcion('subcategorias', v)));
+  crearModalFiltro('🏷️ Subcategorías', 'subcategorias', valores, counts, filtrosState, subcategoriasModal);
 }
 
 function actualizarImagenEsquina(){
@@ -640,7 +665,7 @@ async function render(){
 
   if (necesitaReRender) {
     persistState();
-    render();         // volvemos a ejecutar render con los filtros ya corregidos
+    render();
     return;
   }
 
