@@ -439,17 +439,26 @@ function toggleFavorito(id,uiOnly=false){
   updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();
 }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
+// ✅ toggleRevisado ahora actualiza el botón RevFilter al instante
 function toggleRevisado(id,esAuto=false){
   const estaba=revisados.has(id);
   if(modoRevision==="bloqueo"){
-    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();invalidateBaseCache()}return}
+    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();invalidateBaseCache();actualizarEstadoBotonRevisado()}return}
     if(!esAuto&&!estaba)return;
-    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();invalidateBaseCache()}return;
+    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();invalidateBaseCache();actualizarEstadoBotonRevisado()}return;
   }
   estaba?revisados.delete(id):revisados.add(id);
   saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();
+  actualizarEstadoBotonRevisado();
 }
-function marcarRevisadoPorLink(id){if(!revisados.has(id)){toggleRevisado(id,true);regenerarMenus();updateFilterBadges();invalidateBaseCache()}}
+function actualizarEstadoBotonRevisado(){
+  invalidateBaseCache(); // asegurar conteo fresco
+  const revCount=contarPorEstado("revisado");
+  const noRevCount=contarPorEstado("no_revisado");
+  const opcionesData=(revCount>0?1:0)+(noRevCount>0?1:0);
+  btnRevFilter.disabled=(opcionesData<=1);
+}
+function marcarRevisadoPorLink(id){if(!revisados.has(id)){toggleRevisado(id,true);regenerarMenus();updateFilterBadges();invalidateBaseCache();actualizarEstadoBotonRevisado()}}
 function actualizarIconoRevisadoTarjeta(id){const estado=revisados.has(id);const icono=estado?"◆":"◇";const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const ri=card.querySelector(".revisado-icon");if(ri){ri.innerHTML=icono;ri.classList.toggle("revisado",estado);ri.classList.toggle("no-revisado",!estado);ri.title=estado?"Revisado":"No revisado"}}if(currentModalCreature&&currentModalCreature.id===id&&modalRevisadoBtn){modalRevisadoBtn.innerHTML=icono;modalRevisadoBtn.classList.toggle("revisado",estado);modalRevisadoBtn.classList.toggle("no-revisado",!estado);modalRevisadoBtn.title=estado?"Revisado":"No revisado"}}
 function updateRevFilterBadge(){const b=btnRevFilter;b.title=revFilterState.length===0?"Filtrar por revisado":revFilterState.length===1?`Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}`:"Filtrar: revisado y no revisado";actualizarFiltroActivo(b,revFilterState.length>0)}
 
@@ -577,7 +586,7 @@ function crearCardGrid(e,idx,totalPagina){
   const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";
   fb.onclick=ev=>{ev.stopPropagation();toggleFavorito(e.id,false)};const ri=document.createElement("span");ri.className="revisado-icon";const est=revisados.has(e.id);
   ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no-revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";
-  ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault()};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;
+  ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault();toggleRevisado(e.id)};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;
 }
 
 function actualizarPaginacionHeader(tp){
@@ -620,7 +629,6 @@ async function render(){
         const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
         return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length;
       }
-      // categorías principales con arreglo de opciones
       const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
       return opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
     };
