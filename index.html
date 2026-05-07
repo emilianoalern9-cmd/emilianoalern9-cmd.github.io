@@ -480,9 +480,8 @@ function abrirModalUbicacion(){
   closeAllMenus();closeTempMenus();if(ubicacionModal)ubicacionModal.remove();createMenuOverlay(999,()=>{closeTempMenus()});
   const modal=document.createElement('div');modal.className='temp-floating-menu';modal.id='ubicacionModal';
   const valores=[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].sort();const counts=new Map();valores.forEach(v=>{counts.set(v,contarConOpcion('ubicacion',v))});
-  const opcionesConDatos=valores.filter(v=>counts.get(v)>0);
   let html=`<div class="temp-header">📍 Ubicación <button id="ubicacionCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="ubicacionCheckboxGrid">`;
-  opcionesConDatos.forEach(val=>{const count=counts.get(val);const checked=filtrosState.ubicacion.includes(val);const soloUna=(opcionesConDatos.length===1);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
+  valores.forEach(val=>{const count=counts.get(val);const checked=filtrosState.ubicacion.includes(val);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
   html+=`</div><div class="modal-actions" id="ubicacionActions"></div>`;
   modal.innerHTML=html;document.body.appendChild(modal);modal.classList.add('show');ubicacionModal=modal;
   const grid=modal.querySelector('#ubicacionCheckboxGrid'),actionsDiv=modal.querySelector('#ubicacionActions');
@@ -504,9 +503,8 @@ function abrirModalEpoca(){
   closeAllMenus();closeTempMenus();if(epocaModal)epocaModal.remove();createMenuOverlay(999,()=>{closeTempMenus()});
   const modal=document.createElement('div');modal.className='temp-floating-menu';modal.id='epocaModal';
   const valores=[...new Set(especies.map(e=>e.epoca).filter(v=>v))].sort();const counts=new Map();valores.forEach(v=>{counts.set(v,contarConOpcion('epoca',v))});
-  const opcionesConDatos=valores.filter(v=>counts.get(v)>0);
   let html=`<div class="temp-header">📅 Época <button id="epocaCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="epocaCheckboxGrid">`;
-  opcionesConDatos.forEach(val=>{const count=counts.get(val);const checked=filtrosState.epoca.includes(val);const soloUna=(opcionesConDatos.length===1);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
+  valores.forEach(val=>{const count=counts.get(val);const checked=filtrosState.epoca.includes(val);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
   html+=`</div><div class="modal-actions" id="epocaActions"></div>`;
   modal.innerHTML=html;document.body.appendChild(modal);modal.classList.add('show');epocaModal=modal;
   const grid=modal.querySelector('#epocaCheckboxGrid'),actionsDiv=modal.querySelector('#epocaActions');
@@ -528,9 +526,8 @@ function abrirModalSubcategorias(){
   closeAllMenus();closeTempMenus();if(subcategoriasModal)subcategoriasModal.remove();createMenuOverlay(999,()=>{closeTempMenus()});
   const modal=document.createElement('div');modal.className='temp-floating-menu';modal.id='subcategoriasModal';
   const todas=new Set();especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});const valores=Array.from(todas).sort();const counts=new Map();valores.forEach(v=>{counts.set(v,contarConOpcion('subcategorias',v))});
-  const opcionesConDatos=valores.filter(v=>counts.get(v)>0);
   let html=`<div class="temp-header">🏷️ Subcategorías <button id="subcategoriasCancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="subcategoriasCheckboxGrid">`;
-  opcionesConDatos.forEach(val=>{const count=counts.get(val);const checked=filtrosState.subcategorias.includes(val);const soloUna=(opcionesConDatos.length===1);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
+  valores.forEach(val=>{const count=counts.get(val);const checked=filtrosState.subcategorias.includes(val);html+=`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${count===0?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`});
   html+=`</div><div class="modal-actions" id="subcategoriasActions"></div>`;
   modal.innerHTML=html;document.body.appendChild(modal);modal.classList.add('show');subcategoriasModal=modal;
   const grid=modal.querySelector('#subcategoriasCheckboxGrid'),actionsDiv=modal.querySelector('#subcategoriasActions');
@@ -609,30 +606,6 @@ async function render(){
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false});
     btnOrden.disabled=(total===1);favFilterBtn.disabled=(favoritos.size===0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
-    /* 🔧 Bloquear botón de categoría si solo hay una opción con datos (menú inútil) */
-    const soloUnaOpcion=(categoria,opciones)=>{
-      if(categoria==='ubicacion') return[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length===1;
-      if(categoria==='epoca') return[...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length===1;
-      if(categoria==='subcategorias'){
-        const todas=new Set();especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
-        return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length===1;
-      }
-      if(categoria==='revisado') return (contarPorEstado("revisado")>0&&contarPorEstado("no_revisado")===0)||(contarPorEstado("no_revisado")>0&&contarPorEstado("revisado")===0);
-      return opciones.filter(op=>contarConOpcion(categoria,op)>0).length===1;
-    };
-    const cats=[
-      {id:'btnMorfologia',cat:'morfologia',opciones:opcionesMorfologia},
-      {id:'btnTipo',cat:'tipo',opciones:opcionesTipo},
-      {id:'btnElemento',cat:'elemento',opciones:opcionesElemento},
-      {id:'btnAvistamiento',cat:'avistamiento',opciones:opcionesAvistamiento},
-      {id:'btnUbicacion',cat:'ubicacion',opciones:null},
-      {id:'btnEpoca',cat:'epoca',opciones:null},
-      {id:'btnSubcategorias',cat:'subcategorias',opciones:null},
-      {id:'btnRevFilter',cat:'revisado',opciones:null}
-    ];
-    cats.forEach(({id,cat,opciones})=>{
-      const btn=document.getElementById(id);if(btn&&soloUnaOpcion(cat,opciones))btn.disabled=true;
-    });
   }
   const start=(currentPage-1)*perPage,paginated=ordenadas.slice(start,start+perPage),end=Math.min(start+perPage,total);
   resultSpan.innerText=`${start+1}-${end} / ${total}`;gridDiv.className='grid';gridDiv.innerHTML="";
@@ -697,14 +670,10 @@ function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!se
 function generarMenuCategoria(cat,menuId,opciones){
   const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++});
   opciones.forEach(val=>{
-    const count=contarConOpcion(cat,val);
-    if(count===0)return;
-    const label=document.createElement("label");
-    const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val);
-    if(opcionesVisibles===1&&count>0)cb.disabled=true;
+    const count=contarConOpcion(cat,val);const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val);
+    if(count===0&&!cb.checked)cb.disabled=true;if(opcionesVisibles===1&&count>0)cb.disabled=true;
     cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()});
-    label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts);
-    const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);
+    label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);
   });
   const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);bc.onclick=()=>{filtrosState[cat]=[];render();persistState();invalidateBaseCache()};menu.appendChild(bc);
 }
@@ -719,13 +688,8 @@ function generarMenuOrden(){
 }
 function generarRevFilterMenu(){
   revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++});
-  ops.forEach(opt=>{
-    const count=contarPorEstado(opt.id);
-    if(count===0)return;
-    const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id);
-    if(opcionesVisibles===1&&count>0)cb.disabled=true;
-    cb.addEventListener("change",()=>{if(cb.disabled)return;cb.checked?(!revFilterState.includes(opt.id)&&revFilterState.push(opt.id)):revFilterState=revFilterState.filter(v=>v!==opt.id);saveRevFilterState();currentPage=1;render();invalidateBaseCache()});label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label);
-  });
+  ops.forEach(opt=>{const count=contarPorEstado(opt.id);const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id);if(count===0&&!cb.checked)cb.disabled=true;if(opcionesVisibles===1&&count>0)cb.disabled=true;
+    cb.addEventListener("change",()=>{if(cb.disabled)return;cb.checked?(!revFilterState.includes(opt.id)&&revFilterState.push(opt.id)):revFilterState=revFilterState.filter(v=>v!==opt.id);saveRevFilterState();currentPage=1;render();invalidateBaseCache()});label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label)});
   const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache()};revFilterMenu.appendChild(bc);
 }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
