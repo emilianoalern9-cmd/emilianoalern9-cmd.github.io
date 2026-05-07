@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img2/anuncio1.gif">
 <style>
+/* ========== TEMA OSCURO (INCLUYE CORRECCIÓN CSV Y DESACTIVACIÓN) ========== */
 :root {
   --bg-color: #0f0c18;
   --header-bg: rgba(10, 8, 18, 0.95);
@@ -166,6 +167,7 @@ h2{
   border-color:var(--accent-hover);
   box-shadow:0 0 4px var(--accent);
 }
+/* ========== MENÚS FLOTANTES ========== */
 .filtro-menu,.orden-menu,.items-menu,.csv-menu,.config-menu,.rev-filter-menu,.help-menu{
   position:absolute;
   top:110%;
@@ -220,7 +222,11 @@ h2{
   text-align:center;
 }
 .limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none;}
+
+/* ========== OVERLAY BLOQUEADOR ========== */
 .menu-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent;z-index:199;}
+
+/* ========== MENÚS FLOTANTES TEMPORALES (MODALES) ========== */
 .temp-floating-menu{
   position:fixed;
   top:50%;
@@ -296,6 +302,8 @@ h2{
 .temp-floating-menu .temp-actions button:hover:not(:disabled){background:var(--accent-hover);color:#1a1625;transform:scale(.96);}
 .temp-floating-menu .temp-actions button:active:not(:disabled){transform:scale(.92);}
 .temp-floating-menu .temp-actions button:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;}
+
+/* Grid para checkboxes dentro de modales */
 .modal-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 50vh; overflow-y: auto; padding: 4px 8px; margin-bottom: 16px; }
 .modal-checkbox-grid label { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; cursor: pointer; color: var(--text-primary); background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 20px; }
 .modal-checkbox-grid label.disabled { opacity: 0.5; cursor: not-allowed; }
@@ -304,14 +312,23 @@ h2{
 .modal-actions button:hover:not(:disabled) { background: var(--accent-hover); color: #1a1625; transform: scale(0.96); }
 .modal-actions button:active:not(:disabled) { transform: scale(0.92); }
 .modal-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .help-content { color: var(--text-primary); font-size: 0.7rem; line-height: 1.4; overflow-y: auto; max-height: 60vh; }
 .help-content p { margin-bottom: 6px; }
 .help-content hr { border-color: var(--border-color); margin: 8px 0; }
 .help-content img { display: block; margin: 10px auto; max-width: 200px; width: 100%; height: auto; }
+
+/* 🔧 CSV MENU: ahora el título y la X están en una sola línea siempre */
 .csv-menu{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);min-width:340px;max-width:90vw;max-height:80vh;overflow-y:auto;z-index:1001;padding:15px;border-radius:24px;backdrop-filter:blur(8px);}
-.csv-menu .csv-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-family:'Cinzel',serif; color:var(--accent); border-bottom:1px solid var(--border-color); padding-bottom:6px; font-weight:600;}
-.csv-menu .csv-header span{flex-grow:1; text-align:left;}
-.csv-menu .csv-header button{background:none; border:none; font-size:1.2rem; color:var(--accent); cursor:pointer; margin-left:8px;}
+.csv-menu .csv-header{
+  display:flex; justify-content:space-between; align-items:center; 
+  margin-bottom:12px; font-family:'Cinzel',serif; color:var(--accent); 
+  border-bottom:1px solid var(--border-color); padding-bottom:6px; font-weight:600;
+  white-space: nowrap; /* 🔧 Evita que se rompa la línea */
+}
+.csv-menu .csv-header span{flex-grow:1; text-align:left; overflow:hidden; text-overflow:ellipsis; margin-right:8px;}
+.csv-menu .csv-header button{background:none; border:none; font-size:1.2rem; color:var(--accent); cursor:pointer; flex-shrink:0;}
+
 .csv-menu .csv-checkbox-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;max-height:40vh;overflow-y:auto;margin-bottom:16px;padding-right:4px;}
 .csv-menu .csv-checkbox-group label{display:flex;align-items:center;gap:8px;font-size:.75rem;cursor:pointer;color:var(--text-primary);background:rgba(0,0,0,.2);padding:4px 8px;border-radius:20px;}
 .csv-menu .csv-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
@@ -319,6 +336,7 @@ h2{
 .csv-menu .csv-actions button:hover:not(:disabled){background:var(--accent-hover);color:#1a1625;transform:scale(.96);}
 .csv-menu .csv-actions button:active:not(:disabled){transform:scale(.92);}
 .csv-menu .csv-actions button:disabled{opacity:.5;cursor:not-allowed;}
+
 .search-wrapper{display:inline-flex;align-items:center;gap:4px;background:rgba(25,20,40,.85);border-radius:40px;padding:2px 8px;}
 .search-wrapper input{background:transparent;border:none;padding:4px 0;font-family:'Inter',sans-serif;font-size:.7rem;color:var(--text-primary);outline:none;width:140px;}
 .result-count{background:rgba(0,0,0,.4);padding:2px 8px;border-radius:40px;font-size:.7rem;color:var(--accent);display:inline-flex;align-items:center;gap:4px;}
@@ -645,6 +663,7 @@ function baseFilterPredicate(ignoreCat){
       if(!filtrosState.subcategorias.some(sel => subcats.includes(sel))) return false;
     }
     if(onlyFavorites && !favoritos.has(e.id)) return false;
+    /* 🔧 Búsqueda solo por nombre */
     if(searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   };
@@ -694,6 +713,7 @@ function buildPredicate(extraCheck=null){
       if(!filtrosState.subcategorias.some(sel => subcats.includes(sel))) return false;
     }
     if(onlyFavorites && !favoritos.has(e.id)) return false;
+    /* 🔧 Búsqueda solo por nombre */
     if(searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     if(revFilterState.length){ const r=revisados.has(e.id); if(!(revFilterState.includes("revisado")&&revFilterState.includes("no_revisado")) && ((revFilterState.includes("revisado")&&!r) || (revFilterState.includes("no_revisado")&&r))) return false;}
     return extraCheck?extraCheck(e):true;
@@ -803,6 +823,7 @@ function closeAllMenus(){
 }
 const closeTempMenus=()=>{ document.querySelectorAll(".temp-floating-menu").forEach(m=>{ m.classList.remove("show"); setTimeout(()=>{ if(!m.classList.contains("show")) m.remove(); },300); }); if(csvMenu) csvMenu.classList.remove("show"); if(ubicacionModal) ubicacionModal.classList.remove("show"); if(epocaModal) epocaModal.classList.remove("show"); if(subcategoriasModal) subcategoriasModal.classList.remove("show"); removeMenuOverlay(); hideTooltip(); };
 
+// ========== MODALES DE FILTRO (SIN BOTÓN ✗, CIERRE CON ✕ EN TÍTULO) ==========
 function abrirModalUbicacion(){
   closeAllMenus(); closeTempMenus(); if(ubicacionModal) ubicacionModal.remove();
   createMenuOverlay(999, ()=>{ closeTempMenus(); });
@@ -970,6 +991,7 @@ async function render(){
     document.querySelectorAll('.filtro-boton').forEach(btn => { btn.disabled = true; });
     btnOrden.disabled = true; favFilterBtn.disabled = true; btnLimpiar.disabled = true; configBtn.disabled = true;
   } else {
+    // Primero reactivar todos, luego desactivar aquellos sin opciones
     document.querySelectorAll('.filtro-boton').forEach(btn => { btn.disabled = false; });
     btnOrden.disabled = (total === 1);
     favFilterBtn.disabled = (favoritos.size === 0);
@@ -1016,6 +1038,7 @@ async function render(){
   updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); adjustTitleFontSize(); actualizarImagenEsquina();
 }
 
+/* ========== RESTO DEL CÓDIGO (MODAL DETALLE, MENÚS, CSV, EVENTOS) ========== */
 function actualizarModal(){
   if(!currentModalCreature) return; const e=currentModalCreature;
   modalTitle.innerText=e.nombre; adjustModalTitleFontSize();
@@ -1193,13 +1216,7 @@ async function cargarArchivosDesdeCarpeta() {
   let todosLosDatos = []; let indice = 1; let hayError = false;
   while (!hayError) {
     const url = `dtsk/Datos${indice}.json`;
-    try {
-      const respuesta = await fetch(url, { cache: 'no-store' });
-      if (!respuesta.ok) { hayError = true; break; }
-      const datos = await respuesta.json();
-      if (Array.isArray(datos)) { todosLosDatos.push(...datos); } else { todosLosDatos.push(datos); }
-      indice++;
-    } catch (error) { hayError = true; break; }
+    try { const respuesta = await fetch(url, { cache: 'no-store' }); if (!respuesta.ok) { hayError = true; break; } const datos = await respuesta.json(); if (Array.isArray(datos)) { todosLosDatos.push(...datos); } else { todosLosDatos.push(datos); } indice++; } catch (error) { hayError = true; break; }
   }
   return todosLosDatos;
 }
@@ -1207,18 +1224,8 @@ async function cargarArchivosDesdeCarpeta() {
 async function cargarDatos(){
   try {
     let datosCombinados = await cargarArchivosDesdeCarpeta();
-    if (datosCombinados.length === 0) {
-      console.warn("No se encontraron archivos DatosX.json en la carpeta dtsk/");
-      const res = await fetch('datos.json', { cache: 'no-store' });
-      if (res.ok) { const respaldo = await res.json(); datosCombinados = Array.isArray(respaldo) ? respaldo : [respaldo]; }
-    }
-    especies = datosCombinados.map((criatura, idx) => {
-      if (criatura.posX === undefined) { criatura.posX = criatura.posx !== undefined ? criatura.posx : 0; }
-      if (criatura.posY === undefined) { criatura.posY = criatura.posy !== undefined ? criatura.posy : 0; }
-      if (criatura.zoom === undefined) criatura.zoom = 1;
-      if (!criatura.id) { criatura.id = `criatura_${idx}_${Date.now()}_${Math.random()}`; }
-      return criatura;
-    });
+    if (datosCombinados.length === 0) { console.warn("No se encontraron archivos DatosX.json en la carpeta dtsk/"); const res = await fetch('datos.json', { cache: 'no-store' }); if (res.ok) { const respaldo = await res.json(); datosCombinados = Array.isArray(respaldo) ? respaldo : [respaldo]; } }
+    especies = datosCombinados.map((criatura, idx) => { if (criatura.posX === undefined) { criatura.posX = criatura.posx !== undefined ? criatura.posx : 0; } if (criatura.posY === undefined) { criatura.posY = criatura.posy !== undefined ? criatura.posy : 0; } if (criatura.zoom === undefined) criatura.zoom = 1; if (!criatura.id) { criatura.id = `criatura_${idx}_${Date.now()}_${Math.random()}`; } return criatura; });
     dataLoaded = true;
     buildIndexes();
     loadFavoritos(); loadRevisados(); loadModoRevision(); loadPersistedState();
