@@ -440,7 +440,6 @@ function toggleFavorito(id,uiOnly=false){
   updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();
 }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
-// ✅ toggleRevisado ahora actualiza el botón RevFilter al instante
 function toggleRevisado(id,esAuto=false){
   const estaba=revisados.has(id);
   if(modoRevision==="bloqueo"){
@@ -453,7 +452,7 @@ function toggleRevisado(id,esAuto=false){
   actualizarEstadoBotonRevisado();
 }
 function actualizarEstadoBotonRevisado(){
-  invalidateBaseCache(); // asegurar conteo fresco
+  invalidateBaseCache();
   const revCount=contarPorEstado("revisado");
   const noRevCount=contarPorEstado("no_revisado");
   const opcionesData=(revCount>0?1:0)+(noRevCount>0?1:0);
@@ -618,11 +617,9 @@ async function render(){
   }else{
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false});
     btnOrden.disabled=(total===1);
-// Contar cuántos favoritos hay en los resultados actuales (sin el filtro de favoritos)
-const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
-favFilterBtn.disabled = (favoritos.size === 0) || (favoritosEnResultados === 0);
+    const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
+    favFilterBtn.disabled = (favoritos.size === 0) || (favoritosEnResultados === 0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
-    /* 🔧 LÓGICA DE BOTONES: desactivar si 0 opciones con datos o exactamente 1 opción (menú inútil) */
     const opcionesConDatosCount = (categoria) => {
       if (categoria === 'revisado') {
         let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c;
@@ -750,7 +747,7 @@ function generarRevFilterMenu(){
 }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
 function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96];const idx=valores.indexOf(perPage);const sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempPerPage===perPage)};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
-function abrirMenuModoRevision(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempModoRevision=modoRevision;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="revModeMenu";menu.className="temp-floating-menu";const modos=[{id:"automatico",label:"Automático"},{id:"bloqueo",label:"Bloqueo"}];let opcionesHtml=modos.map(m=>`<button class="rev-option${tempModoRevision===m.id?' active':''}" data-mode="${m.id}">${m.label}</button>`).join('');menu.innerHTML=`<div class="temp-header">📌 Modo revisión<button id="revCancelBtn" title="Cancelar">✕</button></div><div class="rev-options">${opcionesHtml}</div><div class="temp-actions"><button id="revAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const acceptBtn=menu.querySelector("#revAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempModoRevision===modoRevision)};menu.querySelectorAll(".rev-option").forEach(btn=>{btn.addEventListener("click",()=>{tempModoRevision=btn.dataset.mode;menu.querySelectorAll(".rev-option").forEach(b=>b.classList.remove("active"));btn.classList.add("active");actualizarEstadoAceptar()})});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;modoRevision=tempModoRevision;saveModoRevision();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#revCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
+// Se elimina abrirMenuModoRevision
 function regenerarMenuConfigBtn(){generarMenuConfig()}
 function generarMenuConfig(){
   configMenu.innerHTML="";const addBtn=(html,click)=>{const b=document.createElement("button");b.innerHTML=html;b.onclick=click;configMenu.appendChild(b);return b};
@@ -758,7 +755,13 @@ function generarMenuConfig(){
   addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{e.stopPropagation();closeAllMenus();abrirMenuItemsPerPage()});
   addBtn("📎 Exportar CSV",(e)=>{e.stopPropagation();closeAllMenus();crearMenuCSV();csvMenu.classList.add("show")});
   const modoTexto=modoRevision==="automatico"?"Automático":"Bloqueo";
-  addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{e.stopPropagation();closeAllMenus();abrirMenuModoRevision()});
+  addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{
+    e.stopPropagation();
+    modoRevision = (modoRevision === "automatico") ? "bloqueo" : "automatico";
+    saveModoRevision();
+    regenerarMenuConfigBtn(); // refrescar el texto del botón
+    closeAllMenus();
+  });
   addBtn("📖 Ayuda",(e)=>{e.stopPropagation();closeAllMenus();abrirMenuAyuda()});
 }
 function crearMenuCSV(){
