@@ -518,12 +518,13 @@ function generarMenuCategoria(cat,menuId,opciones){
     const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);
   });
   const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);
-  // ✅ CAMBIO AQUÍ: omitir render si todas las opciones visibles ya estaban seleccionadas
-  bc.onclick=()=>{
+  bc.onclick=(e)=>{
+    e.stopPropagation();
     const todasMarcadas = opciones.filter(op => contarConOpcion(cat, op) > 0).every(op => filtrosState[cat].includes(op));
     filtrosState[cat]=[];
     persistState();
     invalidateBaseCache();
+    closeAllMenus();
     if (!todasMarcadas) render();
   };
   menu.appendChild(bc);
@@ -532,7 +533,6 @@ function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfolo
 function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
 function generarMenuElemento(){generarMenuCategoria("elemento","menu-elemento",opcionesElemento)}
 function generarMenuAvistamiento(){generarMenuCategoria("avistamiento","menu-avistamiento",opcionesAvistamiento)}
-// Menú de ordenamiento con la opción activa deshabilitada
 function generarMenuOrden(){ const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}]; ordenMenu.innerHTML=ops.map(o=>`<button${ordenActual===o.v?' disabled':''}>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join(''); [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(b.disabled)return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); } }); }
 function generarRevFilterMenu(){
   revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++});
@@ -546,12 +546,13 @@ function generarRevFilterMenu(){
     const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label);
   });
   const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);
-  // ✅ CAMBIO AQUÍ: omitir render si ya estaba vacío (sin cambios visuales)
-  bc.onclick=()=>{
+  bc.onclick=(e)=>{
+    e.stopPropagation();
     const sinCambioVisual = (revFilterState.length === 0);
     revFilterState=[];
     saveRevFilterState();
     invalidateBaseCache();
+    closeAllMenus();
     if (!sinCambioVisual) { currentPage=1; render(); }
   };
   revFilterMenu.appendChild(bc);
