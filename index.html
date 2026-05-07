@@ -57,6 +57,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
   font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;
   white-space:nowrap;line-height:1;outline:none
 }
+/* 👇 Se agregó .config-btn:disabled para que también se vea semitransparente */
 .filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn:disabled,.config-btn button:disabled,.limpiar-categoria:disabled{
   opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none
 }
@@ -93,6 +94,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .help-menu hr{margin:4px 0;border-color:var(--border-color)}
 .config-submenu{position:absolute;top:0;left:100%;margin-left:5px;background:rgba(25,20,40,.9);backdrop-filter:blur(8px);border:1px solid var(--border-color);border-radius:20px;padding:6px;min-width:100px;display:none;flex-direction:column;gap:4px;z-index:210}
 .config-submenu.show,.filtro-menu.show,.orden-menu.show,.items-menu.show,.csv-menu.show,.config-menu.show,.rev-filter-menu.show,.help-menu.show{display:flex}
+/* 👇 Estilo para botón deshabilitado en menú de orden: sin hover, cursor default */
 .orden-menu button:disabled {
   background:none !important;
   color:var(--text-primary) !important;
@@ -397,111 +399,11 @@ function isFavorito(id){return favoritos.has(id)}
 function actualizarEstadoFavoritosYBoton(){const h=favoritos.size>0;favFilterBtn.disabled=!h;if(!h&&onlyFavorites){onlyFavorites=false;render()}}
 function toggleFavorito(id,uiOnly=false){ favoritos.has(id)?favoritos.delete(id):favoritos.add(id); saveFavoritos(); if(!uiOnly){if(onlyFavorites)render();else{actualizarEstrellaEnTarjeta(id);if(currentModalCreature&&currentModalCreature.id===id&&modalFavBtn)modalFavBtn.textContent=favoritos.has(id)?"★":"☆"}} updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache(); }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
-
-/* ----- OPTIMIZACIÓN: toggleRevisado con render condicional ----- */
-function toggleRevisado(id, esAuto = false) {
-  const estaba = revisados.has(id);
-  if (modoRevision === "bloqueo") {
-    if (!esAuto && estaba) {
-      if (confirm("¿Estás seguro de marcar como NO revisado?")) {
-        revisados.delete(id);
-        saveRevisados();
-        actualizarIconoRevisadoTarjeta(id);
-        if (currentModalCreature && currentModalCreature.id === id && modalRevisadoBtn) {
-          modalRevisadoBtn.innerHTML = "◇";
-          modalRevisadoBtn.classList.remove("revisado");
-          modalRevisadoBtn.classList.add("no-revisado");
-          modalRevisadoBtn.title = "No revisado";
-        }
-        if (revFilterState.length > 0) render();
-        else {
-          regenerarRevFilterMenu();
-          actualizarEstadoBotonesFiltro();
-          updateRevFilterBadge();
-          invalidateBaseCache();
-        }
-      }
-      return;
-    }
-    if (!esAuto && !estaba) return;
-    if (!estaba) {
-      revisados.add(id);
-      saveRevisados();
-      actualizarIconoRevisadoTarjeta(id);
-      if (currentModalCreature && currentModalCreature.id === id && modalRevisadoBtn) {
-        modalRevisadoBtn.innerHTML = "◆";
-        modalRevisadoBtn.classList.add("revisado");
-        modalRevisadoBtn.classList.remove("no-revisado");
-        modalRevisadoBtn.title = "Revisado";
-      }
-      if (revFilterState.length > 0) render();
-      else {
-        regenerarRevFilterMenu();
-        actualizarEstadoBotonesFiltro();
-        updateRevFilterBadge();
-        invalidateBaseCache();
-      }
-      return;
-    }
-  }
-  // Modo automático o acción permitida
-  if (estaba) revisados.delete(id);
-  else revisados.add(id);
-  saveRevisados();
-  actualizarIconoRevisadoTarjeta(id);
-  if (currentModalCreature && currentModalCreature.id === id && modalRevisadoBtn) {
-    const nuevoEstado = revisados.has(id);
-    modalRevisadoBtn.innerHTML = nuevoEstado ? "◆" : "◇";
-    modalRevisadoBtn.classList.toggle("revisado", nuevoEstado);
-    modalRevisadoBtn.classList.toggle("no-revisado", !nuevoEstado);
-    modalRevisadoBtn.title = nuevoEstado ? "Revisado" : "No revisado";
-  }
-  if (revFilterState.length > 0) render();
-  else {
-    regenerarRevFilterMenu();
-    actualizarEstadoBotonesFiltro();
-    updateRevFilterBadge();
-    invalidateBaseCache();
-  }
-}
-
-function actualizarIconoRevisadoTarjeta(id){
-  const estado = revisados.has(id);
-  const icono = estado ? "◆" : "◇";
-  const card = document.querySelector(`.card[data-id="${id}"]`);
-  if (card) {
-    const ri = card.querySelector(".revisado-icon");
-    if (ri) {
-      ri.innerHTML = icono;
-      ri.classList.toggle("revisado", estado);
-      ri.classList.toggle("no-revisado", !estado);
-      ri.title = estado ? "Revisado" : "No revisado";
-    }
-  }
-  if (currentModalCreature && currentModalCreature.id === id && modalRevisadoBtn) {
-    modalRevisadoBtn.innerHTML = icono;
-    modalRevisadoBtn.classList.toggle("revisado", estado);
-    modalRevisadoBtn.classList.toggle("no-revisado", !estado);
-    modalRevisadoBtn.title = estado ? "Revisado" : "No revisado";
-  }
-}
-function updateRevFilterBadge(){
-  const b = btnRevFilter;
-  b.title = revFilterState.length === 0 ? "Filtrar por revisado" : revFilterState.length === 1 ? `Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}` : "Filtrar: revisado y no revisado";
-  actualizarFiltroActivo(b, revFilterState.length > 0);
-}
-function actualizarEstadoBotonesFiltro() {
-  const opcionesConDatosCount = (categoria) => {
-    if (categoria === 'revisado') { let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c; }
-    if (categoria === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;
-    if (categoria === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;
-    if (categoria === 'subcategorias') { const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})}); return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length; }
-    const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
-    return opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
-  };
-  const categorias = [ {id:'btnMorfologia', cat:'morfologia'},{id:'btnTipo', cat:'tipo'},{id:'btnElemento', cat:'elemento'},{id:'btnAvistamiento', cat:'avistamiento'},{id:'btnUbicacion', cat:'ubicacion'},{id:'btnEpoca', cat:'epoca'},{id:'btnSubcategorias', cat:'subcategorias'},{id:'btnRevFilter', cat:'revisado'} ];
-  categorias.forEach(({id, cat}) => { const btn = document.getElementById(id); if (btn) { const n = opcionesConDatosCount(cat); btn.disabled = (n === 0 || n === 1); } });
-}
+function toggleRevisado(id,esAuto=false){ const estaba=revisados.has(id); if(modoRevision==="bloqueo"){ if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return}} if(!esAuto&&!estaba)return; if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return;} } estaba?revisados.delete(id):revisados.add(id); saveRevisados();actualizarIconoRevisadoTarjeta(id); render(); }
+function actualizarEstadoBotonRevisado(){ invalidateBaseCache(); const revCount=contarPorEstado("revisado"); const noRevCount=contarPorEstado("no_revisado"); const opcionesData=(revCount>0?1:0)+(noRevCount>0?1:0); btnRevFilter.disabled=(opcionesData<=1); }
+function marcarRevisadoPorLink(id){if(!revisados.has(id)){toggleRevisado(id,true);}}
+function actualizarIconoRevisadoTarjeta(id){const estado=revisados.has(id);const icono=estado?"◆":"◇";const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const ri=card.querySelector(".revisado-icon");if(ri){ri.innerHTML=icono;ri.classList.toggle("revisado",estado);ri.classList.toggle("no-revisado",!estado);ri.title=estado?"Revisado":"No revisado"}}if(currentModalCreature&&currentModalCreature.id===id&&modalRevisadoBtn){modalRevisadoBtn.innerHTML=icono;modalRevisadoBtn.classList.toggle("revisado",estado);modalRevisadoBtn.classList.toggle("no-revisado",!estado);modalRevisadoBtn.title=estado?"Revisado":"No revisado"}}
+function updateRevFilterBadge(){const b=btnRevFilter;b.title=revFilterState.length===0?"Filtrar por revisado":revFilterState.length===1?`Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}`:"Filtrar: revisado y no revisado";actualizarFiltroActivo(b,revFilterState.length>0)}
 
 function setImageWithFallback(imgElement,nombre,transformStyle="",isPrioritario=false){ const extensions=['jpg','jpeg','png'];let currentExtIndex=0; if(isPrioritario){imgElement.fetchPriority="high";imgElement.loading="eager"}else{imgElement.loading="lazy"} const tryNext=()=>{ if(currentExtIndex>=extensions.length){imgElement.style.display="none";const parent=imgElement.parentNode;if(!parent.querySelector(".img-placeholder")){const placeholder=document.createElement("img");placeholder.className="img-placeholder";placeholder.src="img2/noimg2.png";placeholder.style.cssText="width:100%;height:100%;object-fit:cover;";parent.appendChild(placeholder)}return} const ext=extensions[currentExtIndex];const url=`img/${encodeURIComponent(nombre)}.${ext}`; imgElement.src=url;imgElement.style.display="block"; if(transformStyle)imgElement.style.transform=transformStyle; imgElement.onerror=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();currentExtIndex++;tryNext()}; imgElement.onload=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();imgElement.style.display="block"}; }; tryNext(); }
 function crearImg(e,isPrioritario=false){ const img=document.createElement("img");const transformStyle=`translate(${e.posX||0}px, ${e.posY||0}px) scale(${e.zoom||1})`; setImageWithFallback(img,e.nombre,transformStyle,isPrioritario);return img; }
@@ -580,9 +482,12 @@ async function render(){
   const tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp; const hayResultados=total>0;
   if(!hayResultados){ document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=true}); btnOrden.disabled=true;favFilterBtn.disabled=true;btnLimpiar.disabled=true;configBtn.disabled=true; }
   else{
-    actualizarEstadoBotonesFiltro();
+    document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false}); btnOrden.disabled=(total===1);
     favFilterBtn.disabled = (favoritos.size === 0) || (favoritosEnResultados === 0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
+    const opcionesConDatosCount = (categoria) => { if (categoria === 'revisado') { let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c; } if (categoria === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length; if (categoria === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length; if (categoria === 'subcategorias') { const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})}); return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length; } const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria]; return opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0; };
+    const categorias = [ {id:'btnMorfologia', cat:'morfologia'},{id:'btnTipo', cat:'tipo'},{id:'btnElemento', cat:'elemento'},{id:'btnAvistamiento', cat:'avistamiento'},{id:'btnUbicacion', cat:'ubicacion'},{id:'btnEpoca', cat:'epoca'},{id:'btnSubcategorias', cat:'subcategorias'},{id:'btnRevFilter', cat:'revisado'} ];
+    categorias.forEach(({id, cat}) => { const btn = document.getElementById(id); if (btn) { const n = opcionesConDatosCount(cat); btn.disabled = (n === 0 || n === 1); } });
   }
   const start=(currentPage-1)*perPage,paginated=ordenadas.slice(start,start+perPage),end=Math.min(start+perPage,total);
   resultSpan.innerText=`${start+1}-${end} / ${total}`;gridDiv.className='grid';gridDiv.innerHTML="";
@@ -613,6 +518,7 @@ function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfolo
 function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
 function generarMenuElemento(){generarMenuCategoria("elemento","menu-elemento",opcionesElemento)}
 function generarMenuAvistamiento(){generarMenuCategoria("avistamiento","menu-avistamiento",opcionesAvistamiento)}
+// Menú de ordenamiento con la opción activa deshabilitada
 function generarMenuOrden(){ const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}]; ordenMenu.innerHTML=ops.map(o=>`<button${ordenActual===o.v?' disabled':''}>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join(''); [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(b.disabled)return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); } }); }
 function generarRevFilterMenu(){ revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++}); ops.forEach(opt=>{ const count=contarPorEstado(opt.id); if(count===0)return; const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{ if(cb.disabled)return; let newRev = revFilterState.slice(); if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); } else { newRev = newRev.filter(v=>v!==opt.id); } if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = []; if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){ revFilterState = newRev; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); } }); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label); }); const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0); bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache();}; revFilterMenu.appendChild(bc); }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
@@ -648,4 +554,4 @@ async function inicializarApp(){await cargarConfiguracionCategorias();await carg
 inicializarApp();
 </script>
 </body>
-</html>
+</html> 
