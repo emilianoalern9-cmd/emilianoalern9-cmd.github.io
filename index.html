@@ -589,7 +589,7 @@ h2{
   border-radius:20px;
   cursor:pointer;
   border:1px solid var(--border-color);
-  /* transition: transform .2s ease, border-color .2s ease, background .2s ease; */ /* ← DESACTIVADO PARA PRUEBA */
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
   display:flex;
   flex-direction:column;
   position:relative;
@@ -930,9 +930,53 @@ function loadLocal(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 function persistState(){saveLocal('catalogo_filtros',filtrosState);saveLocal('catalogo_orden',ordenActual);saveLocal('catalogo_perpage',perPage);saveLocal('catalogo_onlyFav',onlyFavorites);saveRevFilterState()}
 function actualizarFiltroActivo(btn,activo){btn.classList.toggle('active-filter',activo);}
 
-// ========== TOOLTIP GLOBAL (DESACTIVADO PARA PRUEBA) ==========
-function showTooltip(){}
-function hideTooltip(){}
+// ========== TOOLTIP GLOBAL (SEGURO, SIN RECTÁNGULOS NEGROS) ==========
+let tooltipElement = null;
+let tooltipTimeout = null;
+
+function crearTooltipElement() {
+  if (tooltipElement) return;
+  tooltipElement = document.createElement("div");
+  tooltipElement.className = "temp-tooltip";
+  tooltipElement.style.opacity = "0";
+  document.body.appendChild(tooltipElement);
+}
+
+function showTooltip(text, x, y, duration = 1500) {
+  crearTooltipElement();
+  if (tooltipTimeout) clearTimeout(tooltipTimeout);
+
+  tooltipElement.textContent = text;
+  tooltipElement.style.left = x + "px";
+  tooltipElement.style.top = y + "px";
+  tooltipElement.style.opacity = "1";
+
+  // Ajustar para que nunca se salga de la pantalla
+  const rect = tooltipElement.getBoundingClientRect();
+  let finalX = x, finalY = y;
+  if (finalX + rect.width > window.innerWidth - 10) finalX = window.innerWidth - rect.width - 10;
+  if (finalY + rect.height > window.innerHeight - 10) finalY = window.innerHeight - rect.height - 10;
+  if (finalX < 10) finalX = 10;
+  if (finalY < 10) finalY = 10;
+  tooltipElement.style.left = finalX + "px";
+  tooltipElement.style.top = finalY + "px";
+
+  tooltipTimeout = setTimeout(() => hideTooltip(), duration);
+}
+
+function hideTooltip() {
+  if (!tooltipElement) return;
+  tooltipElement.style.opacity = "0";
+  if (tooltipTimeout) {
+    clearTimeout(tooltipTimeout);
+    tooltipTimeout = null;
+  }
+}
+
+// Ocultar tooltip al hacer clic en cualquier parte (por si queda algún remanente)
+document.addEventListener("click", (e) => {
+  if (tooltipElement && e.target !== tooltipElement) hideTooltip();
+});
 
 // ========== ÍNDICES INVERTIDOS ==========
 let idxMorfologia, idxTipo, idxElemento, idxAvistamiento, idxUbicacion, idxEpoca, idxSubcategorias;
@@ -1375,11 +1419,27 @@ headerCornerImg.addEventListener('click',(e)=>{ e.stopPropagation(); abrirVentan
 
 // ========== UTILIDADES ==========
 function levenshteinDistance(a,b){ if(!a.length)return b.length; if(!b.length)return a.length; const m=[]; for(let i=0;i<=b.length;i++) m[i]=[i]; for(let j=0;j<=a.length;j++) m[0][j]=j; for(let i=1;i<=b.length;i++) for(let j=1;j<=a.length;j++) m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[j-1]===b[i-1]?0:1)); return m[b.length][a.length]; }
-function showTemporaryTooltip(el,text, duration=1500){ /* desactivado */ }
-function setupBadgeHover(badge, text){ /* desactivado */ }
+function showTemporaryTooltip(el,text, duration=1500){
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const x = rect.left + rect.width/2;
+  const y = rect.top - 10;
+  showTooltip(text, x, y, duration);
+}
+function setupBadgeHover(badge, text){
+  badge.addEventListener("mouseenter", () => {
+    const rect = badge.getBoundingClientRect();
+    const x = rect.left + rect.width/2;
+    const y = rect.top - 10;
+    showTooltip(text, x, y, 2000);
+  });
+  badge.addEventListener("mouseleave", () => {
+    hideTooltip();
+  });
+}
 function crearBadge(ico,tit,cls){
   const d=document.createElement("div"); d.className=`mini-badge ${cls}`; d.textContent=ico;
-  // setupBadgeHover(d, tit);  ← desactivado
+  setupBadgeHover(d, tit);
   d.addEventListener("click",e=>{ e.stopPropagation(); });
   return d;
 }
@@ -1471,9 +1531,9 @@ function copiarLinkAlPortapapeles(){
   const url = new URL(window.location.href);
   url.hash = `id=${encodeURIComponent(currentModalCreature.id)}`;
   navigator.clipboard.writeText(url.href).then(()=>{
-    // showTemporaryTooltip(modalCopyLinkBtn, "Enlace copiado");  ← desactivado
+    showTemporaryTooltip(modalCopyLinkBtn, "Enlace copiado");
   }).catch(()=>{
-    // showTemporaryTooltip(modalCopyLinkBtn, "No se pudo copiar"); ← desactivado
+    showTemporaryTooltip(modalCopyLinkBtn, "No se pudo copiar");
   });
 }
 modalCopyLinkBtn.onclick = copiarLinkAlPortapapeles;
@@ -1490,12 +1550,10 @@ function abrirDetalle(e){
 function actualizarFlechasModal(){ if(!currentOrderedList.length||navegacionBloqueada) return; modalPrevArrow.classList.toggle("disabled",currentModalIndex===0); modalNextArrow.classList.toggle("disabled",currentModalIndex===currentOrderedList.length-1); }
 function navegarModal(d){ if(navegacionBloqueada||!currentOrderedList.length) return; let ni=currentModalIndex+d; if(ni<0) ni=0; if(ni>=currentOrderedList.length) ni=currentOrderedList.length-1; if(ni!==currentModalIndex){ currentModalIndex=ni; currentModalCreature=currentOrderedList[ni]; actualizarModal(); actualizarFlechasModal(); } }
 async function closeModal(){
-  // CORRECCIÓN: Restaurar la navegación normal antes de evaluar
   const eraAleatorio = navegacionBloqueada;
   navegacionBloqueada = false;
 
   if (!eraAleatorio && currentModalCreature) {
-    // Solo reubicar si no viene de una ficha aleatoria
     const idx = currentOrderedList.findIndex(c => c.id === currentModalCreature.id);
     if (idx !== -1) {
       const newPage = Math.floor(idx / perPage) + 1;
@@ -1588,7 +1646,7 @@ function generarMenuConfig(){
   addBtn("🎲 Azar",()=>{
     const f=aplicarFiltrosCompletos();
     if(f.length){
-      navegacionBloqueada = true;   // Bloquea flechas y swipe para la ficha aleatoria
+      navegacionBloqueada = true;
       abrirDetalle(f[Math.floor(Math.random()*f.length)]);
     }
     closeAllMenus();
