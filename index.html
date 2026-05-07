@@ -609,29 +609,37 @@ async function render(){
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false});
     btnOrden.disabled=(total===1);favFilterBtn.disabled=(favoritos.size===0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
-    /* 🔧 Bloquear botón de categoría si solo hay una opción con datos (menú inútil) */
-    const soloUnaOpcion=(categoria,opciones)=>{
-      if(categoria==='ubicacion') return[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length===1;
-      if(categoria==='epoca') return[...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length===1;
-      if(categoria==='subcategorias'){
-        const todas=new Set();especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
-        return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length===1;
+    /* 🔧 LÓGICA DE BOTONES: desactivar si 0 opciones con datos o exactamente 1 opción (menú inútil) */
+    const opcionesConDatosCount = (categoria) => {
+      if (categoria === 'revisado') {
+        let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c;
       }
-      if(categoria==='revisado') return (contarPorEstado("revisado")>0&&contarPorEstado("no_revisado")===0)||(contarPorEstado("no_revisado")>0&&contarPorEstado("revisado")===0);
-      return opciones.filter(op=>contarConOpcion(categoria,op)>0).length===1;
+      if (categoria === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;
+      if (categoria === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;
+      if (categoria === 'subcategorias') {
+        const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
+        return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length;
+      }
+      // categorías principales con arreglo de opciones
+      const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
+      return opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
     };
-    const cats=[
-      {id:'btnMorfologia',cat:'morfologia',opciones:opcionesMorfologia},
-      {id:'btnTipo',cat:'tipo',opciones:opcionesTipo},
-      {id:'btnElemento',cat:'elemento',opciones:opcionesElemento},
-      {id:'btnAvistamiento',cat:'avistamiento',opciones:opcionesAvistamiento},
-      {id:'btnUbicacion',cat:'ubicacion',opciones:null},
-      {id:'btnEpoca',cat:'epoca',opciones:null},
-      {id:'btnSubcategorias',cat:'subcategorias',opciones:null},
-      {id:'btnRevFilter',cat:'revisado',opciones:null}
+    const categorias = [
+      {id:'btnMorfologia', cat:'morfologia'},
+      {id:'btnTipo', cat:'tipo'},
+      {id:'btnElemento', cat:'elemento'},
+      {id:'btnAvistamiento', cat:'avistamiento'},
+      {id:'btnUbicacion', cat:'ubicacion'},
+      {id:'btnEpoca', cat:'epoca'},
+      {id:'btnSubcategorias', cat:'subcategorias'},
+      {id:'btnRevFilter', cat:'revisado'}
     ];
-    cats.forEach(({id,cat,opciones})=>{
-      const btn=document.getElementById(id);if(btn&&soloUnaOpcion(cat,opciones))btn.disabled=true;
+    categorias.forEach(({id, cat}) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        const n = opcionesConDatosCount(cat);
+        btn.disabled = (n === 0 || n === 1);
+      }
     });
   }
   const start=(currentPage-1)*perPage,paginated=ordenadas.slice(start,start+perPage),end=Math.min(start+perPage,total);
