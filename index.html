@@ -440,16 +440,17 @@ function toggleFavorito(id,uiOnly=false){
   updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();
 }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
+// ✅ toggleRevisado ahora actualiza el grid inmediatamente y fuerza la auto‑limpieza de filtros
 function toggleRevisado(id,esAuto=false){
   const estaba=revisados.has(id);
   if(modoRevision==="bloqueo"){
-    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();invalidateBaseCache();actualizarEstadoBotonRevisado()}return}
+    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return}}
     if(!esAuto&&!estaba)return;
-    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();invalidateBaseCache();actualizarEstadoBotonRevisado()}return;
+    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return;}
   }
   estaba?revisados.delete(id):revisados.add(id);
-  saveRevisados();actualizarIconoRevisadoTarjeta(id);regenerarMenus();updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();
-  actualizarEstadoBotonRevisado();
+  saveRevisados();actualizarIconoRevisadoTarjeta(id);
+  render();  // <-- ¡Aquí se regenera la parrilla y se activa la limpieza automática!
 }
 function actualizarEstadoBotonRevisado(){
   invalidateBaseCache();
@@ -458,7 +459,7 @@ function actualizarEstadoBotonRevisado(){
   const opcionesData=(revCount>0?1:0)+(noRevCount>0?1:0);
   btnRevFilter.disabled=(opcionesData<=1);
 }
-function marcarRevisadoPorLink(id){if(!revisados.has(id)){toggleRevisado(id,true);regenerarMenus();updateFilterBadges();invalidateBaseCache();actualizarEstadoBotonRevisado()}}
+function marcarRevisadoPorLink(id){if(!revisados.has(id)){toggleRevisado(id,true);}}
 function actualizarIconoRevisadoTarjeta(id){const estado=revisados.has(id);const icono=estado?"◆":"◇";const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const ri=card.querySelector(".revisado-icon");if(ri){ri.innerHTML=icono;ri.classList.toggle("revisado",estado);ri.classList.toggle("no-revisado",!estado);ri.title=estado?"Revisado":"No revisado"}}if(currentModalCreature&&currentModalCreature.id===id&&modalRevisadoBtn){modalRevisadoBtn.innerHTML=icono;modalRevisadoBtn.classList.toggle("revisado",estado);modalRevisadoBtn.classList.toggle("no-revisado",!estado);modalRevisadoBtn.title=estado?"Revisado":"No revisado"}}
 function updateRevFilterBadge(){const b=btnRevFilter;b.title=revFilterState.length===0?"Filtrar por revisado":revFilterState.length===1?`Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}`:"Filtrar: revisado y no revisado";actualizarFiltroActivo(b,revFilterState.length>0)}
 
@@ -606,10 +607,45 @@ function actualizarPaginacionHeader(tp){
   paginationControlsDiv.append(bf,bp,pi,s,bn,bl);
 }
 
+// ========== RENDER PRINCIPAL ==========
 async function render(){
   if(!dataLoaded)return;gridDiv.classList.add("fade-out");await new Promise(r=>setTimeout(r,30));
   invalidateBaseCache();const filtradas=aplicarFiltrosCompletos(),ordenadas=ordenarEspecies(filtradas);currentOrderedList=ordenadas;
-  const total=ordenadas.length,tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp;
+  let total=ordenadas.length;
+  const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
+
+  // AUTO‑CORRECCIÓN DE FILTROS CUANDO SE QUEDAN SIN ELEMENTOS
+  let necesitaReRender = false;
+
+  if (onlyFavorites && favoritosEnResultados === 0) {
+    onlyFavorites = false;
+    necesitaReRender = true;
+  }
+
+  if (!necesitaReRender && revFilterState.includes("revisado") && !revFilterState.includes("no_revisado")) {
+    if (contarPorEstado("revisado") === 0) {
+      revFilterState = revFilterState.filter(v => v !== "revisado");
+      saveRevFilterState();
+      necesitaReRender = true;
+    }
+  }
+
+  if (!necesitaReRender && revFilterState.includes("no_revisado") && !revFilterState.includes("revisado")) {
+    if (contarPorEstado("no_revisado") === 0) {
+      revFilterState = revFilterState.filter(v => v !== "no_revisado");
+      saveRevFilterState();
+      necesitaReRender = true;
+    }
+  }
+
+  if (necesitaReRender) {
+    persistState();
+    render();         // volvemos a ejecutar render con los filtros ya corregidos
+    return;
+  }
+
+  // Ahora sí, pintamos la parrilla
+  const tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp;
   const hayResultados=total>0;
   if(!hayResultados){
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=true});
@@ -617,9 +653,9 @@ async function render(){
   }else{
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=false});
     btnOrden.disabled=(total===1);
-    const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
     favFilterBtn.disabled = (favoritos.size === 0) || (favoritosEnResultados === 0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
+
     const opcionesConDatosCount = (categoria) => {
       if (categoria === 'revisado') {
         let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c;
@@ -747,7 +783,6 @@ function generarRevFilterMenu(){
 }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
 function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96];const idx=valores.indexOf(perPage);const sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempPerPage===perPage)};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
-// Se elimina abrirMenuModoRevision
 function regenerarMenuConfigBtn(){generarMenuConfig()}
 function generarMenuConfig(){
   configMenu.innerHTML="";const addBtn=(html,click)=>{const b=document.createElement("button");b.innerHTML=html;b.onclick=click;configMenu.appendChild(b);return b};
@@ -759,7 +794,7 @@ function generarMenuConfig(){
     e.stopPropagation();
     modoRevision = (modoRevision === "automatico") ? "bloqueo" : "automatico";
     saveModoRevision();
-    regenerarMenuConfigBtn(); // refrescar el texto del botón
+    regenerarMenuConfigBtn();
     closeAllMenus();
   });
   addBtn("📖 Ayuda",(e)=>{e.stopPropagation();closeAllMenus();abrirMenuAyuda()});
