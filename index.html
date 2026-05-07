@@ -1265,7 +1265,7 @@ function crearMenuCSV(){ if(csvMenu) csvMenu.remove(); csvMenu=document.createEl
 function actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn){ const marcados=cg.querySelectorAll("input[type='checkbox']:checked").length, total=cg.querySelectorAll("input[type='checkbox']").length; sa.disabled=(marcados===total); da.disabled=(marcados===0); acceptBtn.disabled=!selectedFields.length; }
 function actualizarMenuCSV(){
   if(!csvMenu) return; const camposVisibles = csvFields.filter(f=>f!=='nombre');
-  csvMenu.innerHTML=`<div class="csv-header"><span>📎 Seleccionar campos a exportar (nombre siempre incluido)</span><button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
+  csvMenu.innerHTML=`<div class="csv-header"><span>📎 Seleccionar campos a exportar</span><button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
   const cg=csvMenu.querySelector(".csv-checkbox-group");
   const acceptBtn=document.createElement("button"); acceptBtn.textContent="✓"; acceptBtn.title="Aceptar y exportar"; acceptBtn.className="accept"; acceptBtn.disabled=!selectedFields.length;
   acceptBtn.onclick=()=>{ exportarCSV(); closeTempMenus(); };
