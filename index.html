@@ -513,60 +513,14 @@ function onSearchInput(){clearTimeout(searchTimeout);searchTimeout=setTimeout(()
 function updateSearchSuggestions(){const term=searchInput.value.trim();let cand=aplicarFiltrosCompletos(),sug=[];if(!term){sug=ordenarEspecies(cand).slice(0,6).map(e=>e.nombre)}else{const wd=cand.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term.toLowerCase(),e.nombre.toLowerCase()),exact:e.nombre.toLowerCase().includes(term.toLowerCase())}));wd.sort((a,b)=>a.exact!==b.exact?a.exact?-1:1:a.dist-b.dist);sug=wd.slice(0,6).map(s=>s.nombre)}searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('')}
 function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
 
-function generarMenuCategoria(cat,menuId,opciones){ const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++}); opciones.forEach(val=>{ const count=contarConOpcion(cat,val); if(count===0)return; const label=document.createElement("label"); const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()}); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label); }); const bc=document.createElement("button");
-bc.textContent="Limpiar esta categoría";
-bc.className="limpiar-categoria";
-bc.disabled=(filtrosState[cat].length===0);
-bc.onclick=()=>{
-  // Si todas las opciones visibles ya están seleccionadas, no hacer render
-  const todosSeleccionados = opciones.every(val => {
-    const count = contarConOpcion(cat, val);
-    return count === 0 || filtrosState[cat].includes(val);
-  });
-  if (todosSeleccionados) {
-    filtrosState[cat] = [];
-    persistState();
-    bc.disabled = true;
-    return;                       // no se regenera la vista
-  }
-  // Si no estaban todas seleccionadas, limpiar y renderizar normalmente
-  filtrosState[cat]=[];
-  render();
-  persistState();
-  invalidateBaseCache();
-};
-menu.appendChild(bc);
+function generarMenuCategoria(cat,menuId,opciones){ const menu=$(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++}); opciones.forEach(val=>{ const count=contarConOpcion(cat,val); if(count===0)return; const label=document.createElement("label"); const cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else{filtrosState[cat]=filtrosState[cat].filter(v=>v!==val)}currentPage=1;render();persistState();invalidateBaseCache()}); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label); }); const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);bc.onclick=()=>{filtrosState[cat]=[];render();persistState();invalidateBaseCache()};menu.appendChild(bc); }
 function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfologia",opcionesMorfologia)}
 function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
 function generarMenuElemento(){generarMenuCategoria("elemento","menu-elemento",opcionesElemento)}
 function generarMenuAvistamiento(){generarMenuCategoria("avistamiento","menu-avistamiento",opcionesAvistamiento)}
 // Menú de ordenamiento con la opción activa deshabilitada
 function generarMenuOrden(){ const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}]; ordenMenu.innerHTML=ops.map(o=>`<button${ordenActual===o.v?' disabled':''}>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join(''); [...ordenMenu.children].forEach((b,i)=>{ b.onclick=()=>{ if(b.disabled)return; ordenActual=ops[i].v; currentPage=1; actualizarTooltipOrden(); render(); persistState(); closeAllMenus(); invalidateBaseCache(); } }); }
-function generarRevFilterMenu(){ revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++}); ops.forEach(opt=>{ const count=contarPorEstado(opt.id); if(count===0)return; const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{ if(cb.disabled)return; let newRev = revFilterState.slice(); if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); } else { newRev = newRev.filter(v=>v!==opt.id); } if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = []; if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){ revFilterState = newRev; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); } }); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label); });const bc=document.createElement("button");
-bc.textContent="Limpiar esta categoría";
-bc.className="limpiar-categoria";
-bc.disabled=(revFilterState.length===0);
-bc.onclick=()=>{
-  // Si todas las opciones visibles ya están seleccionadas, no hacer render
-  const revCount = contarPorEstado("revisado");
-  const noRevCount = contarPorEstado("no_revisado");
-  const todosSeleccionados = (revCount > 0 ? revFilterState.includes("revisado") : true) &&
-                              (noRevCount > 0 ? revFilterState.includes("no_revisado") : true);
-  if (todosSeleccionados) {
-    revFilterState = [];
-    saveRevFilterState();
-    bc.disabled = true;
-    return;                       // se omite render()
-  }
-  // Caso normal
-  revFilterState=[];
-  saveRevFilterState();
-  currentPage=1;
-  render();
-  invalidateBaseCache();
-};
-revFilterMenu.appendChild(bc);
- bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache();}; revFilterMenu.appendChild(bc); }
+function generarRevFilterMenu(){ revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++}); ops.forEach(opt=>{ const count=contarPorEstado(opt.id); if(count===0)return; const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id); if(opcionesVisibles===1&&count>0)cb.disabled=true; cb.addEventListener("change",()=>{ if(cb.disabled)return; let newRev = revFilterState.slice(); if(cb.checked) { if(!newRev.includes(opt.id)) newRev.push(opt.id); } else { newRev = newRev.filter(v=>v!==opt.id); } if(newRev.includes("revisado") && newRev.includes("no_revisado")) newRev = []; if(JSON.stringify(newRev) !== JSON.stringify(revFilterState)){ revFilterState = newRev; saveRevFilterState(); currentPage=1; render(); invalidateBaseCache(); } }); label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts); const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label); }); const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0); bc.onclick=()=>{revFilterState=[];saveRevFilterState();currentPage=1;render();invalidateBaseCache();}; revFilterMenu.appendChild(bc); }
 function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico: Grabado, Documentado, Crónicas, Avistamiento, Ficción, Tradición oral, Difuso</p><p><strong>📍 Ubicación</strong> - Filtro por lugar geográfico</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas personalizadas (separadas por coma)</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong> - Reinicia categorías</p><p><strong>📊 Ordenar</strong> - Cambia orden</p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo revisión</p><p>Los filtros activos se resaltan en dorado.</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
 function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96];const idx=valores.indexOf(perPage);const sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempPerPage===perPage)};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
 function regenerarMenuConfigBtn(){generarMenuConfig()}
