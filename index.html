@@ -52,7 +52,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .filtros-panel.oculto{display:none}
 .filtro-group{position:relative}
 .filtro-boton,.btn-limpiar,.export-btn,.random-btn,.theme-btn,.view-btn,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:40px;padding:5px 10px;font-family:'Cinzel',serif;font-weight:600;color:var(--text-primary);font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;white-space:nowrap;line-height:1;outline:none}
-.filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn button:disabled,.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
+.filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn:disabled,.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
 .search-clear{cursor:pointer;font-size:.9rem;font-weight:700;color:var(--accent);background:none;border:none;padding:0 2px;transition:opacity .2s}
 .search-clear.disabled{opacity:.5;pointer-events:none;cursor:default}
 .search-clear:active:not(.disabled){transform:scale(.9)}
@@ -612,7 +612,7 @@ function actualizarImagenEsquina(){
 function abrirVentanaAyudaEsquina(){
   closeAllMenus();closeTempMenus();const existente=document.getElementById('ayudaEsquinaMenu');if(existente)existente.remove();
   createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement('div');menu.id='ayudaEsquinaMenu';menu.className='temp-floating-menu';
-  menu.innerHTML=`<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high"></div>`;
+  menu.innerHTML=`<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><p style="text-align:center; color:var(--accent);">emilianoalern9@gmail.com</p><div style="display:flex; justify-content:center;"><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high" style="max-width:200px; width:100%; height:auto;"></div></div>`;
   document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#ayudaEsquinaCerrarBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation());
 }
 headerCornerImg.addEventListener('click',(e)=>{e.stopPropagation();abrirVentanaAyudaEsquina()});
@@ -751,14 +751,21 @@ function actualizarModal(){
   setImageWithFallback(modalImg,e.nombre,"",true);const linksHtml=e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:"";
   const subcatsHtml=e.subcategorias?`<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>`:'';
   modalInfoScroll.innerHTML=`<div class="info-grid"><div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div><div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div><div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div><div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div><div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div><div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>${subcatsHtml}</div><div class="modal-description">${e.descripcion}</div>${linksHtml}`;
-  const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no-revisado",!est);modalRevisadoBtn.style.color="var(--accent)";
+  const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no_revisado",!est);modalRevisadoBtn.style.color="var(--accent)";
   modalRevisadoBtn.onclick=()=>{if(modoRevision==="bloqueo"){if(revisados.has(e.id))toggleRevisado(e.id,false)}else toggleRevisado(e.id,false)};
   if(modalFavBtn)modalFavBtn.textContent=isFavorito(e.id)?"★":"☆";modalPrevArrow.style.display=modalNextArrow.style.display=navegacionBloqueada?"none":"flex";actualizarFlechasModal();
   requestAnimationFrame(()=>{adjustModalTitleFontSize()});
 }
 function copiarLinkAlPortapapeles(){
-  if(!currentModalCreature)return;const url=new URL(window.location.href);url.hash=`id=${encodeURIComponent(currentModalCreature.id)}`;
-  navigator.clipboard.writeText(url.href).then(()=>{showTemporaryTooltip(modalCopyLinkBtn,"Enlace copiado")}).catch(()=>{showTemporaryTooltip(modalCopyLinkBtn,"No se pudo copiar")});
+  if(!currentModalCreature)return;
+  const url=new URL(window.location.href);url.hash=`id=${encodeURIComponent(currentModalCreature.id)}`;
+  navigator.clipboard.writeText(url.href).then(()=>{
+    const originalText = modalCopyLinkBtn.textContent;
+    modalCopyLinkBtn.textContent = '▼';
+    setTimeout(() => { modalCopyLinkBtn.textContent = originalText; }, 500);
+  }).catch(()=>{
+    showTemporaryTooltip(modalCopyLinkBtn,"No se pudo copiar");
+  });
 }
 modalCopyLinkBtn.onclick=copiarLinkAlPortapapeles;
 
@@ -932,7 +939,6 @@ mainTitle.addEventListener("click",()=>{panelVisible=!panelVisible;if(panelVisib
 btnLimpiar.onclick=()=>{
   if(btnLimpiar.disabled)return;
 
-  // Calcular puntos por categoría ANTES de limpiar
   const opcionesVisiblesCount = (cat) => {
     if (cat === 'revisado') {
       return (contarPorEstado("revisado")>0?1:0) + (contarPorEstado("no_revisado")>0?1:0);
@@ -963,7 +969,6 @@ btnLimpiar.onclick=()=>{
     }
   }
 
-  // Limpiar todos los filtros
   filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
   revFilterState = [];
   saveRevFilterState();
@@ -974,7 +979,6 @@ btnLimpiar.onclick=()=>{
   if (totalPuntos > 0) {
     render();
   } else {
-    // Sin cambios reales en la parrilla, solo actualizar UI auxiliar
     updateFilterBadges();
     regenerarMenus();
     updateSearchSuggestions();
@@ -997,6 +1001,9 @@ function adjustModalTitleFontSize(){const h3=modalTitle;if(!h3)return;const avai
 const btnResetTotal = document.getElementById('btnResetTotal');
 if (btnResetTotal) {
   btnResetTotal.addEventListener('click', () => {
+    const hayFiltrosActivos = Object.values(filtrosState).some(a => a.length) || revFilterState.length > 0;
+    if (!hayFiltrosActivos && !onlyFavorites && searchTerm === '') return;
+
     filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
     revFilterState = [];
     saveRevFilterState();
