@@ -440,17 +440,31 @@ function toggleFavorito(id,uiOnly=false){
   updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();
 }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
-// ✅ toggleRevisado ahora actualiza el grid inmediatamente y fuerza la auto‑limpieza de filtros
+
+// 🔁 Cambio de revisado con renderizado condicional
 function toggleRevisado(id,esAuto=false){
   const estaba=revisados.has(id);
   if(modoRevision==="bloqueo"){
-    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return}}
+    if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);afterRevisadoToggle();return}}
     if(!esAuto&&!estaba)return;
-    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);render();return;}
+    if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);afterRevisadoToggle();return;}
   }
   estaba?revisados.delete(id):revisados.add(id);
   saveRevisados();actualizarIconoRevisadoTarjeta(id);
-  render();
+  afterRevisadoToggle();
+}
+function afterRevisadoToggle() {
+  invalidateBaseCache();
+  // Si el filtro no está activo (ambos o ninguno seleccionados), omitir la regeneración completa
+  if (revFilterState.length === 0 || revFilterState.length === 2) {
+    updateFilterBadges();
+    regenerarMenus();
+    updateSearchSuggestions();
+    adjustTitleFontSize();
+    actualizarImagenEsquina();
+  } else {
+    render();
+  }
 }
 function actualizarEstadoBotonRevisado(){
   invalidateBaseCache();
@@ -516,7 +530,6 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
     da.disabled = (checkedCount === 0);
   };
 
-  // Aplicar filtro inmediatamente al marcar/desmarcar
   grid.addEventListener('change', () => {
     const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
     filtrosState[cat] = selected;
@@ -631,21 +644,17 @@ function actualizarPaginacionHeader(tp){
   paginationControlsDiv.append(bf,bp,pi,s,bn,bl);
 }
 
-// ========== RENDER PRINCIPAL ==========
 async function render(){
   if(!dataLoaded)return;gridDiv.classList.add("fade-out");await new Promise(r=>setTimeout(r,30));
   invalidateBaseCache();const filtradas=aplicarFiltrosCompletos(),ordenadas=ordenarEspecies(filtradas);currentOrderedList=ordenadas;
   let total=ordenadas.length;
   const favoritosEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
 
-  // AUTO‑CORRECCIÓN DE FILTROS CUANDO SE QUEDAN SIN ELEMENTOS
   let necesitaReRender = false;
-
   if (onlyFavorites && favoritosEnResultados === 0) {
     onlyFavorites = false;
     necesitaReRender = true;
   }
-
   if (!necesitaReRender && revFilterState.includes("revisado") && !revFilterState.includes("no_revisado")) {
     if (contarPorEstado("revisado") === 0) {
       revFilterState = revFilterState.filter(v => v !== "revisado");
@@ -653,7 +662,6 @@ async function render(){
       necesitaReRender = true;
     }
   }
-
   if (!necesitaReRender && revFilterState.includes("no_revisado") && !revFilterState.includes("revisado")) {
     if (contarPorEstado("no_revisado") === 0) {
       revFilterState = revFilterState.filter(v => v !== "no_revisado");
@@ -661,7 +669,6 @@ async function render(){
       necesitaReRender = true;
     }
   }
-
   if (necesitaReRender) {
     persistState();
     render();
@@ -781,20 +788,16 @@ function onSearchInput(){clearTimeout(searchTimeout);searchTimeout=setTimeout(()
 function updateSearchSuggestions(){const term=searchInput.value.trim();let cand=aplicarFiltrosCompletos(),sug=[];if(!term){sug=ordenarEspecies(cand).slice(0,6).map(e=>e.nombre)}else{const wd=cand.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term.toLowerCase(),e.nombre.toLowerCase()),exact:e.nombre.toLowerCase().includes(term.toLowerCase())}));wd.sort((a,b)=>a.exact!==b.exact?a.exact?-1:1:a.dist-b.dist);sug=wd.slice(0,6).map(s=>s.nombre)}searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('')}
 function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
 
-// ==================== LIMPIEZA DE CATEGORÍAS (CON OPTIMIZACIÓN) ====================
 function limpiarCategoriaORevisados(cat) {
-  // Calcula cuántas opciones visibles hay
   const opcionesVisibles = (cat === 'revisado')
     ? (contarPorEstado("revisado")>0?1:0) + (contarPorEstado("no_revisado")>0?1:0)
     : (cat==='morfologia'?opcionesMorfologia:cat==='tipo'?opcionesTipo:cat==='elemento'?opcionesElemento:opcionesAvistamiento)
         .filter(op => contarConOpcion(cat, op) > 0).length;
 
-  // ¿Están todas las opciones visibles actualmente marcadas?
   const todasMarcadas = (cat === 'revisado')
     ? (revFilterState.length === opcionesVisibles)
     : (filtrosState[cat].length === opcionesVisibles);
 
-  // Limpiar la categoría
   if (cat === 'revisado') {
     revFilterState = [];
     saveRevFilterState();
@@ -807,7 +810,6 @@ function limpiarCategoriaORevisados(cat) {
   invalidateBaseCache();
 
   if (todasMarcadas) {
-    // No cambia la lista de criaturas: solo actualizar UI auxiliar
     updateFilterBadges();
     regenerarMenus();
     updateSearchSuggestions();
@@ -833,7 +835,7 @@ function generarMenuCategoria(cat,menuId,opciones){
   });
   const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(filtrosState[cat].length===0);
   bc.addEventListener('click', (e) => {
-    e.stopPropagation(); // 🔧 Evita que el clic cierre el menú
+    e.stopPropagation();
     limpiarCategoriaORevisados(cat);
   });
   menu.appendChild(bc);
@@ -858,7 +860,7 @@ function generarRevFilterMenu(){
   });
   const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);
   bc.addEventListener('click', (e) => {
-    e.stopPropagation(); // 🔧 Evita que el clic cierre el menú
+    e.stopPropagation();
     limpiarCategoriaORevisados('revisado');
   });
   revFilterMenu.appendChild(bc);
