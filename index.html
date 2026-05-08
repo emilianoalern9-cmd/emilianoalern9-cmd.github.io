@@ -205,12 +205,6 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
   .image-fixed{order:2;margin-top:16px;flex:none}
   .info-scroll{order:1;max-height:50vh}
 }
-/* 🆕 Deshabilitar opción activa en menú orden */
-.orden-menu button:disabled {
-  opacity: var(--disabled-opacity);
-  cursor: not-allowed;
-  pointer-events: none;
-}
 </style>
 </head>
 <body>
@@ -272,14 +266,53 @@ let especies=[],filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],
     csvMenu=null,ubicacionModal=null,epocaModal=null,subcategoriasModal=null,ordenActual="nombre_asc",touchStartX=0,
     tempPerPage=24,tempModoRevision="automatico", panelVisible=true, menuOverlay=null, headerOriginalZIndex='100';
 
-let categoriasConfig=null, opcionesMorfologia, opcionesTipo, opcionesElemento, opcionesAvistamiento, iconMap;
-
+// ==================== CONFIGURACIÓN DE CATEGORÍAS (EDITABLE) ====================
 const defaultCategorias = {
-  morfologia:{options:["Humano","Humanoide","Mamífero","Híbrido","Ave","Reptil","Pez","Insecto","Amorfo","Etéreo","Artificial","Otro"],icons:{"Humano":"🧑","Humanoide":"🧝","Mamífero":"🦌","Híbrido":"🦄","Ave":"🕊️","Reptil":"🐍","Pez":"🐟","Insecto":"🐞","Amorfo":"🌀","Etéreo":"✨","Artificial":"🤖","Otro":"❓"},buttonIcon:"🔮",buttonTitle:"Morfología"},
-  tipo:{options:["Mitológico","Criptido","Difuso"],icons:{"Mitológico":"🏛️","Criptido":"🐾","Difuso":"🌫️"},buttonIcon:"🌙",buttonTitle:"Tipo de ser"},
-  elemento:{options:["Aéreo","Acuático","Terrestre","Subterráneo","Anfibio","Misceláneo"],icons:{"Aéreo":"💨","Acuático":"💧","Terrestre":"🌿","Subterráneo":"⛰️","Anfibio":"🐸","Misceláneo":"⚙️"},buttonIcon:"💧",buttonTitle:"Elemento"},
-  avistamiento:{options:["Grabado / Capturado","Documentado","Crónicas","Avistamiento","Ficción","Tradición oral","Difuso"],icons:{"Grabado / Capturado":"📹","Documentado":"📜","Crónicas":"📖","Avistamiento":"👁️","Ficción":"📚","Tradición oral":"🗣️","Difuso":"❓"},buttonIcon:"👁️",buttonTitle:"Avistamiento"}
+  morfologia:{
+    options:["Humano","Humanoide","Mamífero","Híbrido","Ave","Reptil","Pez","Insecto","Amorfo","Etéreo","Artificial","Otro"],
+    icons:{"Humano":"🧑","Humanoide":"🧝","Mamífero":"🦌","Híbrido":"🦄","Ave":"🕊️","Reptil":"🐍","Pez":"🐟","Insecto":"🐞","Amorfo":"🌀","Etéreo":"✨","Artificial":"🤖","Otro":"❓"},
+    buttonIcon:"🔮", buttonTitle:"Morfología"
+  },
+  tipo:{
+    options:["Mitológico","Criptido","Difuso"],
+    icons:{"Mitológico":"🏛️","Criptido":"🐾","Difuso":"🌫️"},
+    buttonIcon:"🌙", buttonTitle:"Tipo de ser"
+  },
+  elemento:{
+    options:["Aéreo","Acuático","Terrestre","Subterráneo","Anfibio","Misceláneo"],
+    icons:{"Aéreo":"💨","Acuático":"💧","Terrestre":"🌿","Subterráneo":"⛰️","Anfibio":"🐸","Misceláneo":"⚙️"},
+    buttonIcon:"💧", buttonTitle:"Elemento"
+  },
+  avistamiento:{
+    options:["Grabado / Capturado","Documentado","Crónicas","Avistamiento","Ficción","Tradición oral","Difuso"],
+    icons:{"Grabado / Capturado":"📹","Documentado":"📜","Crónicas":"📖","Avistamiento":"👁️","Ficción":"📚","Tradición oral":"🗣️","Difuso":"❓"},
+    buttonIcon:"👁️", buttonTitle:"Avistamiento"
+  }
 };
+
+let opcionesMorfologia = defaultCategorias.morfologia.options;
+let opcionesTipo = defaultCategorias.tipo.options;
+let opcionesElemento = defaultCategorias.elemento.options;
+let opcionesAvistamiento = defaultCategorias.avistamiento.options;
+
+const iconMap = {
+  morfologia: defaultCategorias.morfologia.icons,
+  tipo: defaultCategorias.tipo.icons,
+  elemento: defaultCategorias.elemento.icons,
+  avistamiento: (v) => defaultCategorias.avistamiento.icons[v] || "❓"
+};
+
+function configurarBotonesCategorias() {
+  document.getElementById('btnMorfologia').textContent = defaultCategorias.morfologia.buttonIcon;
+  document.getElementById('btnMorfologia').title = defaultCategorias.morfologia.buttonTitle;
+  document.getElementById('btnTipo').textContent = defaultCategorias.tipo.buttonIcon;
+  document.getElementById('btnTipo').title = defaultCategorias.tipo.buttonTitle;
+  document.getElementById('btnElemento').textContent = defaultCategorias.elemento.buttonIcon;
+  document.getElementById('btnElemento').title = defaultCategorias.elemento.buttonTitle;
+  document.getElementById('btnAvistamiento').textContent = defaultCategorias.avistamiento.buttonIcon;
+  document.getElementById('btnAvistamiento').title = defaultCategorias.avistamiento.buttonTitle;
+}
+configurarBotonesCategorias();
 
 const $=id=>document.getElementById(id),gridDiv=$("grid"),resultSpan=$("resultText"),
       searchInput=$("searchInput"),clearSearchBtn=$("clearSearch"),searchDatalist=$("searchSuggestions"),
@@ -299,15 +332,6 @@ function showTooltip(text,x,y,duration=1500){crearTooltipElement();if(tooltipTim
 function hideTooltip(){if(!tooltipElement)return;tooltipElement.style.opacity="0";if(tooltipTimeout){clearTimeout(tooltipTimeout);tooltipTimeout=null}}
 document.addEventListener("click",(e)=>{if(tooltipElement&&e.target!==tooltipElement)hideTooltip()});
 
-async function cargarConfiguracionCategorias(){
-  try{const resp=await fetch('categorias.json',{cache:'no-store'});if(resp.ok){categoriasConfig=await resp.json();for(let cat of['morfologia','tipo','elemento','avistamiento']){categoriasConfig[cat]={...defaultCategorias[cat],...categoriasConfig[cat]};if(categoriasConfig[cat].icons)categoriasConfig[cat].icons={...defaultCategorias[cat].icons,...categoriasConfig[cat].icons}}}else categoriasConfig=defaultCategorias}catch(e){categoriasConfig=defaultCategorias}
-  opcionesMorfologia=categoriasConfig.morfologia.options;opcionesTipo=categoriasConfig.tipo.options;opcionesElemento=categoriasConfig.elemento.options;opcionesAvistamiento=categoriasConfig.avistamiento.options;
-  iconMap={morfologia:categoriasConfig.morfologia.icons,tipo:categoriasConfig.tipo.icons,elemento:categoriasConfig.elemento.icons,avistamiento:(v)=>categoriasConfig.avistamiento.icons[v]||"❓"};
-  document.getElementById('btnMorfologia').textContent=categoriasConfig.morfologia.buttonIcon;document.getElementById('btnMorfologia').title=categoriasConfig.morfologia.buttonTitle;
-  document.getElementById('btnTipo').textContent=categoriasConfig.tipo.buttonIcon;document.getElementById('btnTipo').title=categoriasConfig.tipo.buttonTitle;
-  document.getElementById('btnElemento').textContent=categoriasConfig.elemento.buttonIcon;document.getElementById('btnElemento').title=categoriasConfig.elemento.buttonTitle;
-  document.getElementById('btnAvistamiento').textContent=categoriasConfig.avistamiento.buttonIcon;document.getElementById('btnAvistamiento').title=categoriasConfig.avistamiento.buttonTitle;
-}
 const getIconForMorfologia=e=>iconMap.morfologia[e]||"🔮",getIconForTipo=e=>iconMap.tipo[e]||"🌙",getIconForElemento=e=>iconMap.elemento[e]||"💧",getIconForAvistamiento=v=>iconMap.avistamiento(v);
 function saveLocal(k,v){localStorage.setItem(k,JSON.stringify(v))}
 function loadLocal(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
@@ -397,7 +421,7 @@ function buildPredicate(extraCheck=null){
 const aplicarFiltrosCompletos=()=>especies.filter(buildPredicate());
 function ordenarEspecies(lista){const[campo,dir]=ordenActual.split('_');const order=dir==="asc"?1:-1;return[...lista].sort((a,b)=>{let va=a[campo]||"",vb=b[campo]||"";return va<vb?-order:va>vb?order:0})}
 
-const STORAGE_VERSION=11;
+const STORAGE_VERSION=12;
 function resetAllData(){
   localStorage.clear();filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
   revFilterState=[];revisados.clear();favoritos.clear();onlyFavorites=false;ordenActual="nombre_asc";perPage=24;currentPage=1;searchTerm='';
@@ -447,7 +471,6 @@ function toggleFavorito(id,uiOnly=false){
 }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
 
-// 🔁 Cambio de revisado con renderizado condicional + actualización inmediata del botón
 function toggleRevisado(id,esAuto=false){
   const estaba=revisados.has(id);
   if(modoRevision==="bloqueo"){
@@ -506,7 +529,6 @@ function removeMenuOverlay(){if(menuOverlay){menuOverlay.remove();menuOverlay=nu
 function closeAllMenus(){document.querySelectorAll(".filtro-menu,.config-menu,.orden-menu,.csv-menu,.config-submenu,.rev-filter-menu,.help-menu").forEach(m=>m.classList.remove("show"));removeMenuOverlay();hideTooltip()}
 const closeTempMenus=()=>{document.querySelectorAll(".temp-floating-menu").forEach(m=>{m.classList.remove("show");setTimeout(()=>{if(!m.classList.contains("show"))m.remove()},300)});if(csvMenu)csvMenu.classList.remove("show");if(ubicacionModal)ubicacionModal.classList.remove("show");if(epocaModal)epocaModal.classList.remove("show");if(subcategoriasModal)subcategoriasModal.classList.remove("show");removeMenuOverlay();hideTooltip()};
 
-// ==================== MODALES DE FILTRO ====================
 function aplicarCambioModalFiltro(cat, nuevosValores, opcionesVisiblesCount) {
   const antesTodos = (filtrosState[cat].length === 0) || (filtrosState[cat].length === opcionesVisiblesCount);
   const despuesTodos = (nuevosValores.length === 0) || (nuevosValores.length === opcionesVisiblesCount);
@@ -877,7 +899,7 @@ function generarMenuOrden(){
   ordenMenu.innerHTML=ops.map(o=>`<button>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join('');
   [...ordenMenu.children].forEach((b,i)=>{
     if (ops[i].v === ordenActual) {
-      b.disabled = true;   // Deshabilitar la opción activa
+      b.disabled = true;
     }
     b.onclick=()=>{if(btnOrden.disabled||b.disabled)return;ordenActual=ops[i].v;currentPage=1;actualizarTooltipOrden();render();persistState();closeAllMenus();invalidateBaseCache()};
   });
@@ -991,7 +1013,6 @@ clearSearchBtn.onclick=()=>{if(clearSearchBtn.classList.contains("disabled"))ret
 cerrarBtn.onclick=closeModal;overlayEl.onclick=e=>{if(e.target===overlayEl)closeModal()};
 modalPrevArrow.onclick=()=>navegarModal(-1);modalNextArrow.onclick=()=>navegarModal(1);
 modalFavBtn.onclick=()=>{if(currentModalCreature)toggleFavorito(currentModalCreature.id,false)};
-// 🆕 Atajos de teclado en el modal
 document.addEventListener("keydown",e=>{
   if(!overlayEl.classList.contains("show")) return;
   const key = e.key;
@@ -1043,7 +1064,7 @@ async function cargarDatos(){
     const hash=window.location.hash.substring(1);if(hash.startsWith("id=")){const id=decodeURIComponent(hash.substring(3));const cr=especies.find(e=>e.id===id);if(cr)setTimeout(()=>abrirDetalle(cr),300)}window.scrollTo({top:0,behavior:'instant'});
   }catch(err){console.error("Error cargando datos:",err);especies=[];dataLoaded=true;render()}
 }
-async function inicializarApp(){await cargarConfiguracionCategorias();await cargarDatos()}
+async function inicializarApp(){await cargarDatos()}
 inicializarApp();
 </script>
 </body>
