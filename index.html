@@ -34,10 +34,10 @@ body{background:var(--bg-color);color:var(--text-primary);font-family:'Inter',sa
 body.modal-open{overflow:hidden}
 body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZikiIG9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=');background-repeat:repeat;pointer-events:none;opacity:.2;z-index:0}
 .container,.main-header,.grid-wrapper,#overlay{position:relative;z-index:1}
-.main-header{position:sticky;top:0;z-index:100;background:var(--header-bg);padding:8px 16px;box-shadow:0 1px 3px rgba(0,0,0,.3);border-bottom:1px solid var(--border-color);overflow:visible}
-.header-corner{position:absolute;top:0;right:0;width:auto;height:100%;pointer-events:all;z-index:2;opacity:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));cursor:pointer;object-fit:contain}
+.main-header{position:sticky;top:0;z-index:100;background:var(--header-bg);padding:8px 16px;box-shadow:0 1px 3px rgba(0,0,0,.3);border-bottom:1px solid var(--border-color);overflow:visible;position:relative;padding-right:60px}
+.header-corner{position:absolute;top:0;right:0;height:100%;max-height:100%;width:auto;object-fit:contain;pointer-events:all;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));cursor:pointer}
 @media(max-width:700px){
-  .main-header{padding:4px 8px}
+  .main-header{padding:4px 8px;padding-right:45px}
   .header-corner{max-width:40px}
   h2{font-size:1.2rem!important;margin-bottom:3px}
   .filtro-boton,.btn-limpiar,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{padding:3px 6px!important;font-size:.7rem!important}
@@ -54,10 +54,10 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .filtro-boton,.btn-limpiar,.export-btn,.random-btn,.theme-btn,.view-btn,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:40px;padding:5px 10px;font-family:'Cinzel',serif;font-weight:600;color:var(--text-primary);font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;white-space:nowrap;line-height:1;outline:none}
 .filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn:disabled,.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
 .search-clear{cursor:pointer;font-size:.9rem;font-weight:700;color:var(--accent);background:none;border:none;padding:0 2px;transition:opacity .2s}
-.search-clear.disabled{opacity:.5;pointer-events:none;cursor:default}
+.search-clear.disabled{opacity:var(--disabled-opacity);pointer-events:none;cursor:default}
 .search-clear:active:not(.disabled){transform:scale(.9)}
-.filtro-menu input:disabled,.rev-filter-menu input:disabled{opacity:.5;cursor:not-allowed}
-.filtro-menu label:has(input:disabled),.rev-filter-menu label:has(input:disabled){opacity:.6;cursor:default}
+.filtro-menu input:disabled,.rev-filter-menu input:disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
+.filtro-menu label:has(input:disabled),.rev-filter-menu label:has(input:disabled){opacity:var(--disabled-opacity);cursor:default}
 @media(hover:hover){
   .filtro-boton:hover:not(:disabled),.btn-limpiar:hover:not(:disabled),.export-btn:hover,.random-btn:hover,.theme-btn:hover,.view-btn:hover,.fav-filter-btn:hover:not(:disabled),.pagination-btn:hover:not(:disabled),.config-btn:hover,.help-btn:hover{background:var(--accent-hover);color:#1a1625;border-color:var(--accent)}
   .filtro-menu button:hover,.rev-filter-menu label:hover:has(input:not(:disabled)),.orden-menu button:hover,.items-menu button:hover,.csv-menu button:hover,.config-menu button:hover,.config-submenu button:hover{background:var(--accent-hover);color:#1a1625}
@@ -125,12 +125,12 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 /* Grid para checkboxes en modales */
 .modal-checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:50vh;overflow-y:auto;padding:4px 8px;margin-bottom:16px}
 .modal-checkbox-grid label{display:flex;align-items:center;gap:8px;font-size:.75rem;cursor:pointer;color:var(--text-primary);background:rgba(0,0,0,.2);padding:4px 8px;border-radius:20px}
-.modal-checkbox-grid label.disabled{opacity:.5;cursor:not-allowed}
+.modal-checkbox-grid label.disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
 .modal-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
 .modal-actions button{flex:0 0 auto;min-width:44px;width:44px;height:44px;background:rgba(100,70,40,.7);text-align:center;padding:0;font-size:1.4rem;border-radius:40px;transition:all .2s;font-family:'Inter',sans-serif;font-weight:500;border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .modal-actions button:hover:not(:disabled){background:var(--accent-hover);color:#1a1625;transform:scale(.96)}
 .modal-actions button:active:not(:disabled){transform:scale(.92)}
-.modal-actions button:disabled{opacity:.5;cursor:not-allowed}
+.modal-actions button:disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
 /* CSV modal (mismo estilo que los demás) */
 #csvModal.temp-floating-menu{min-width:360px;max-height:80vh;overflow-y:auto}
 #csvModal .csv-checkbox-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;max-height:40vh;overflow-y:auto;margin-bottom:16px;padding-right:4px}
@@ -353,7 +353,7 @@ const defaultCategorias = {
   },
   elemento:{
     options:["Aéreo","Acuático","Terrestre","Subterráneo","Anfibio","Misceláneo"],
-    icons:{"Aéreo":"💨","Acuático":"💧","Terrestre":" ","Subterráneo":"⛰️","Anfibio":"🐸","Misceláneo":"⚙️"},
+    icons:{"Aéreo":"💨","Acuático":"💧","Terrestre":"🌿","Subterráneo":"⛰️","Anfibio":"🐸","Misceláneo":"⚙️"},
     buttonIcon:"💧", buttonTitle:"Elemento"
   },
   avistamiento:{
@@ -426,7 +426,7 @@ function configurarBotonesCategorias() {
 }
 configurarBotonesCategorias();
 
-function $(id){ return document.getElementById(id); } // Mantenida por compatibilidad aunque ya no se use tanto
+function $(id){ return document.getElementById(id); }
 
 let tooltipElement=null,tooltipTimeout=null;
 function crearTooltipElement(){if(tooltipElement)return;tooltipElement=document.createElement("div");tooltipElement.className="temp-tooltip";tooltipElement.style.opacity="0";document.body.appendChild(tooltipElement)}
@@ -453,26 +453,32 @@ function buildIndexes(){
 function addToIndex(map,key,id){if(!map.has(key))map.set(key,new Set());map.get(key).add(id)}
 
 let baseFilterVersion=0,cachedBaseIds=null,cachedBaseVersion=-1,cachedIgnoreCat=null;
-function baseFilterPredicate(ignoreCat){
-  return e=>{
-    if(ignoreCat!=='morfologia'&&filtrosState.morfologia.length&&!filtrosState.morfologia.includes(e.morfologia))return false;
-    if(ignoreCat!=='tipo'&&filtrosState.tipo.length&&!filtrosState.tipo.includes(e.tipo))return false;
-    if(ignoreCat!=='elemento'&&filtrosState.elemento.length&&!filtrosState.elemento.includes(e.elemento))return false;
-    if(ignoreCat!=='avistamiento'&&filtrosState.avistamiento.length&&!filtrosState.avistamiento.includes(e.avistamiento))return false;
-    if(ignoreCat!=='ubicacion'&&filtrosState.ubicacion.length&&!filtrosState.ubicacion.includes(e.ubicacion))return false;
-    if(ignoreCat!=='epoca'&&filtrosState.epoca.length&&!filtrosState.epoca.includes(e.epoca))return false;
-    if(ignoreCat!=='subcategorias'&&filtrosState.subcategorias.length){
-      const subcats=e.subcategorias?e.subcategorias.split(',').map(s=>s.trim()).filter(s=>s):[];
-      if(!filtrosState.subcategorias.some(sel=>subcats.includes(sel)))return false;
+// Unificación de predicados: buildPredicate acepta ignoreCat y extraCheck
+function buildPredicate(ignoreCat = null, extraCheck = null) {
+  return e => {
+    if (ignoreCat !== 'morfologia' && filtrosState.morfologia.length && !filtrosState.morfologia.includes(e.morfologia)) return false;
+    if (ignoreCat !== 'tipo' && filtrosState.tipo.length && !filtrosState.tipo.includes(e.tipo)) return false;
+    if (ignoreCat !== 'elemento' && filtrosState.elemento.length && !filtrosState.elemento.includes(e.elemento)) return false;
+    if (ignoreCat !== 'avistamiento' && filtrosState.avistamiento.length && !filtrosState.avistamiento.includes(e.avistamiento)) return false;
+    if (ignoreCat !== 'ubicacion' && filtrosState.ubicacion.length && !filtrosState.ubicacion.includes(e.ubicacion)) return false;
+    if (ignoreCat !== 'epoca' && filtrosState.epoca.length && !filtrosState.epoca.includes(e.epoca)) return false;
+    if (ignoreCat !== 'subcategorias' && filtrosState.subcategorias.length) {
+      const subcats = e.subcategorias ? e.subcategorias.split(',').map(s => s.trim()).filter(s => s) : [];
+      if (!filtrosState.subcategorias.some(sel => subcats.includes(sel))) return false;
     }
-    if(onlyFavorites&&!favoritos.has(e.id))return false;
-    if(searchTerm.trim()&&!e.nombre.toLowerCase().includes(searchTerm.toLowerCase()))return false;
-    return true;
+    if (onlyFavorites && !favoritos.has(e.id)) return false;
+    if (searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (revFilterState.length && ignoreCat !== 'revisado') {
+      const r = revisados.has(e.id);
+      if (!(revFilterState.includes("revisado") && revFilterState.includes("no_revisado")) &&
+          ((revFilterState.includes("revisado") && !r) || (revFilterState.includes("no_revisado") && r))) return false;
+    }
+    return extraCheck ? extraCheck(e) : true;
   };
 }
 function getBaseFilteredIds(ignoreCat=null){
   if(baseFilterVersion===cachedBaseVersion&&ignoreCat===cachedIgnoreCat&&cachedBaseIds!==null)return cachedBaseIds;
-  const pred=baseFilterPredicate(ignoreCat),ids=new Set();
+  const pred=buildPredicate(ignoreCat),ids=new Set();
   for(let e of especies)if(pred(e))ids.add(e.id);
   cachedBaseIds=ids;cachedBaseVersion=baseFilterVersion;cachedIgnoreCat=ignoreCat;
   return ids;
@@ -480,14 +486,14 @@ function getBaseFilteredIds(ignoreCat=null){
 function invalidateBaseCache(){baseFilterVersion++}
 
 // Caché de contadores para evitar recalcular en cada render
-let filterCountCache = new Map(); // clave: `${cat}_${opcion}` -> número
+let filterCountCache = new Map();
 function clearFilterCountCache() { filterCountCache.clear(); }
 function cachedContarConOpcion(categoria, opcion) {
   const key = `${categoria}_${opcion}`;
   if (filterCountCache.has(key)) return filterCountCache.get(key);
   let count;
   if (categoria === 'revisado') {
-    count = contarPorEstado(opcion); // opcion es "revisado" o "no_revisado"
+    count = contarPorEstado(opcion);
   } else {
     const baseIds = getBaseFilteredIds(categoria);
     if (!baseIds.size) count = 0;
@@ -513,9 +519,7 @@ function cachedContarConOpcion(categoria, opcion) {
   filterCountCache.set(key, count);
   return count;
 }
-// Sobrescribimos la función original para que use caché (se invalida al cambiar filtros)
 const contarConOpcion = cachedContarConOpcion;
-// También se cachean los contadores de revisados
 let revCountCache = { revisado: -1, no_revisado: -1 };
 function cachedContarPorEstado(estado) {
   if (revCountCache[estado] !== -1) return revCountCache[estado];
@@ -531,32 +535,14 @@ function invalidateCountCaches() {
   clearFilterCountCache();
   revCountCache = { revisado: -1, no_revisado: -1 };
 }
-// Llamar a invalidateCountCaches cada vez que se invalida base o cambian revisados/favoritos
 const originalInvalidateBaseCache = invalidateBaseCache;
 invalidateBaseCache = function() {
   originalInvalidateBaseCache();
   invalidateCountCaches();
 };
 
-function buildPredicate(extraCheck=null){
-  return e=>{
-    if(filtrosState.morfologia.length&&!filtrosState.morfologia.includes(e.morfologia))return false;
-    if(filtrosState.tipo.length&&!filtrosState.tipo.includes(e.tipo))return false;
-    if(filtrosState.elemento.length&&!filtrosState.elemento.includes(e.elemento))return false;
-    if(filtrosState.avistamiento.length&&!filtrosState.avistamiento.includes(e.avistamiento))return false;
-    if(filtrosState.ubicacion.length&&!filtrosState.ubicacion.includes(e.ubicacion))return false;
-    if(filtrosState.epoca.length&&!filtrosState.epoca.includes(e.epoca))return false;
-    if(filtrosState.subcategorias.length){
-      const subcats=e.subcategorias?e.subcategorias.split(',').map(s=>s.trim()).filter(s=>s):[];
-      if(!filtrosState.subcategorias.some(sel=>subcats.includes(sel)))return false;
-    }
-    if(onlyFavorites&&!favoritos.has(e.id))return false;
-    if(searchTerm.trim()&&!e.nombre.toLowerCase().includes(searchTerm.toLowerCase()))return false;
-    if(revFilterState.length){const r=revisados.has(e.id);if(!(revFilterState.includes("revisado")&&revFilterState.includes("no_revisado"))&&((revFilterState.includes("revisado")&&!r)||(revFilterState.includes("no_revisado")&&r)))return false}
-    return extraCheck?extraCheck(e):true;
-  };
-}
-const aplicarFiltrosCompletos=()=>especies.filter(buildPredicate());
+// Función para obtener lista filtrada (usa buildPredicate sin ignoreCat)
+const aplicarFiltrosCompletos = () => especies.filter(buildPredicate());
 function ordenarEspecies(lista){const[campo,dir]=ordenActual.split('_');const order=dir==="asc"?1:-1;return[...lista].sort((a,b)=>{let va=a[campo]||"",vb=b[campo]||"";return va<vb?-order:va>vb?order:0})}
 
 const STORAGE_VERSION=12;
@@ -778,11 +764,10 @@ function debounce(func, wait) {
 const debouncedAdjustTitleFontSize = debounce(adjustTitleFontSize, 100);
 const debouncedActualizarImagenEsquina = debounce(actualizarImagenEsquina, 100);
 
+// imagen de esquina ahora se maneja solo con CSS, no requiere ajustes JS
 function actualizarImagenEsquina(){
   const ancho=window.innerWidth;const esCelular=ancho<=700;const src=esCelular?'img2/esquina.png':'img2/esquina.gif';
   if(headerCornerImg.src!==src)headerCornerImg.src=src;
-  const headerHeight=mainHeader.offsetHeight;headerCornerImg.style.height=headerHeight+'px';headerCornerImg.style.width='auto';
-  const cornerWidth=headerCornerImg.offsetWidth;headerContainer.style.paddingRight=(cornerWidth+8)+'px';
   headerCornerImg.onerror=()=>{headerCornerImg.style.display='none'};headerCornerImg.onload=()=>{headerCornerImg.style.display='block'};
 }
 function abrirVentanaAyudaEsquina(){
@@ -869,6 +854,29 @@ async function render(){
 
   const tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp;
   const hayResultados=total>0;
+
+  // Cachear conteos de opciones con datos para esta renderización
+  const opcionesConDatosCache = new Map();
+  const getCachedOpcionesConDatos = (categoria) => {
+    if (opcionesConDatosCache.has(categoria)) return opcionesConDatosCache.get(categoria);
+    let result;
+    if (categoria === 'revisado') {
+      let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; result = c;
+    } else if (categoria === 'ubicacion') {
+      result = [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;
+    } else if (categoria === 'epoca') {
+      result = [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;
+    } else if (categoria === 'subcategorias') {
+      const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
+      result = Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length;
+    } else {
+      const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
+      result = opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
+    }
+    opcionesConDatosCache.set(categoria, result);
+    return result;
+  };
+
   if(!hayResultados){
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=true});
     btnOrden.disabled=true;favFilterBtn.disabled=true;btnLimpiar.disabled=true;configBtn.disabled=true;
@@ -878,19 +886,6 @@ async function render(){
     favFilterBtn.disabled = (favoritos.size === 0) || (favoritosEnResultados === 0);
     btnLimpiar.disabled=(Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0);configBtn.disabled=false;
 
-    const opcionesConDatosCount = (categoria) => {
-      if (categoria === 'revisado') {
-        let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; return c;
-      }
-      if (categoria === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;
-      if (categoria === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;
-      if (categoria === 'subcategorias') {
-        const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
-        return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length;
-      }
-      const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
-      return opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
-    };
     const categorias = [
       {btn: btnMorfologia, cat:'morfologia'},
       {btn: btnTipo, cat:'tipo'},
@@ -903,7 +898,7 @@ async function render(){
     ];
     categorias.forEach(({btn, cat}) => {
       if (btn) {
-        const n = opcionesConDatosCount(cat);
+        const n = getCachedOpcionesConDatos(cat);
         btn.disabled = (n === 0 || n === 1);
       }
     });
@@ -1117,7 +1112,7 @@ function actualizarMenuCSV(){
 function exportarCSV(){
   if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return;
   const ordenadas=ordenarEspecies(filtradas);const headers=['nombre',...selectedFields];if(!headers.length)return;
-  const rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))});
+  const rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")||v.includes('"')))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))});
   const blob=new Blob([rows.join("\n")],{type:"text/csv"}),link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="indice_seres.csv";link.click();URL.revokeObjectURL(link.href);
 }
 function regenerarMenus(){generarMenuMorfologia();generarMenuTipo();generarMenuElemento();generarMenuAvistamiento();generarMenuOrden();generarMenuConfig();generarRevFilterMenu();if(csvMenu)csvMenu.remove();crearMenuCSV()}
@@ -1207,16 +1202,13 @@ if (btnResetTotal) {
     invalidateBaseCache();
   });
 }
-async function cargarArchivosDesdeCarpeta(){let todosLosDatos=[];let indice=1;let hayError=false;while(!hayError){const url=`dtsk/Datos${indice}.json`;try{const respuesta=await fetch(url,{cache:'no-store'});if(!respuesta.ok){hayError=true;break}const datos=await respuesta.json();if(Array.isArray(datos)){todosLosDatos.push(...datos)}else{todosLosDatos.push(datos)}indice++}catch(error){hayError=true;break}}return todosLosDatos}
+async function cargarArchivosDesdeCarpeta(){let todosLosDatos=[];let indice=1;let hayError=false;while(!hayError){const url=`dtsk/Datos${indice}.json`;try{const respuesta=await fetch(url,{cache:'default'});if(!respuesta.ok){hayError=true;break}const datos=await respuesta.json();if(Array.isArray(datos)){todosLosDatos.push(...datos)}else{todosLosDatos.push(datos)}indice++}catch(error){hayError=true;break}}return todosLosDatos}
 async function cargarDatos(){
   try{
     let datosCombinados=await cargarArchivosDesdeCarpeta();
     if(datosCombinados.length===0){
-      const res=await fetch('datos.json',{cache:'no-store'});
-      if(res.ok){const respaldo=await res.json();datosCombinados=Array.isArray(respaldo)?respaldo:[respaldo]}
-    }
-    if (datosCombinados.length === 0) {
-      throw new Error('No se pudieron cargar datos desde dtsk/Datos*.json ni datos.json');
+      // Ya no se busca datos.json; solo se lanza error si no hay archivos en dtsk
+      throw new Error('No se pudieron cargar datos desde dtsk/Datos*.json');
     }
     especies=datosCombinados.map((criatura,idx)=>{if(criatura.posX===undefined){criatura.posX=criatura.posx!==undefined?criatura.posx:0}if(criatura.posY===undefined){criatura.posY=criatura.posy!==undefined?criatura.posy:0}if(criatura.zoom===undefined)criatura.zoom=1;if(!criatura.id){criatura.id=`criatura_${idx}_${Date.now()}_${Math.random()}`}return criatura});
     dataLoaded=true;buildIndexes();loadFavoritos();loadRevisados();loadModoRevision();loadPersistedState();updateSearchSuggestions();updateClearSearchState();regenerarMenus();await render();
@@ -1226,7 +1218,7 @@ async function cargarDatos(){
     console.error("Error cargando datos:",err);
     especies=[];
     dataLoaded=true;
-    render(); // Mostrará el mensaje de error amigable en el grid
+    render();
   }
 }
 async function inicializarApp(){await cargarDatos()}
