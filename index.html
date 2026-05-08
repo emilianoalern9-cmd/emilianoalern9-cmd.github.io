@@ -929,7 +929,60 @@ function initMenus(){
 }
 initMenus();
 mainTitle.addEventListener("click",()=>{panelVisible=!panelVisible;if(panelVisible){filtrosPanel.classList.remove("oculto")}else{filtrosPanel.classList.add("oculto")}actualizarImagenEsquina()});
-btnLimpiar.onclick=()=>{if(btnLimpiar.disabled)return;filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};revFilterState=[];saveRevFilterState();currentPage=1;render();persistState();invalidateBaseCache()};
+btnLimpiar.onclick=()=>{
+  if(btnLimpiar.disabled)return;
+
+  // Calcular puntos por categoría ANTES de limpiar
+  const opcionesVisiblesCount = (cat) => {
+    if (cat === 'revisado') {
+      return (contarPorEstado("revisado")>0?1:0) + (contarPorEstado("no_revisado")>0?1:0);
+    }
+    if (cat === 'morfologia') return opcionesMorfologia.filter(op => contarConOpcion('morfologia',op)>0).length;
+    if (cat === 'tipo') return opcionesTipo.filter(op => contarConOpcion('tipo',op)>0).length;
+    if (cat === 'elemento') return opcionesElemento.filter(op => contarConOpcion('elemento',op)>0).length;
+    if (cat === 'avistamiento') return opcionesAvistamiento.filter(op => contarConOpcion('avistamiento',op)>0).length;
+    if (cat === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op => contarConOpcion('ubicacion',op)>0).length;
+    if (cat === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op => contarConOpcion('epoca',op)>0).length;
+    if (cat === 'subcategorias') {
+      const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
+      return Array.from(todas).filter(op => contarConOpcion('subcategorias',op)>0).length;
+    }
+    return 0;
+  };
+
+  const categoriasAEvaluar = ['morfologia','tipo','elemento','avistamiento','ubicacion','epoca','subcategorias','revisado'];
+  let totalPuntos = 0;
+  for (let cat of categoriasAEvaluar) {
+    const visibles = opcionesVisiblesCount(cat);
+    if (visibles === 0) continue;
+    const seleccionadas = (cat === 'revisado') ? revFilterState.length : filtrosState[cat].length;
+    const todasSeleccionadas = (seleccionadas === visibles);
+    const ningunaSeleccionada = (seleccionadas === 0);
+    if (!todasSeleccionadas && !ningunaSeleccionada) {
+      totalPuntos++;
+    }
+  }
+
+  // Limpiar todos los filtros
+  filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
+  revFilterState = [];
+  saveRevFilterState();
+  currentPage = 1;
+  persistState();
+  invalidateBaseCache();
+
+  if (totalPuntos > 0) {
+    render();
+  } else {
+    // Sin cambios reales en la parrilla, solo actualizar UI auxiliar
+    updateFilterBadges();
+    regenerarMenus();
+    updateSearchSuggestions();
+    actualizarContadorYPaginacion();
+    adjustTitleFontSize();
+    actualizarImagenEsquina();
+  }
+};
 favFilterBtn.onclick=()=>{if(!favFilterBtn.disabled){onlyFavorites=!onlyFavorites;currentPage=1;render();persistState();invalidateBaseCache()}};
 searchInput.addEventListener('input',onSearchInput);
 clearSearchBtn.onclick=()=>{if(clearSearchBtn.classList.contains("disabled"))return;searchInput.value='';searchTerm='';currentPage=1;render();updateClearSearchState();updateSearchSuggestions();invalidateBaseCache()};
