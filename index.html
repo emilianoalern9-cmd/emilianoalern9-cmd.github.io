@@ -441,7 +441,7 @@ function toggleFavorito(id,uiOnly=false){
 }
 function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
 
-// 🔁 Cambio de revisado con renderizado condicional
+// 🔁 Cambio de revisado con renderizado condicional + actualización inmediata del botón
 function toggleRevisado(id,esAuto=false){
   const estaba=revisados.has(id);
   if(modoRevision==="bloqueo"){
@@ -455,6 +455,9 @@ function toggleRevisado(id,esAuto=false){
 }
 function afterRevisadoToggle() {
   invalidateBaseCache();
+  // ✅ Actualizar el estado del botón inmediatamente, haya o no renderizado completo
+  actualizarEstadoBotonRevisado();
+
   // Si el filtro no está activo (ambos o ninguno seleccionados), omitir la regeneración completa
   if (revFilterState.length === 0 || revFilterState.length === 2) {
     updateFilterBadges();
@@ -744,7 +747,7 @@ function actualizarModal(){
   setImageWithFallback(modalImg,e.nombre,"",true);const linksHtml=e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:"";
   const subcatsHtml=e.subcategorias?`<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>`:'';
   modalInfoScroll.innerHTML=`<div class="info-grid"><div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div><div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div><div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div><div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div><div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div><div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>${subcatsHtml}</div><div class="modal-description">${e.descripcion}</div>${linksHtml}`;
-  const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no-revisado",!est);modalRevisadoBtn.style.color="var(--accent)";
+  const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no_revisado",!est);modalRevisadoBtn.style.color="var(--accent)";
   modalRevisadoBtn.onclick=()=>{if(modoRevision==="bloqueo"){if(revisados.has(e.id))toggleRevisado(e.id,false)}else toggleRevisado(e.id,false)};
   if(modalFavBtn)modalFavBtn.textContent=isFavorito(e.id)?"★":"☆";modalPrevArrow.style.display=modalNextArrow.style.display=navegacionBloqueada?"none":"flex";actualizarFlechasModal();
   requestAnimationFrame(()=>{adjustModalTitleFontSize()});
