@@ -34,7 +34,7 @@ body{background:var(--bg-color);color:var(--text-primary);font-family:'Inter',sa
 body.modal-open{overflow:hidden}
 body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZikiIG9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=');background-repeat:repeat;pointer-events:none;opacity:.2;z-index:0}
 .container,.main-header,.grid-wrapper,#overlay{position:relative;z-index:1}
-.main-header{position:sticky;top:0;z-index:100;background:var(--header-bg);padding:8px 16px;box-shadow:0 1px 3px rgba(0,0,0,.3);border-bottom:1px solid var(--border-color);overflow:visible;position:relative;padding-right:60px}
+.main-header{position:sticky;top:0;z-index:100;background:var(--header-bg);padding:8px 16px;padding-right:60px;box-shadow:0 1px 3px rgba(0,0,0,.3);border-bottom:1px solid var(--border-color);overflow:visible;position:relative}
 .header-corner{position:absolute;top:0;right:0;height:100%;max-height:100%;width:auto;object-fit:contain;pointer-events:all;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));cursor:pointer}
 @media(max-width:700px){
   .main-header{padding:4px 8px;padding-right:45px}
@@ -224,7 +224,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 .card-footer-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 10px;gap:8px;margin-top:auto;position:relative;z-index:2}
 .badges-wrapper{display:flex;flex-wrap:wrap;gap:2px;align-items:center}
 .card-actions{display:flex;gap:6px;align-items:center}
-.mini-badge{width:20px;height:20px;border-radius:30px;background:rgba(0,0,0,.7);backdrop-filter:none;display:flex;align-items:center;justify-content:center;font-size:10px;border:1px solid var(--border-color);cursor:pointer;transition:transform .1s}
+.mini-badge{width:20px;height:20px;border-radius:30px;background:rgba(0,0,0,.7);backdrop-filter:none;display:flex;align-items:center;justify-content:center;font-size:10px;border:1px solid var(--border-color);cursor:pointer;transition:transform .1s;padding:0}
 .mini-badge:active{transform:scale(.96)}
 .card b{display:block;padding:12px 8px 6px;text-align:center;font-family:'Cinzel',serif;font-weight:700;font-size:.9rem;background:var(--title-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;word-break:break-word;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .05s linear;flex:1;position:relative;z-index:2}
 .card b.wrap-name{white-space:normal!important;overflow:visible;text-overflow:unset;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-height:calc(2 * 1.2em + 12px);line-height:1.2;padding-bottom:6px}
@@ -375,7 +375,7 @@ const iconMap = {
   avistamiento: (v) => defaultCategorias.avistamiento.icons[v] || "❓"
 };
 
-// Referencias globales a botones (optimización: evitar búsquedas repetidas)
+// Referencias globales a botones
 const btnMorfologia = document.getElementById('btnMorfologia');
 const btnTipo = document.getElementById('btnTipo');
 const btnElemento = document.getElementById('btnElemento');
@@ -453,7 +453,6 @@ function buildIndexes(){
 function addToIndex(map,key,id){if(!map.has(key))map.set(key,new Set());map.get(key).add(id)}
 
 let baseFilterVersion=0,cachedBaseIds=null,cachedBaseVersion=-1,cachedIgnoreCat=null;
-// Unificación de predicados: buildPredicate acepta ignoreCat y extraCheck
 function buildPredicate(ignoreCat = null, extraCheck = null) {
   return e => {
     if (ignoreCat !== 'morfologia' && filtrosState.morfologia.length && !filtrosState.morfologia.includes(e.morfologia)) return false;
@@ -485,7 +484,7 @@ function getBaseFilteredIds(ignoreCat=null){
 }
 function invalidateBaseCache(){baseFilterVersion++}
 
-// Caché de contadores para evitar recalcular en cada render
+// Caché de contadores
 let filterCountCache = new Map();
 function clearFilterCountCache() { filterCountCache.clear(); }
 function cachedContarConOpcion(categoria, opcion) {
@@ -541,7 +540,6 @@ invalidateBaseCache = function() {
   invalidateCountCaches();
 };
 
-// Función para obtener lista filtrada (usa buildPredicate sin ignoreCat)
 const aplicarFiltrosCompletos = () => especies.filter(buildPredicate());
 function ordenarEspecies(lista){const[campo,dir]=ordenActual.split('_');const order=dir==="asc"?1:-1;return[...lista].sort((a,b)=>{let va=a[campo]||"",vb=b[campo]||"";return va<vb?-order:va>vb?order:0})}
 
@@ -613,11 +611,30 @@ function afterRevisadoToggle() {
     updateFilterBadges();
     regenerarMenus();
     updateSearchSuggestions();
+    actualizarContadorYPaginacion();
     adjustTitleFontSize();
     actualizarImagenEsquina();
+    actualizarDisabledOtrosFiltros(); // nuevo: actualiza el estado disabled de los demás botones de filtro
   } else {
     render();
   }
+}
+function actualizarDisabledOtrosFiltros() {
+  const categorias = [
+    {btn: btnMorfologia, cat:'morfologia'},
+    {btn: btnTipo, cat:'tipo'},
+    {btn: btnElemento, cat:'elemento'},
+    {btn: btnAvistamiento, cat:'avistamiento'},
+    {btn: btnUbicacion, cat:'ubicacion'},
+    {btn: btnEpoca, cat:'epoca'},
+    {btn: btnSubcategorias, cat:'subcategorias'}
+  ];
+  categorias.forEach(({btn, cat}) => {
+    if (btn) {
+      const n = getCachedOpcionesConDatos(cat);
+      btn.disabled = (n === 0 || n === 1);
+    }
+  });
 }
 function actualizarEstadoBotonRevisado(){
   invalidateBaseCache();
@@ -633,13 +650,42 @@ function updateRevFilterBadge(){btnRevFilter.title=revFilterState.length===0?"Fi
 function setImageWithFallback(imgElement,nombre,transformStyle="",isPrioritario=false){
   const extensions=['jpg','jpeg','png'];let currentExtIndex=0;
   if(isPrioritario){imgElement.fetchPriority="high";imgElement.loading="eager"}else{imgElement.loading="lazy"}
+  // Limpiar placeholders existentes antes de cargar
+  const parent = imgElement.parentNode;
+  if (parent) { const old = parent.querySelectorAll('.img-placeholder'); old.forEach(el => el.remove()); }
   const tryNext=()=>{
-    if(currentExtIndex>=extensions.length){imgElement.style.display="none";const parent=imgElement.parentNode;if(!parent.querySelector(".img-placeholder")){const placeholder=document.createElement("img");placeholder.className="img-placeholder";placeholder.src="img2/noimg2.png";placeholder.style.cssText="width:100%;height:100%;object-fit:cover;";parent.appendChild(placeholder)}return}
+    if(currentExtIndex>=extensions.length){
+      imgElement.style.display="none";
+      if(!parent.querySelector(".img-placeholder")){
+        const placeholder=document.createElement("img");
+        placeholder.className="img-placeholder";
+        placeholder.src="img2/noimg2.png";
+        placeholder.style.cssText="width:100%;height:100%;object-fit:cover;";
+        placeholder.onerror=()=>{
+          // Fallback final si noimg2.png tampoco existe
+          placeholder.style.display="none";
+          const emoji = document.createElement("div");
+          emoji.className="img-placeholder";
+          emoji.textContent="🖼️";
+          emoji.style.cssText="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;";
+          parent.appendChild(emoji);
+        };
+        parent.appendChild(placeholder);
+      }
+      return;
+    }
     const ext=extensions[currentExtIndex];const url=`img/${encodeURIComponent(nombre)}.${ext}`;
     imgElement.src=url;imgElement.style.display="block";
     if(transformStyle)imgElement.style.transform=transformStyle;
-    imgElement.onerror=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();currentExtIndex++;tryNext()};
-    imgElement.onload=()=>{const parent=imgElement.parentNode;const oldPlaceholder=parent.querySelector(".img-placeholder");if(oldPlaceholder)oldPlaceholder.remove();imgElement.style.display="block"};
+    imgElement.onerror=()=>{
+      currentExtIndex++;
+      tryNext();
+    };
+    imgElement.onload=()=>{
+      const oldPlaceholder=parent.querySelector(".img-placeholder");
+      if(oldPlaceholder) oldPlaceholder.remove();
+      imgElement.style.display="block";
+    };
   };
   tryNext();
 }
@@ -753,7 +799,6 @@ function abrirModalSubcategorias() {
   crearModalFiltro('🏷️ Subcategorías', 'subcategorias', valores, counts, filtrosState, subcategoriasModal);
 }
 
-// Debounce para resize
 function debounce(func, wait) {
   let timeout;
   return function(...args) {
@@ -764,7 +809,6 @@ function debounce(func, wait) {
 const debouncedAdjustTitleFontSize = debounce(adjustTitleFontSize, 100);
 const debouncedActualizarImagenEsquina = debounce(actualizarImagenEsquina, 100);
 
-// imagen de esquina ahora se maneja solo con CSS, no requiere ajustes JS
 function actualizarImagenEsquina(){
   const ancho=window.innerWidth;const esCelular=ancho<=700;const src=esCelular?'img2/esquina.png':'img2/esquina.gif';
   if(headerCornerImg.src!==src)headerCornerImg.src=src;
@@ -790,7 +834,17 @@ headerCornerImg.addEventListener('click',(e)=>{e.stopPropagation();abrirVentanaA
 function levenshteinDistance(a,b){if(!a.length)return b.length;if(!b.length)return a.length;const m=[];for(let i=0;i<=b.length;i++)m[i]=[i];for(let j=0;j<=a.length;j++)m[0][j]=j;for(let i=1;i<=b.length;i++)for(let j=1;j<=a.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[j-1]===b[i-1]?0:1));return m[b.length][a.length]}
 function showTemporaryTooltip(el,text,duration=1500){if(!el)return;const rect=el.getBoundingClientRect();showTooltip(text,rect.left+rect.width/2,rect.top-10,duration)}
 function setupBadgeHover(badge,text){badge.addEventListener("mouseenter",()=>{const rect=badge.getBoundingClientRect();showTooltip(text,rect.left+rect.width/2,rect.top-10,2000)});badge.addEventListener("mouseleave",()=>hideTooltip())}
-function crearBadge(ico,tit,cls){const d=document.createElement("div");d.className=`mini-badge ${cls}`;d.textContent=ico;d.setAttribute('aria-label', tit);setupBadgeHover(d,tit);d.addEventListener("click",e=>{e.stopPropagation()});return d}
+// Badges convertidos en <button>
+function crearBadge(ico,tit,cls){
+  const btn = document.createElement("button");
+  btn.className=`mini-badge ${cls}`;
+  btn.textContent=ico;
+  btn.setAttribute('aria-label', tit);
+  btn.title = tit;
+  setupBadgeHover(btn,tit);
+  btn.addEventListener("click",e=>{e.stopPropagation()});
+  return btn;
+}
 function crearBadgesRow(e){return[crearBadge(getIconForMorfologia(e.morfologia),`Morfología: ${e.morfologia}`,"badge-morfologia"),crearBadge(getIconForTipo(e.tipo),`Tipo: ${e.tipo}`,"badge-tipo"),crearBadge(getIconForElemento(e.elemento),`Elemento: ${e.elemento}`,"badge-elemento"),crearBadge(getIconForAvistamiento(e.avistamiento),`Avistamiento: ${e.avistamiento}`,"badge-avistamiento")]}
 
 function crearCardGrid(e,idx,totalPagina){
@@ -819,6 +873,28 @@ function actualizarPaginacionHeader(tp){
   bn.onclick=()=>{if(!bn.disabled){currentPage++;render();window.scrollTo({top:0,behavior:'smooth'})}};
   bl.onclick=()=>{if(!bl.disabled){currentPage=tp;render();window.scrollTo({top:0,behavior:'smooth'})}};
   paginationControlsDiv.append(bf,bp,pi,s,bn,bl);
+}
+
+// Obtener opciones con datos para una categoría (usando caché durante el render)
+function getCachedOpcionesConDatos(categoria) {
+  if (!getCachedOpcionesConDatos.cache) getCachedOpcionesConDatos.cache = new Map();
+  if (getCachedOpcionesConDatos.cache.has(categoria)) return getCachedOpcionesConDatos.cache.get(categoria);
+  let result;
+  if (categoria === 'revisado') {
+    let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; result = c;
+  } else if (categoria === 'ubicacion') {
+    result = [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;
+  } else if (categoria === 'epoca') {
+    result = [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;
+  } else if (categoria === 'subcategorias') {
+    const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
+    result = Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length;
+  } else {
+    const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
+    result = opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
+  }
+  getCachedOpcionesConDatos.cache.set(categoria, result);
+  return result;
 }
 
 async function render(){
@@ -852,30 +928,9 @@ async function render(){
     return;
   }
 
+  getCachedOpcionesConDatos.cache = new Map(); // reset cache per render
   const tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp;
   const hayResultados=total>0;
-
-  // Cachear conteos de opciones con datos para esta renderización
-  const opcionesConDatosCache = new Map();
-  const getCachedOpcionesConDatos = (categoria) => {
-    if (opcionesConDatosCache.has(categoria)) return opcionesConDatosCache.get(categoria);
-    let result;
-    if (categoria === 'revisado') {
-      let c=0; if(contarPorEstado("revisado")>0) c++; if(contarPorEstado("no_revisado")>0) c++; result = c;
-    } else if (categoria === 'ubicacion') {
-      result = [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;
-    } else if (categoria === 'epoca') {
-      result = [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;
-    } else if (categoria === 'subcategorias') {
-      const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});
-      result = Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length;
-    } else {
-      const opciones = {morfologia:opcionesMorfologia, tipo:opcionesTipo, elemento:opcionesElemento, avistamiento:opcionesAvistamiento}[categoria];
-      result = opciones ? opciones.filter(op=>contarConOpcion(categoria,op)>0).length : 0;
-    }
-    opcionesConDatosCache.set(categoria, result);
-    return result;
-  };
 
   if(!hayResultados){
     document.querySelectorAll('.filtro-boton').forEach(btn=>{btn.disabled=true});
@@ -908,7 +963,7 @@ async function render(){
   if(!paginated.length){
     const nd=document.createElement("div");nd.className="no-results";
     if (especies.length === 0) {
-      nd.innerHTML=`<div>🜁 No se pudieron cargar los datos. Verifica la conexión o los archivos.</div><img src="img2/non.jpeg" alt="Error de carga" loading="lazy">`;
+      nd.innerHTML=`<div>🜁 No se pudieron cargar los datos desde dtsk/Datos*.json.</div><img src="img2/non.jpeg" alt="Error de carga" loading="lazy">`;
     } else {
       nd.innerHTML=`<div>🜁 No se encontraron criaturas con esos filtros.</div><img src="img2/non.jpeg" alt="Sin resultados" loading="lazy">`;
     }
@@ -984,7 +1039,33 @@ function actualizarFiltroActivo(btn,activo){btn.classList.toggle('active-filter'
 
 let searchTimeout;
 function onSearchInput(){clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>{searchTerm=searchInput.value;currentPage=1;render();updateClearSearchState();updateSearchSuggestions();invalidateBaseCache()},300)}
-function updateSearchSuggestions(){const term=searchInput.value.trim();let cand=aplicarFiltrosCompletos(),sug=[];if(!term){sug=ordenarEspecies(cand).slice(0,6).map(e=>e.nombre)}else{const wd=cand.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term.toLowerCase(),e.nombre.toLowerCase()),exact:e.nombre.toLowerCase().includes(term.toLowerCase())}));wd.sort((a,b)=>a.exact!==b.exact?a.exact?-1:1:a.dist-b.dist);sug=wd.slice(0,6).map(s=>s.nombre)}searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('')}
+// Búsqueda optimizada: primero nombres que empiezan, luego Levenshtein si hay pocos
+function updateSearchSuggestions(){
+  const term = searchInput.value.trim().toLowerCase();
+  let cand = aplicarFiltrosCompletos();
+  let sug = [];
+  if (!term) {
+    sug = ordenarEspecies(cand).slice(0, 6).map(e => e.nombre);
+  } else {
+    const comienzan = cand.filter(e => e.nombre.toLowerCase().startsWith(term));
+    const otros = cand.filter(e => !e.nombre.toLowerCase().startsWith(term));
+    if (comienzan.length >= 6) {
+      sug = comienzan.slice(0, 6).map(e => e.nombre);
+    } else {
+      sug = comienzan.map(e => e.nombre);
+      const restoCupo = 6 - sug.length;
+      if (restoCupo > 0 && otros.length > 0) {
+        const wd = otros.map(e => ({
+          nombre: e.nombre,
+          dist: levenshteinDistance(term, e.nombre.toLowerCase())
+        }));
+        wd.sort((a, b) => a.dist - b.dist);
+        sug.push(...wd.slice(0, restoCupo).map(s => s.nombre));
+      }
+    }
+  }
+  searchDatalist.innerHTML = sug.map(s => `<option value="${s}">`).join('');
+}
 function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
 
 function limpiarCategoriaORevisados(cat) {
@@ -1015,6 +1096,7 @@ function limpiarCategoriaORevisados(cat) {
     actualizarContadorYPaginacion();
     adjustTitleFontSize();
     actualizarImagenEsquina();
+    actualizarDisabledOtrosFiltros();
   } else {
     render();
   }
@@ -1154,7 +1236,7 @@ btnLimpiar.onclick=()=>{
   persistState();
   invalidateBaseCache();
   if (totalPuntos > 0) { render(); }
-  else { updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); actualizarContadorYPaginacion(); adjustTitleFontSize(); actualizarImagenEsquina(); }
+  else { updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); actualizarContadorYPaginacion(); adjustTitleFontSize(); actualizarImagenEsquina(); actualizarDisabledOtrosFiltros(); }
 };
 favFilterBtn.onclick=()=>{if(!favFilterBtn.disabled){onlyFavorites=!onlyFavorites;currentPage=1;render();persistState();invalidateBaseCache()}};
 searchInput.addEventListener('input',onSearchInput);
@@ -1202,22 +1284,88 @@ if (btnResetTotal) {
     invalidateBaseCache();
   });
 }
-async function cargarArchivosDesdeCarpeta(){let todosLosDatos=[];let indice=1;let hayError=false;while(!hayError){const url=`dtsk/Datos${indice}.json`;try{const respuesta=await fetch(url,{cache:'default'});if(!respuesta.ok){hayError=true;break}const datos=await respuesta.json();if(Array.isArray(datos)){todosLosDatos.push(...datos)}else{todosLosDatos.push(datos)}indice++}catch(error){hayError=true;break}}return todosLosDatos}
+
+async function cargarArchivosDesdeCarpeta() {
+  let todosLosDatos = [];
+  let indice = 1;
+  let hayError = false;
+  while (!hayError) {
+    const url = `dtsk/Datos${indice}.json?t=${Date.now()}`;
+    try {
+      const respuesta = await fetch(url, { cache: 'no-store' });
+      if (!respuesta.ok) {
+        hayError = true;
+        break;
+      }
+      const datos = await respuesta.json();
+      if (Array.isArray(datos)) {
+        todosLosDatos.push(...datos);
+      } else {
+        todosLosDatos.push(datos);
+      }
+      indice++;
+    } catch (error) {
+      hayError = true;
+      break;
+    }
+  }
+  return todosLosDatos;
+}
+
 async function cargarDatos(){
   try{
-    let datosCombinados=await cargarArchivosDesdeCarpeta();
-    if(datosCombinados.length===0){
-      // Ya no se busca datos.json; solo se lanza error si no hay archivos en dtsk
+    let datosCombinados = await cargarArchivosDesdeCarpeta();
+    if (datosCombinados.length === 0) {
       throw new Error('No se pudieron cargar datos desde dtsk/Datos*.json');
     }
-    especies=datosCombinados.map((criatura,idx)=>{if(criatura.posX===undefined){criatura.posX=criatura.posx!==undefined?criatura.posx:0}if(criatura.posY===undefined){criatura.posY=criatura.posy!==undefined?criatura.posy:0}if(criatura.zoom===undefined)criatura.zoom=1;if(!criatura.id){criatura.id=`criatura_${idx}_${Date.now()}_${Math.random()}`}return criatura});
-    dataLoaded=true;buildIndexes();loadFavoritos();loadRevisados();loadModoRevision();loadPersistedState();updateSearchSuggestions();updateClearSearchState();regenerarMenus();await render();
-    window.addEventListener('resize',()=>{if(dataLoaded){ debouncedAdjustTitleFontSize(); if(overlayEl.classList.contains("show")) adjustModalTitleFontSize(); debouncedActualizarImagenEsquina(); }});actualizarImagenEsquina();
-    const hash=window.location.hash.substring(1);if(hash.startsWith("id=")){const id=decodeURIComponent(hash.substring(3));const cr=especies.find(e=>e.id===id);if(cr)setTimeout(()=>abrirDetalle(cr),300)}window.scrollTo({top:0,behavior:'instant'});
-  }catch(err){
-    console.error("Error cargando datos:",err);
-    especies=[];
-    dataLoaded=true;
+    // Asignar valores por defecto para campos imprescindibles
+    especies = datosCombinados.map((criatura, idx) => {
+      return {
+        id: criatura.id || `criatura_${idx}_${Date.now()}_${Math.random()}`,
+        nombre: criatura.nombre || 'Sin nombre',
+        morfologia: criatura.morfologia || 'Desconocido',
+        tipo: criatura.tipo || 'Desconocido',
+        elemento: criatura.elemento || 'Desconocido',
+        avistamiento: criatura.avistamiento || 'Desconocido',
+        ubicacion: criatura.ubicacion || '',
+        epoca: criatura.epoca || '',
+        subcategorias: criatura.subcategorias || '',
+        descripcion: criatura.descripcion || '',
+        links: criatura.links || [],
+        posX: criatura.posX !== undefined ? criatura.posX : (criatura.posx !== undefined ? criatura.posx : 0),
+        posY: criatura.posY !== undefined ? criatura.posY : (criatura.posy !== undefined ? criatura.posy : 0),
+        zoom: criatura.zoom || 1
+      };
+    });
+    dataLoaded = true;
+    buildIndexes();
+    loadFavoritos();
+    loadRevisados();
+    loadModoRevision();
+    loadPersistedState();
+    updateSearchSuggestions();
+    updateClearSearchState();
+    regenerarMenus();
+    await render();
+    window.addEventListener('resize', () => {
+      if (dataLoaded) {
+        debouncedAdjustTitleFontSize();
+        if (overlayEl.classList.contains("show")) adjustModalTitleFontSize();
+        debouncedActualizarImagenEsquina();
+      }
+    });
+    actualizarImagenEsquina();
+    const hash = window.location.hash.substring(1);
+    if (hash.startsWith("id=")) {
+      const id = decodeURIComponent(hash.substring(3));
+      const cr = especies.find(e => e.id === id);
+      if (cr) setTimeout(() => abrirDetalle(cr), 300);
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  } catch(err) {
+    console.error("Error cargando datos:", err);
+    especies = [];
+    dataLoaded = true;
     render();
   }
 }
