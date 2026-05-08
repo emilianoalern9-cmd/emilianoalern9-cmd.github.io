@@ -317,7 +317,7 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
         <div class="modal-header-actions">
           <button id="modalFav" class="fav-star" title="Favorito" aria-label="Marcar como favorito">☆</button>
           <button id="modalRevisado" class="revisado-icon" title="Marcar revisado" aria-label="Marcar como revisado">◇</button>
-          <span id="cerrar" title="Cerrar" aria-label="Cerrar ficha">✕</span>
+          <span id="cerrar" title="Cerrar">✕</span>
         </div>
       </div>
       <div class="modal-body">
@@ -725,9 +725,9 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
   modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show');
   if (cat === 'ubicacion') ubicacionModal = modal; else if (cat === 'epoca') epocaModal = modal; else if (cat === 'subcategorias') subcategoriasModal = modal;
   const grid = modal.querySelector(`#${cat}CheckboxGrid`), actionsDiv = modal.querySelector(`#${cat}Actions`);
-  const sa = document.createElement('button'); sa.textContent = '📋'; sa.title = 'Seleccionar todo'; sa.setAttribute('aria-label','Seleccionar todo');
-  const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo'; da.setAttribute('aria-label','Deseleccionar todo');
-  const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección'; inv.setAttribute('aria-label','Invertir selección');
+  const sa = document.createElement('button'); sa.textContent = '📋'; sa.title = 'Seleccionar todo';
+  const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo';
+  const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
   actionsDiv.append(sa, da, inv);
 
   const actualizarEstadoBotones = () => {
@@ -827,7 +827,7 @@ function crearBadge(ico,tit,cls){
   const btn = document.createElement("button");
   btn.className=`mini-badge ${cls}`;
   btn.textContent=ico;
-  btn.setAttribute('aria-label', tit);
+  // Se mantiene solo el tooltip dorado (title), sin aria-label adicional
   btn.title = tit;
   setupBadgeHover(btn,tit);
   btn.addEventListener("click",e=>{e.stopPropagation()});
@@ -842,7 +842,7 @@ function crearCardGrid(e,idx,totalPagina){
   const footer=document.createElement("div");footer.className="card-footer-row";const bw=document.createElement("div");bw.className="badges-wrapper";crearBadgesRow(e).forEach(b=>bw.appendChild(b));
   const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";fb.setAttribute('aria-label','Marcar como favorito');
   fb.onclick=ev=>{ev.stopPropagation();toggleFavorito(e.id,false)};const ri=document.createElement("span");ri.className="revisado-icon";const est=revisados.has(e.id);
-  ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no_revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";ri.setAttribute('aria-label', est?'Revisado':'No revisado');
+  ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no_revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";
   ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault();toggleRevisado(e.id)};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;
 }
 
@@ -1154,11 +1154,11 @@ function actualizarMenuCSV(){
   const acceptBtn=document.createElement("button");acceptBtn.textContent="✓";acceptBtn.title="Aceptar y exportar";acceptBtn.className="accept";acceptBtn.disabled=!selectedFields.length;
   acceptBtn.onclick=()=>{exportarCSV();closeTempMenus()};
   const actionsDiv=document.createElement("div");actionsDiv.className="temp-actions";
-  const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";sa.setAttribute('aria-label','Seleccionar todo');
+  const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";
   sa.onclick=()=>{selectedFields=[...camposVisibles];cg.querySelectorAll("input").forEach(c=>c.checked=true);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";da.setAttribute('aria-label','Deseleccionar todo');
+  const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";
   da.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>c.checked=false);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";inv.setAttribute('aria-label','Invertir selección');
+  const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";
   inv.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>{if(!c.checked)selectedFields.push(c.value);c.checked=!c.checked});actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
   actionsDiv.append(sa,da,inv,acceptBtn);csvMenu.appendChild(actionsDiv);
   csvMenu.querySelector('#csvCloseBtn').onclick=()=>closeTempMenus();
