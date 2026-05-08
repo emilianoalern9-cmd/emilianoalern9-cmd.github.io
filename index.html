@@ -455,10 +455,7 @@ function toggleRevisado(id,esAuto=false){
 }
 function afterRevisadoToggle() {
   invalidateBaseCache();
-  // ✅ Actualizar el estado del botón inmediatamente, haya o no renderizado completo
   actualizarEstadoBotonRevisado();
-
-  // Si el filtro no está activo (ambos o ninguno seleccionados), omitir la regeneración completa
   if (revFilterState.length === 0 || revFilterState.length === 2) {
     updateFilterBadges();
     regenerarMenus();
@@ -504,17 +501,38 @@ function closeAllMenus(){document.querySelectorAll(".filtro-menu,.config-menu,.o
 const closeTempMenus=()=>{document.querySelectorAll(".temp-floating-menu").forEach(m=>{m.classList.remove("show");setTimeout(()=>{if(!m.classList.contains("show"))m.remove()},300)});if(csvMenu)csvMenu.classList.remove("show");if(ubicacionModal)ubicacionModal.classList.remove("show");if(epocaModal)epocaModal.classList.remove("show");if(subcategoriasModal)subcategoriasModal.classList.remove("show");removeMenuOverlay();hideTooltip()};
 
 // ==================== MODALES DE FILTRO (SIN BOTÓN ACEPTAR, CAMBIOS EN TIEMPO REAL) ====================
+function aplicarCambioModalFiltro(cat, nuevosValores, opcionesVisiblesCount) {
+  const antesTodos = (filtrosState[cat].length === 0) || (filtrosState[cat].length === opcionesVisiblesCount);
+  const despuesTodos = (nuevosValores.length === 0) || (nuevosValores.length === opcionesVisiblesCount);
+  filtrosState[cat] = nuevosValores;
+  currentPage = 1;
+  persistState();
+  invalidateBaseCache();
+  if (antesTodos && despuesTodos) {
+    // Sin cambio real en la lista
+    updateFilterBadges();
+    regenerarMenus();
+    updateSearchSuggestions();
+    actualizarContadorYPaginacion();
+    adjustTitleFontSize();
+    actualizarImagenEsquina();
+  } else {
+    render();
+  }
+}
+
 function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
   closeAllMenus();closeTempMenus();
   if(modalVar) modalVar.remove();
   createMenuOverlay(999, ()=>{closeTempMenus();});
   const modal = document.createElement('div'); modal.className = 'temp-floating-menu'; modal.id = cat+'Modal';
   const opcionesConDatos = valores.filter(v => counts.get(v) > 0);
+  const totalVisibles = opcionesConDatos.length;
   let html = `<div class="temp-header">${titulo} <button id="${cat}CancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="${cat}CheckboxGrid">`;
   opcionesConDatos.forEach(val => {
     const count = counts.get(val);
     const checked = filtrosState[cat].includes(val);
-    const soloUna = (opcionesConDatos.length === 1);
+    const soloUna = (totalVisibles === 1);
     html += `<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`;
   });
   html += `</div><div class="modal-actions" id="${cat}Actions"></div>`;
@@ -535,32 +553,22 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
 
   grid.addEventListener('change', () => {
     const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-    filtrosState[cat] = selected;
-    currentPage = 1;
-    render();
-    persistState();
-    invalidateBaseCache();
+    aplicarCambioModalFiltro(cat, selected, totalVisibles);
     actualizarEstadoBotones();
   });
 
   sa.onclick = () => {
-    grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = true);
-    const selected = Array.from(grid.querySelectorAll('input[type="checkbox"]:not([disabled])')).map(cb => cb.value);
-    filtrosState[cat] = selected;
-    currentPage = 1;
-    render();
-    persistState();
-    invalidateBaseCache();
+    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
+    checks.forEach(cb => cb.checked = true);
+    const selected = Array.from(checks).map(cb => cb.value);
+    aplicarCambioModalFiltro(cat, selected, totalVisibles);
     actualizarEstadoBotones();
   };
 
   da.onclick = () => {
-    grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb => cb.checked = false);
-    filtrosState[cat] = [];
-    currentPage = 1;
-    render();
-    persistState();
-    invalidateBaseCache();
+    const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
+    checks.forEach(cb => cb.checked = false);
+    aplicarCambioModalFiltro(cat, [], totalVisibles);
     actualizarEstadoBotones();
   };
 
@@ -568,11 +576,7 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
     const checks = grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
     const newSelected = [];
     checks.forEach(cb => { cb.checked = !cb.checked; if (cb.checked) newSelected.push(cb.value); });
-    filtrosState[cat] = newSelected;
-    currentPage = 1;
-    render();
-    persistState();
-    invalidateBaseCache();
+    aplicarCambioModalFiltro(cat, newSelected, totalVisibles);
     actualizarEstadoBotones();
   };
 
@@ -747,7 +751,7 @@ function actualizarModal(){
   setImageWithFallback(modalImg,e.nombre,"",true);const linksHtml=e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:"";
   const subcatsHtml=e.subcategorias?`<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>`:'';
   modalInfoScroll.innerHTML=`<div class="info-grid"><div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div><div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div><div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div><div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div><div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div><div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>${subcatsHtml}</div><div class="modal-description">${e.descripcion}</div>${linksHtml}`;
-  const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no_revisado",!est);modalRevisadoBtn.style.color="var(--accent)";
+  const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no-revisado",!est);modalRevisadoBtn.style.color="var(--accent)";
   modalRevisadoBtn.onclick=()=>{if(modoRevision==="bloqueo"){if(revisados.has(e.id))toggleRevisado(e.id,false)}else toggleRevisado(e.id,false)};
   if(modalFavBtn)modalFavBtn.textContent=isFavorito(e.id)?"★":"☆";modalPrevArrow.style.display=modalNextArrow.style.display=navegacionBloqueada?"none":"flex";actualizarFlechasModal();
   requestAnimationFrame(()=>{adjustModalTitleFontSize()});
