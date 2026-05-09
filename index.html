@@ -1164,3 +1164,185 @@ function actualizarMenuCSV(){
   actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);
   cg.addEventListener("change",()=>{selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)});
 }
+}
+function exportarCSV(){
+  if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return;
+  const ordenadas=ordenarEspecies(filtradas);const headers=['nombre',...selectedFields];if(!headers.length)return;
+  const rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")||v.includes('"')))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))});
+  const blob=new Blob([rows.join("\n")],{type:"text/csv"}),link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="indice_seres.csv";link.click();URL.revokeObjectURL(link.href);
+}
+function regenerarMenus(){generarMenuMorfologia();generarMenuTipo();generarMenuElemento();generarMenuAvistamiento();generarMenuOrden();generarMenuConfig();generarRevFilterMenu();if(csvMenu)csvMenu.remove();crearMenuCSV()}
+function repositionMenu(menu,button){if(!menu||!button)return;const r=button.getBoundingClientRect(),mr=menu.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;mr.height>vh-r.bottom&&r.top>mr.height?(menu.style.top='auto',menu.style.bottom='110%'):(menu.style.top='110%',menu.style.bottom='auto');r.left+mr.width>vw?(menu.style.left='auto',menu.style.right='0'):(menu.style.left='0',menu.style.right='auto')}
+function initMenus(){
+  document.querySelectorAll(".filtro-group").forEach(g=>{const b=g.querySelector(".filtro-boton,.config-btn,.help-btn");const m=g.querySelector(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu,.help-menu");if(b&&m&&(b.id!=='btnUbicacion'&&b.id!=='btnEpoca'&&b.id!=='btnSubcategorias')){b.addEventListener("click",e=>{e.stopPropagation();const wasOpen=m.classList.contains("show");closeAllMenus();if(!wasOpen){m.classList.add("show");createMenuOverlay(199,()=>{closeAllMenus()});setTimeout(()=>repositionMenu(m,b),10)}})}});
+  btnUbicacion.addEventListener("click",(e)=>{e.stopPropagation();abrirModalUbicacion()});
+  btnEpoca.addEventListener("click",(e)=>{e.stopPropagation();abrirModalEpoca()});
+  btnSubcategorias.addEventListener("click",(e)=>{e.stopPropagation();abrirModalSubcategorias()});
+  document.addEventListener("click",e=>{if(!e.target.closest(".filtro-group")&&!e.target.closest("#ordenGroup")&&!e.target.closest("#configGroup")&&!e.target.closest(".csv-menu")&&!e.target.closest(".temp-floating-menu")){closeAllMenus();closeTempMenus()}});
+}
+initMenus();
+mainTitle.addEventListener("click",()=>{panelVisible=!panelVisible;if(panelVisible){filtrosPanel.classList.remove("oculto")}else{filtrosPanel.classList.add("oculto")}actualizarImagenEsquina()});
+btnLimpiar.onclick=()=>{
+  if(btnLimpiar.disabled)return;
+  const opcionesVisiblesCount = (cat) => {
+    if (cat === 'revisado') return (contarPorEstado("revisado")>0?1:0) + (contarPorEstado("no_revisado")>0?1:0);
+    if (cat === 'morfologia') return opcionesMorfologia.filter(op => contarConOpcion('morfologia',op)>0).length;
+    if (cat === 'tipo') return opcionesTipo.filter(op => contarConOpcion('tipo',op)>0).length;
+    if (cat === 'elemento') return opcionesElemento.filter(op => contarConOpcion('elemento',op)>0).length;
+    if (cat === 'avistamiento') return opcionesAvistamiento.filter(op => contarConOpcion('avistamiento',op)>0).length;
+    if (cat === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op => contarConOpcion('ubicacion',op)>0).length;
+    if (cat === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op => contarConOpcion('epoca',op)>0).length;
+    if (cat === 'subcategorias') { const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})}); return Array.from(todas).filter(op => contarConOpcion('subcategorias',op)>0).length; }
+    return 0;
+  };
+  const categoriasAEvaluar = ['morfologia','tipo','elemento','avistamiento','ubicacion','epoca','subcategorias','revisado'];
+  let totalPuntos = 0;
+  for (let cat of categoriasAEvaluar) {
+    const visibles = opcionesVisiblesCount(cat);
+    if (visibles === 0) continue;
+    const seleccionadas = (cat === 'revisado') ? revFilterState.length : filtrosState[cat].length;
+    if (seleccionadas !== 0 && seleccionadas !== visibles) totalPuntos++;
+  }
+  filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
+  revFilterState = [];
+  saveRevFilterState();
+  currentPage = 1;
+  persistState();
+  invalidateBaseCache();
+  if (totalPuntos > 0) { render(); }
+  else { updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); actualizarContadorYPaginacion(); adjustTitleFontSize(); actualizarImagenEsquina(); actualizarDisabledOtrosFiltros(); }
+};
+favFilterBtn.onclick=()=>{if(!favFilterBtn.disabled){onlyFavorites=!onlyFavorites;currentPage=1;render();persistState();invalidateBaseCache()}};
+searchInput.addEventListener('input',onSearchInput);
+clearSearchBtn.onclick=()=>{if(clearSearchBtn.classList.contains("disabled"))return;searchInput.value='';searchTerm='';currentPage=1;render();updateClearSearchState();updateSearchSuggestions();invalidateBaseCache()};
+cerrarBtn.onclick=closeModal;overlayEl.onclick=e=>{if(e.target===overlayEl)closeModal()};
+modalPrevArrow.onclick=()=>navegarModal(-1);modalNextArrow.onclick=()=>navegarModal(1);
+modalFavBtn.onclick=()=>{if(currentModalCreature)toggleFavorito(currentModalCreature.id,false)};
+document.addEventListener("keydown",e=>{
+  if(!overlayEl.classList.contains("show")) return;
+  const key = e.key;
+  if (key === "Escape") { closeModal(); return; }
+  if (navegacionBloqueada) return;
+  if (key === "ArrowLeft") { e.preventDefault(); navegarModal(-1); }
+  else if (key === "ArrowRight") { e.preventDefault(); navegarModal(1); }
+  else if (key === "f" || key === "F") { e.preventDefault(); if(currentModalCreature) toggleFavorito(currentModalCreature.id, false); }
+  else if (key === "r" || key === "R") { e.preventDefault(); if(currentModalCreature) toggleRevisado(currentModalCreature.id, false); }
+  else if (key === "l" || key === "L") {
+    e.preventDefault();
+    if(currentModalCreature && currentModalCreature.links && currentModalCreature.links.length) {
+      const url = currentModalCreature.links[0];
+      window.open(url, '_blank');
+      marcarRevisadoPorLink(currentModalCreature.id);
+    }
+  }
+});
+modalTitle.closest("#detalle").addEventListener("touchstart",e=>{touchStartX=e.changedTouches[0].screenX});
+modalTitle.closest("#detalle").addEventListener("touchend",e=>{if(navegacionBloqueada)return;const d=e.changedTouches[0].screenX-touchStartX;if(Math.abs(d)>50){navegarModal(d>0?-1:1);e.preventDefault()}});
+function adjustTitleFontSize(){const ruler=document.createElement('span');ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none';document.body.appendChild(ruler);const minFontSize=0.7;document.querySelectorAll('.card b').forEach(t=>{const a=t.clientWidth;if(a<=0)return;ruler.textContent=t.textContent;let fs=0.9;ruler.style.fontSize=fs+'rem';while(fs>minFontSize&&ruler.offsetWidth>a){fs-=0.005;ruler.style.fontSize=fs+'rem'}if(ruler.offsetWidth>a){t.classList.add('wrap-name');t.style.fontSize=minFontSize+'rem'}else{t.classList.remove('wrap-name');t.style.fontSize=fs+'rem'}});ruler.remove()}
+function adjustModalTitleFontSize(){const h3=modalTitle;if(!h3)return;const availableWidth=h3.clientWidth;if(availableWidth<=0)return;const minFontSize=0.8;const testEl=document.createElement('span');testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;';testEl.textContent=h3.textContent;document.body.appendChild(testEl);let fs=1.4;testEl.style.fontSize=fs+'rem';while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){fs-=0.05;testEl.style.fontSize=fs+'rem'}if(testEl.scrollWidth>testEl.clientWidth){h3.classList.add('wrap-name');h3.style.fontSize=minFontSize+'rem'}else{h3.classList.remove('wrap-name');h3.style.fontSize=fs+'rem'}testEl.remove()}
+if (btnResetTotal) {
+  btnResetTotal.addEventListener('click', () => {
+    const hayFiltrosActivos = Object.values(filtrosState).some(a => a.length) || revFilterState.length > 0;
+    if (!hayFiltrosActivos && !onlyFavorites && searchTerm === '') return;
+    filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
+    revFilterState = [];
+    saveRevFilterState();
+    onlyFavorites = false;
+    searchInput.value = '';
+    searchTerm = '';
+    updateClearSearchState();
+    currentPage = 1;
+    render();
+    persistState();
+    invalidateBaseCache();
+  });
+}
+
+async function cargarArchivosDesdeCarpeta() {
+  let todosLosDatos = [];
+  let indice = 1;
+  let hayError = false;
+  while (!hayError) {
+    const url = `dtsk/Datos${indice}.json?t=${Date.now()}`;
+    try {
+      const respuesta = await fetch(url, { cache: 'no-store' });
+      if (!respuesta.ok) {
+        hayError = true;
+        break;
+      }
+      const datos = await respuesta.json();
+      if (Array.isArray(datos)) {
+        todosLosDatos.push(...datos);
+      } else {
+        todosLosDatos.push(datos);
+      }
+      indice++;
+    } catch (error) {
+      hayError = true;
+      break;
+    }
+  }
+  return todosLosDatos;
+}
+
+async function cargarDatos(){
+  try{
+    let datosCombinados = await cargarArchivosDesdeCarpeta();
+    if (datosCombinados.length === 0) {
+      throw new Error('No se pudieron cargar datos desde dtsk/Datos*.json');
+    }
+    especies = datosCombinados.map((criatura, idx) => {
+      return {
+        id: criatura.id || `criatura_${idx}_${Date.now()}_${Math.random()}`,
+        nombre: criatura.nombre || 'Sin nombre',
+        morfologia: criatura.morfologia || 'Desconocido',
+        tipo: criatura.tipo || 'Desconocido',
+        elemento: criatura.elemento || 'Desconocido',
+        avistamiento: criatura.avistamiento || 'Desconocido',
+        ubicacion: criatura.ubicacion || '',
+        epoca: criatura.epoca || '',
+        subcategorias: criatura.subcategorias || '',
+        descripcion: criatura.descripcion || '',
+        links: criatura.links || [],
+        posX: criatura.posX !== undefined ? criatura.posX : (criatura.posx !== undefined ? criatura.posx : 0),
+        posY: criatura.posY !== undefined ? criatura.posY : (criatura.posy !== undefined ? criatura.posy : 0),
+        zoom: criatura.zoom || 1
+      };
+    });
+    dataLoaded = true;
+    buildIndexes();
+    loadFavoritos();
+    loadRevisados();
+    loadModoRevision();
+    loadPersistedState();
+    updateSearchSuggestions();
+    updateClearSearchState();
+    regenerarMenus();
+    await render();
+    window.addEventListener('resize', () => {
+      if (dataLoaded) {
+        debouncedAdjustTitleFontSize();
+        if (overlayEl.classList.contains("show")) adjustModalTitleFontSize();
+        debouncedActualizarImagenEsquina();
+      }
+    });
+    actualizarImagenEsquina();
+    const hash = window.location.hash.substring(1);
+    if (hash.startsWith("id=")) {
+      const id = decodeURIComponent(hash.substring(3));
+      const cr = especies.find(e => e.id === id);
+      if (cr) setTimeout(() => abrirDetalle(cr), 300);
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  } catch(err) {
+    console.error("Error cargando datos:", err);
+    especies = [];
+    dataLoaded = true;
+    render();
+  }
+}
+async function inicializarApp(){await cargarDatos()}
+inicializarApp();
+</script>
+</body>
+</html>
