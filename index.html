@@ -477,7 +477,7 @@ const ORDEN_OPCIONES = [
 ];
 
 const CSV_CAMPOS = ["id","nombre","morfologia","tipo","elemento","avistamiento","ubicacion","epoca","subcategorias","descripcion","links"];
-const STORAGE_VERSION = 12;
+const STORAGE_VERSION = 13;
 
 /* ══ Estado de la app ═════════════════════════════════════ */
 let especies = [], dataLoaded = false;
@@ -548,6 +548,64 @@ const loadRevFilterState= () => { revFilterState = loadLocal('catalogo_rev_filte
 const saveRevFilterState= () => { saveLocal('catalogo_rev_filter', revFilterState); updateRevFilterBadge(); };
 const loadModoRevision  = () => { const m = localStorage.getItem('catalogo_modo_revision'); if (m) modoRevision = m; };
 const saveModoRevision  = () => localStorage.setItem('catalogo_modo_revision', modoRevision);
+
+/* ══ NUEVO: Exportar/Importar datos de usuario ═════════════ */
+function exportarDatosUsuario() {
+  const datos = {
+    version: STORAGE_VERSION,
+    timestamp: new Date().toISOString(),
+    favoritos: [...favoritos],
+    revisados: [...revisados],
+    filtros: filtrosState,
+    orden: ordenActual,
+    perPage: perPage,
+    modoRevision: modoRevision
+  };
+  const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `indice_seres_datos_${new Date().toISOString().slice(0,10)}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showTooltip('📥 Datos exportados', window.innerWidth / 2, window.innerHeight / 2, 2000);
+}
+
+function importarDatosUsuario() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const datos = JSON.parse(event.target.result);
+        if (datos.favoritos) favoritos = new Set(datos.favoritos);
+        if (datos.revisados) revisados = new Set(datos.revisados);
+        if (datos.filtros) filtrosState = datos.filtros;
+        if (datos.orden) ordenActual = datos.orden;
+        if (datos.perPage) perPage = datos.perPage;
+        if (datos.modoRevision) modoRevision = datos.modoRevision;
+        
+        saveFavoritos();
+        saveRevisados();
+        saveModoRevision();
+        persistState();
+        
+        currentPage = 1;
+        invalidateBaseCache();
+        render();
+        showTooltip('📤 Datos importados correctamente', window.innerWidth / 2, window.innerHeight / 2, 2000);
+      } catch (err) {
+        console.error('Error al importar datos:', err);
+        showTooltip('❌ Error al importar', window.innerWidth / 2, window.innerHeight / 2, 2000);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
 
 function resetAllData() {
   localStorage.clear();
@@ -738,10 +796,32 @@ function setupBadgeHover(badge, text) {
   badge.addEventListener("mouseleave", () => hideTooltip());
 }
 
-/* ══ Imagen con fallback ══════════════════════════════════ */
-const IMG_EXTS = ['jpg','jpeg','png'];
+/* ══ Sistema de foco (1-9) para posicionamiento automático ════ */
+function calcularTransformPorFoco(foco) {
+  // Mapa de posiciones basado en cuadrícula 3x3
+  // 1=sup-izq, 2=sup-centro, 3=sup-der
+  // 4=centro-izq, 5=centro, 6=centro-der
+  // 7=inf-izq, 8=inf-centro, 9=inf-der
+  const focoNum = parseInt(foco) || 5;
+  if (focoNum < 1 || focoNum > 9) return "translate(0, 0)";
+  
+  const mapeos = {
+    1: { x: -75, y: -75 },   // superior-izquierda
+    2: { x: 0,   y: -75 },   // superior-centro
+    3: { x: 75,  y: -75 },   // superior-derecha
+    4: { x: -75, y: 0 },     // centro-izquierda
+    5: { x: 0,   y: 0 },     // centro (predeterminado)
+    6: { x: 75,  y: 0 },     // centro-derecha
+    7: { x: -75, y: 75 },    // inferior-izquierda
+    8: { x: 0,   y: 75 },    // inferior-centro
+    9: { x: 75,  y: 75 }     // inferior-derecha
+  };
+  
+  const pos = mapeos[focoNum] || mapeos[5];
+  return `translate(${pos.x}px, ${pos.y}px)`;
+}
 
-function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false) {
+function setImageWithFallback(imgEl, nombre, foco = 5, isPriority = false) {
   if (isPriority) { imgEl.fetchPriority = "high"; imgEl.loading = "eager"; } else { imgEl.loading = "lazy"; }
   const parent = imgEl.parentNode;
   parent?.querySelectorAll('.img-placeholder').forEach(el => el.remove());
@@ -760,7 +840,7 @@ function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false)
     }
     imgEl.src = `img/${encodeURIComponent(nombre)}.${IMG_EXTS[idx]}`;
     imgEl.style.display = "block";
-    if (transform) imgEl.style.transform = transform;
+    imgEl.style.transform = calcularTransformPorFoco(foco);
     imgEl.onerror = () => { idx++; tryNext(); };
     imgEl.onload  = () => { parent?.querySelector(".img-placeholder")?.remove(); imgEl.style.display = "block"; };
   };
@@ -769,7 +849,7 @@ function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false)
 
 function crearImg(e, isPriority = false) {
   const img = document.createElement("img");
-  setImageWithFallback(img, e.nombre, `translate(${e.posX||0}px,${e.posY||0}px) scale(${e.zoom||1})`, isPriority);
+  setImageWithFallback(img, e.nombre, e.foco || 5, isPriority);
   return img;
 }
 
@@ -927,6 +1007,8 @@ function generarMenuConfig() {
   });
   addBtn(`🔢 Ítems por página (${perPage})`, e => { e.stopPropagation(); closeAllMenus(); abrirMenuItemsPerPage(); });
   addBtn("📎 Exportar CSV",                  e => { e.stopPropagation(); closeAllMenus(); crearMenuCSV(); csvMenu.classList.add("show"); });
+  addBtn("💾 Exportar datos",                e => { e.stopPropagation(); closeAllMenus(); exportarDatosUsuario(); });
+  addBtn("📂 Importar datos",                e => { e.stopPropagation(); closeAllMenus(); importarDatosUsuario(); });
   addBtn(`📌 Modo revisión (${modoRevision === "automatico" ? "Automático" : "Bloqueo"})`, e => {
     e.stopPropagation(); modoRevision = modoRevision === "automatico" ? "bloqueo" : "automatico"; saveModoRevision(); generarMenuConfig(); closeAllMenus();
   });
@@ -1058,7 +1140,7 @@ function abrirMenuAyuda() {
   closeAllMenus(); closeTempMenus();
   createMenuOverlay(999, () => closeTempMenus());
   const menu = document.createElement("div"); menu.id = "helpFloatingMenu"; menu.className = "temp-floating-menu";
-  menu.innerHTML = `<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico</p><p><strong>📍 Ubicación</strong> - Filtro por lugar</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong></p><p><strong>📊 Ordenar</strong></p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo</p></div>`;
+  menu.innerHTML = `<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico</p><p><strong>📍 Ubicación</strong> - Filtro por lugar</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong></p><p><strong>📊 Ordenar</strong></p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, datos, modo</p></div>`;
   document.body.appendChild(menu); menu.classList.add('show');
   menu.querySelector('#helpCloseBtn').onclick = () => closeTempMenus();
   menu.addEventListener('click', e => e.stopPropagation());
@@ -1209,7 +1291,7 @@ function actualizarModal() {
   if (!currentModalCreature) return;
   const e = currentModalCreature;
   modalTitle.innerText = e.nombre; adjustModalTitleFontSize();
-  setImageWithFallback(modalImg, e.nombre, "", true);
+  setImageWithFallback(modalImg, e.nombre, e.foco || 5, true);
 
   const linksHtml = e.links?.length ? `<div class="links-list">${e.links.map(u => `<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>` : "";
   const subcatsHtml = e.subcategorias ? `<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>` : '';
@@ -1432,7 +1514,7 @@ document.addEventListener("keydown", e => {
   if (!overlayEl.classList.contains("show")) return;
   if (e.key === "Escape") { closeModal(); return; }
   if (navegacionBloqueada) return;
-  const acciones = { ArrowLeft:()=>navegarModal(-1), ArrowRight:()=>navegarModal(1), f:()=>currentModalCreature&&toggleFavorito(currentModalCreature.id), F:()=>currentModalCreature&&toggleFavorito(currentModalCreature.id), r:()=>currentModalCreature&&toggleRevisado(currentModalCreature.id), R:()=>currentModalCreature&&toggleRevisado(currentModalCreature.id),
+  const acciones = { ArrowLeft:()=>navegarModal(-1), ArrowRight:()=>navegarModal(1), f:()=>currentModalCreature&&toggleFavorito(currentModalCreature.id), F:()=>currentModalCreature&&toggleFavorito(currentModalCreature.id), r:()=>currentModalCreature&&toggleRevisado(currentModalCreature.id), R:()=>currentModalCreature&&toggleRevisado(currentModalCreatura.id),
     l:()=>{if(currentModalCreature?.links?.length){window.open(currentModalCreature.links[0],'_blank');marcarRevisadoPorLink(currentModalCreature.id);}},
     L:()=>{if(currentModalCreature?.links?.length){window.open(currentModalCreature.links[0],'_blank');marcarRevisadoPorLink(currentModalCreature.id);}}
   };
@@ -1478,9 +1560,7 @@ async function cargarDatos() {
       subcategorias:c.subcategorias || '',
       descripcion:  c.descripcion   || '',
       links:        c.links         || [],
-      posX:         c.posX ?? c.posx ?? 0,
-      posY:         c.posY ?? c.posy ?? 0,
-      zoom:         c.zoom          || 1
+      foco:         c.foco          || 5
     }));
 
     dataLoaded = true;
