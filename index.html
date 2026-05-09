@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Índice de Seres Místicos *</title>
+<title>Índice de Seres Místicos</title>
 <link rel="icon" href="img2/icono4.png" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img2/anuncio1.gif">
@@ -827,8 +827,7 @@ function crearBadge(ico,tit,cls){
   const btn = document.createElement("button");
   btn.className=`mini-badge ${cls}`;
   btn.textContent=ico;
-  // Se mantiene solo el tooltip dorado (title), sin aria-label adicional
-  btn.title = tit;
+  btn.title = tit; // solo tooltip dorado
   setupBadgeHover(btn,tit);
   btn.addEventListener("click",e=>{e.stopPropagation()});
   return btn;
@@ -840,7 +839,7 @@ function crearCardGrid(e,idx,totalPagina){
   const imgC=document.createElement("div");imgC.className="img-container";const esPrioritaria=idx<12||(totalPagina<=24&&idx<24);
   imgC.appendChild(crearImg(e,esPrioritaria));const nombreB=document.createElement("b");nombreB.textContent=e.nombre;
   const footer=document.createElement("div");footer.className="card-footer-row";const bw=document.createElement("div");bw.className="badges-wrapper";crearBadgesRow(e).forEach(b=>bw.appendChild(b));
-  const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";fb.setAttribute('aria-label','Marcar como favorito');
+  const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";fb.title=isFavorito(e.id)?"Quitar de favoritos":"Agregar a favoritos";
   fb.onclick=ev=>{ev.stopPropagation();toggleFavorito(e.id,false)};const ri=document.createElement("span");ri.className="revisado-icon";const est=revisados.has(e.id);
   ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no_revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";
   ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault();toggleRevisado(e.id)};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;
@@ -1113,236 +1112,4 @@ function generarRevFilterMenu(){
     if(count===0)return;
     const label=document.createElement("label");const cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id);
     if(opcionesVisibles===1&&count>0)cb.disabled=true;
-    cb.addEventListener("change",()=>{if(cb.disabled)return;cb.checked?(!revFilterState.includes(opt.id)&&revFilterState.push(opt.id)):revFilterState=revFilterState.filter(v=>v!==opt.id);saveRevFilterState();currentPage=1;render();invalidateBaseCache()});label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label);
-  });
-  const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=(revFilterState.length===0);
-  bc.addEventListener('click', (e) => {
-    e.stopPropagation();
-    limpiarCategoriaORevisados('revisado');
-  });
-  revFilterMenu.appendChild(bc);
-}
-function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico</p><p><strong>📍 Ubicación</strong> - Filtro por lugar</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong></p><p><strong>📊 Ordenar</strong></p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
-function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96];const idx=valores.indexOf(perPage);const sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=(tempPerPage===perPage)};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
-function regenerarMenuConfigBtn(){generarMenuConfig()}
-function generarMenuConfig(){
-  configMenu.innerHTML="";const addBtn=(html,click)=>{const b=document.createElement("button");b.innerHTML=html;b.onclick=click;configMenu.appendChild(b);return b};
-  addBtn("🎲 Azar",()=>{const f=aplicarFiltrosCompletos();if(f.length){navegacionBloqueada=true;abrirDetalle(f[Math.floor(Math.random()*f.length)])}closeAllMenus()});
-  addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{e.stopPropagation();closeAllMenus();abrirMenuItemsPerPage()});
-  addBtn("📎 Exportar CSV",(e)=>{e.stopPropagation();closeAllMenus();crearMenuCSV();csvMenu.classList.add("show")});
-  const modoTexto=modoRevision==="automatico"?"Automático":"Bloqueo";
-  addBtn(`📌 Modo revisión (${modoTexto})`,(e)=>{
-    e.stopPropagation();
-    modoRevision = (modoRevision === "automatico") ? "bloqueo" : "automatico";
-    saveModoRevision();
-    regenerarMenuConfigBtn();
-    closeAllMenus();
-  });
-  addBtn("📖 Ayuda",(e)=>{e.stopPropagation();closeAllMenus();abrirMenuAyuda()});
-}
-function crearMenuCSV(){
-  if(csvMenu)csvMenu.remove();
-  csvMenu=document.createElement("div");csvMenu.id="csvModal";csvMenu.className="temp-floating-menu";
-  actualizarMenuCSV();document.body.appendChild(csvMenu);
-  csvMenu.addEventListener("click",e=>e.stopPropagation());
-}
-function actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn){const marcados=cg.querySelectorAll("input[type='checkbox']:checked").length,total=cg.querySelectorAll("input[type='checkbox']").length;sa.disabled=(marcados===total);da.disabled=(marcados===0);acceptBtn.disabled=!selectedFields.length}
-function actualizarMenuCSV(){
-  if(!csvMenu)return;const camposVisibles=csvFields.filter(f=>f!=='nombre');
-  csvMenu.innerHTML=`<div class="temp-header">📎 Seleccionar campos a exportar (nombre siempre incluido) <button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
-  const cg=csvMenu.querySelector(".csv-checkbox-group");
-  const acceptBtn=document.createElement("button");acceptBtn.textContent="✓";acceptBtn.title="Aceptar y exportar";acceptBtn.className="accept";acceptBtn.disabled=!selectedFields.length;
-  acceptBtn.onclick=()=>{exportarCSV();closeTempMenus()};
-  const actionsDiv=document.createElement("div");actionsDiv.className="temp-actions";
-  const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";
-  sa.onclick=()=>{selectedFields=[...camposVisibles];cg.querySelectorAll("input").forEach(c=>c.checked=true);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";
-  da.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>c.checked=false);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";
-  inv.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>{if(!c.checked)selectedFields.push(c.value);c.checked=!c.checked});actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  actionsDiv.append(sa,da,inv,acceptBtn);csvMenu.appendChild(actionsDiv);
-  csvMenu.querySelector('#csvCloseBtn').onclick=()=>closeTempMenus();
-  actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);
-  cg.addEventListener("change",()=>{selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)});
-}
-function exportarCSV(){
-  if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return;
-  const ordenadas=ordenarEspecies(filtradas);const headers=['nombre',...selectedFields];if(!headers.length)return;
-  const rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")||v.includes('"')))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))});
-  const blob=new Blob([rows.join("\n")],{type:"text/csv"}),link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="indice_seres.csv";link.click();URL.revokeObjectURL(link.href);
-}
-function regenerarMenus(){generarMenuMorfologia();generarMenuTipo();generarMenuElemento();generarMenuAvistamiento();generarMenuOrden();generarMenuConfig();generarRevFilterMenu();if(csvMenu)csvMenu.remove();crearMenuCSV()}
-function repositionMenu(menu,button){if(!menu||!button)return;const r=button.getBoundingClientRect(),mr=menu.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;mr.height>vh-r.bottom&&r.top>mr.height?(menu.style.top='auto',menu.style.bottom='110%'):(menu.style.top='110%',menu.style.bottom='auto');r.left+mr.width>vw?(menu.style.left='auto',menu.style.right='0'):(menu.style.left='0',menu.style.right='auto')}
-function initMenus(){
-  document.querySelectorAll(".filtro-group").forEach(g=>{const b=g.querySelector(".filtro-boton,.config-btn,.help-btn");const m=g.querySelector(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu,.help-menu");if(b&&m&&(b.id!=='btnUbicacion'&&b.id!=='btnEpoca'&&b.id!=='btnSubcategorias')){b.addEventListener("click",e=>{e.stopPropagation();const wasOpen=m.classList.contains("show");closeAllMenus();if(!wasOpen){m.classList.add("show");createMenuOverlay(199,()=>{closeAllMenus()});setTimeout(()=>repositionMenu(m,b),10)}})}});
-  btnUbicacion.addEventListener("click",(e)=>{e.stopPropagation();abrirModalUbicacion()});
-  btnEpoca.addEventListener("click",(e)=>{e.stopPropagation();abrirModalEpoca()});
-  btnSubcategorias.addEventListener("click",(e)=>{e.stopPropagation();abrirModalSubcategorias()});
-  document.addEventListener("click",e=>{if(!e.target.closest(".filtro-group")&&!e.target.closest("#ordenGroup")&&!e.target.closest("#configGroup")&&!e.target.closest(".csv-menu")&&!e.target.closest(".temp-floating-menu")){closeAllMenus();closeTempMenus()}});
-}
-initMenus();
-mainTitle.addEventListener("click",()=>{panelVisible=!panelVisible;if(panelVisible){filtrosPanel.classList.remove("oculto")}else{filtrosPanel.classList.add("oculto")}actualizarImagenEsquina()});
-btnLimpiar.onclick=()=>{
-  if(btnLimpiar.disabled)return;
-  const opcionesVisiblesCount = (cat) => {
-    if (cat === 'revisado') return (contarPorEstado("revisado")>0?1:0) + (contarPorEstado("no_revisado")>0?1:0);
-    if (cat === 'morfologia') return opcionesMorfologia.filter(op => contarConOpcion('morfologia',op)>0).length;
-    if (cat === 'tipo') return opcionesTipo.filter(op => contarConOpcion('tipo',op)>0).length;
-    if (cat === 'elemento') return opcionesElemento.filter(op => contarConOpcion('elemento',op)>0).length;
-    if (cat === 'avistamiento') return opcionesAvistamiento.filter(op => contarConOpcion('avistamiento',op)>0).length;
-    if (cat === 'ubicacion') return [...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op => contarConOpcion('ubicacion',op)>0).length;
-    if (cat === 'epoca') return [...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op => contarConOpcion('epoca',op)>0).length;
-    if (cat === 'subcategorias') { const todas=new Set(); especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})}); return Array.from(todas).filter(op => contarConOpcion('subcategorias',op)>0).length; }
-    return 0;
-  };
-  const categoriasAEvaluar = ['morfologia','tipo','elemento','avistamiento','ubicacion','epoca','subcategorias','revisado'];
-  let totalPuntos = 0;
-  for (let cat of categoriasAEvaluar) {
-    const visibles = opcionesVisiblesCount(cat);
-    if (visibles === 0) continue;
-    const seleccionadas = (cat === 'revisado') ? revFilterState.length : filtrosState[cat].length;
-    if (seleccionadas !== 0 && seleccionadas !== visibles) totalPuntos++;
-  }
-  filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
-  revFilterState = [];
-  saveRevFilterState();
-  currentPage = 1;
-  persistState();
-  invalidateBaseCache();
-  if (totalPuntos > 0) { render(); }
-  else { updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); actualizarContadorYPaginacion(); adjustTitleFontSize(); actualizarImagenEsquina(); actualizarDisabledOtrosFiltros(); }
-};
-favFilterBtn.onclick=()=>{if(!favFilterBtn.disabled){onlyFavorites=!onlyFavorites;currentPage=1;render();persistState();invalidateBaseCache()}};
-searchInput.addEventListener('input',onSearchInput);
-clearSearchBtn.onclick=()=>{if(clearSearchBtn.classList.contains("disabled"))return;searchInput.value='';searchTerm='';currentPage=1;render();updateClearSearchState();updateSearchSuggestions();invalidateBaseCache()};
-cerrarBtn.onclick=closeModal;overlayEl.onclick=e=>{if(e.target===overlayEl)closeModal()};
-modalPrevArrow.onclick=()=>navegarModal(-1);modalNextArrow.onclick=()=>navegarModal(1);
-modalFavBtn.onclick=()=>{if(currentModalCreature)toggleFavorito(currentModalCreature.id,false)};
-document.addEventListener("keydown",e=>{
-  if(!overlayEl.classList.contains("show")) return;
-  const key = e.key;
-  if (key === "Escape") { closeModal(); return; }
-  if (navegacionBloqueada) return;
-  if (key === "ArrowLeft") { e.preventDefault(); navegarModal(-1); }
-  else if (key === "ArrowRight") { e.preventDefault(); navegarModal(1); }
-  else if (key === "f" || key === "F") { e.preventDefault(); if(currentModalCreature) toggleFavorito(currentModalCreature.id, false); }
-  else if (key === "r" || key === "R") { e.preventDefault(); if(currentModalCreature) toggleRevisado(currentModalCreature.id, false); }
-  else if (key === "l" || key === "L") {
-    e.preventDefault();
-    if(currentModalCreature && currentModalCreature.links && currentModalCreature.links.length) {
-      const url = currentModalCreature.links[0];
-      window.open(url, '_blank');
-      marcarRevisadoPorLink(currentModalCreature.id);
-    }
-  }
-});
-modalTitle.closest("#detalle").addEventListener("touchstart",e=>{touchStartX=e.changedTouches[0].screenX});
-modalTitle.closest("#detalle").addEventListener("touchend",e=>{if(navegacionBloqueada)return;const d=e.changedTouches[0].screenX-touchStartX;if(Math.abs(d)>50){navegarModal(d>0?-1:1);e.preventDefault()}});
-function adjustTitleFontSize(){const ruler=document.createElement('span');ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none';document.body.appendChild(ruler);const minFontSize=0.7;document.querySelectorAll('.card b').forEach(t=>{const a=t.clientWidth;if(a<=0)return;ruler.textContent=t.textContent;let fs=0.9;ruler.style.fontSize=fs+'rem';while(fs>minFontSize&&ruler.offsetWidth>a){fs-=0.005;ruler.style.fontSize=fs+'rem'}if(ruler.offsetWidth>a){t.classList.add('wrap-name');t.style.fontSize=minFontSize+'rem'}else{t.classList.remove('wrap-name');t.style.fontSize=fs+'rem'}});ruler.remove()}
-function adjustModalTitleFontSize(){const h3=modalTitle;if(!h3)return;const availableWidth=h3.clientWidth;if(availableWidth<=0)return;const minFontSize=0.8;const testEl=document.createElement('span');testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;';testEl.textContent=h3.textContent;document.body.appendChild(testEl);let fs=1.4;testEl.style.fontSize=fs+'rem';while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){fs-=0.05;testEl.style.fontSize=fs+'rem'}if(testEl.scrollWidth>testEl.clientWidth){h3.classList.add('wrap-name');h3.style.fontSize=minFontSize+'rem'}else{h3.classList.remove('wrap-name');h3.style.fontSize=fs+'rem'}testEl.remove()}
-if (btnResetTotal) {
-  btnResetTotal.addEventListener('click', () => {
-    const hayFiltrosActivos = Object.values(filtrosState).some(a => a.length) || revFilterState.length > 0;
-    if (!hayFiltrosActivos && !onlyFavorites && searchTerm === '') return;
-    filtrosState = {morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};
-    revFilterState = [];
-    saveRevFilterState();
-    onlyFavorites = false;
-    searchInput.value = '';
-    searchTerm = '';
-    updateClearSearchState();
-    currentPage = 1;
-    render();
-    persistState();
-    invalidateBaseCache();
-  });
-}
-
-async function cargarArchivosDesdeCarpeta() {
-  let todosLosDatos = [];
-  let indice = 1;
-  let hayError = false;
-  while (!hayError) {
-    const url = `dtsk/Datos${indice}.json?t=${Date.now()}`;
-    try {
-      const respuesta = await fetch(url, { cache: 'no-store' });
-      if (!respuesta.ok) {
-        hayError = true;
-        break;
-      }
-      const datos = await respuesta.json();
-      if (Array.isArray(datos)) {
-        todosLosDatos.push(...datos);
-      } else {
-        todosLosDatos.push(datos);
-      }
-      indice++;
-    } catch (error) {
-      hayError = true;
-      break;
-    }
-  }
-  return todosLosDatos;
-}
-
-async function cargarDatos(){
-  try{
-    let datosCombinados = await cargarArchivosDesdeCarpeta();
-    if (datosCombinados.length === 0) {
-      throw new Error('No se pudieron cargar datos desde dtsk/Datos*.json');
-    }
-    especies = datosCombinados.map((criatura, idx) => {
-      return {
-        id: criatura.id || `criatura_${idx}_${Date.now()}_${Math.random()}`,
-        nombre: criatura.nombre || 'Sin nombre',
-        morfologia: criatura.morfologia || 'Desconocido',
-        tipo: criatura.tipo || 'Desconocido',
-        elemento: criatura.elemento || 'Desconocido',
-        avistamiento: criatura.avistamiento || 'Desconocido',
-        ubicacion: criatura.ubicacion || '',
-        epoca: criatura.epoca || '',
-        subcategorias: criatura.subcategorias || '',
-        descripcion: criatura.descripcion || '',
-        links: criatura.links || [],
-        posX: criatura.posX !== undefined ? criatura.posX : (criatura.posx !== undefined ? criatura.posx : 0),
-        posY: criatura.posY !== undefined ? criatura.posY : (criatura.posy !== undefined ? criatura.posy : 0),
-        zoom: criatura.zoom || 1
-      };
-    });
-    dataLoaded = true;
-    buildIndexes();
-    loadFavoritos();
-    loadRevisados();
-    loadModoRevision();
-    loadPersistedState();
-    updateSearchSuggestions();
-    updateClearSearchState();
-    regenerarMenus();
-    await render();
-    window.addEventListener('resize', () => {
-      if (dataLoaded) {
-        debouncedAdjustTitleFontSize();
-        if (overlayEl.classList.contains("show")) adjustModalTitleFontSize();
-        debouncedActualizarImagenEsquina();
-      }
-    });
-    actualizarImagenEsquina();
-    const hash = window.location.hash.substring(1);
-    if (hash.startsWith("id=")) {
-      const id = decodeURIComponent(hash.substring(3));
-      const cr = especies.find(e => e.id === id);
-      if (cr) setTimeout(() => abrirDetalle(cr), 300);
-    }
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  } catch(err) {
-    console.error("Error cargando datos:", err);
-    especies = [];
-    dataLoaded = true;
-    render();
-  }
-}
-async function inicializarApp(){await cargarDatos()}
-inicializarApp();
-</script>
-</body>
-</html>
+    cb.addEventListener("change",()=>{if(cb.disabled)return;cb.checked?(!revFilterState.includes(opt.id)&&revFilterState.push(opt.id)):revFilterState=revFilterState.filter(v=>v!==opt.id);saveRevFilterState();currentPage=1;render();invalidateBaseCache()});label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild
