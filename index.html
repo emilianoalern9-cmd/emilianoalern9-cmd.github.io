@@ -478,7 +478,9 @@ const ORDEN_OPCIONES = [
 
 const CSV_CAMPOS = ["id","nombre","morfologia","tipo","elemento","avistamiento","ubicacion","epoca","subcategorias","descripcion","links"];
 const STORAGE_VERSION = 13;
-
+const modalFavBtn = $('modalFav');         // ✅ correcto
+const modalRevisadoBtn = $('modalRevisado'); // ✅ correcto
+  
 /* ══ Estado de la app ═════════════════════════════════════ */
 let especies = [], dataLoaded = false;
 let filtrosState  = { morfologia:[], tipo:[], elemento:[], avistamiento:[], ubicacion:[], epoca:[], subcategorias:[] };
