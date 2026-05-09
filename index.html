@@ -480,26 +480,26 @@ const CSV_CAMPOS = ["id","nombre","morfologia","tipo","elemento","avistamiento",
 const STORAGE_VERSION = 12;
 
 /* ══ Mapa de foco → object-position ══════════════════════
-   Cuadrícula 3×3:
-     1=superior izquierda  2=superior centro  3=superior derecha
-     4=centro izquierda    5=centro           6=centro derecha
-     7=inferior izquierda  8=inferior centro  9=inferior derecha
+   Cuadrícula 5×5 (25 posiciones), fila × columna:
+     Col:  0%    25%    50%    75%   100%
+   Fila 0%:  1      2      3      4      5
+   Fila 25%: 6      7      8      9     10
+   Fila 50%: 11     12     13     14     15
+   Fila 75%: 16     17     18     19     20
+   Fila100%: 21     22     23     24     25
+   Default: 13 (centro exacto)
    ══════════════════════════════════════════════════════════ */
 const FOCO_POSITION = {
-  1: "left top",
-  2: "center top",
-  3: "right top",
-  4: "left center",
-  5: "center center",
-  6: "right center",
-  7: "left bottom",
-  8: "center bottom",
-  9: "right bottom"
+   1:"0% 0%",    2:"25% 0%",   3:"50% 0%",   4:"75% 0%",   5:"100% 0%",
+   6:"0% 25%",   7:"25% 25%",  8:"50% 25%",  9:"75% 25%",  10:"100% 25%",
+  11:"0% 50%",  12:"25% 50%", 13:"50% 50%", 14:"75% 50%",  15:"100% 50%",
+  16:"0% 75%",  17:"25% 75%", 18:"50% 75%", 19:"75% 75%",  20:"100% 75%",
+  21:"0% 100%", 22:"25% 100%",23:"50% 100%",24:"75% 100%", 25:"100% 100%"
 };
 
 function focoToObjectPosition(foco) {
   const n = parseInt(foco, 10);
-  return FOCO_POSITION[n] || FOCO_POSITION[5]; // default: centro
+  return FOCO_POSITION[n] || FOCO_POSITION[13]; // default: 13 (centro)
 }
 
 /* ══ Estado de la app ═════════════════════════════════════ */
@@ -869,7 +869,7 @@ function actualizarIconoRevisadoTarjeta(id) {
   const card = document.querySelector(`.card[data-id="${id}"]`);
   if (card) {
     const ri = card.querySelector(".revisado-icon");
-    if (ri) { ri.innerHTML = icono; ri.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`; }
+    if (ri) { ri.innerHTML = icono; ri.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`; ri.title = estado ? "Revisado" : "No revisado"; }
   }
   if (currentModalCreature?.id === id && modalRevisadoBtn) {
     modalRevisadoBtn.innerHTML = icono;
@@ -965,10 +965,97 @@ function generarMenuConfig() {
   });
   addBtn(`🔢 Ítems por página (${perPage})`, e => { e.stopPropagation(); closeAllMenus(); abrirMenuItemsPerPage(); });
   addBtn("📎 Exportar CSV",                  e => { e.stopPropagation(); closeAllMenus(); crearMenuCSV(); csvMenu.classList.add("show"); });
+  addBtn("💾 Exportar progreso",             e => { e.stopPropagation(); closeAllMenus(); exportarProgreso(); });
+  addBtn("📂 Importar progreso",             e => { e.stopPropagation(); closeAllMenus(); importarProgreso(); });
   addBtn(`📌 Modo revisión (${modoRevision === "automatico" ? "Automático" : "Bloqueo"})`, e => {
     e.stopPropagation(); modoRevision = modoRevision === "automatico" ? "bloqueo" : "automatico"; saveModoRevision(); generarMenuConfig(); closeAllMenus();
   });
   addBtn("📖 Ayuda", e => { e.stopPropagation(); closeAllMenus(); abrirMenuAyuda(); });
+}
+
+/* ══ Exportar / Importar progreso ════════════════════════ */
+function exportarProgreso() {
+  const datos = {
+    version:   STORAGE_VERSION,
+    fecha:     new Date().toISOString(),
+    favoritos: [...favoritos],
+    revisados: [...revisados]
+  };
+  const blob = new Blob([JSON.stringify(datos, null, 2)], { type:"application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `progreso_seres_${new Date().toISOString().slice(0,10)}.json`;
+  link.click(); URL.revokeObjectURL(link.href);
+}
+
+function importarProgreso() {
+  const input = document.createElement("input"); input.type = "file"; input.accept = ".json,application/json";
+  input.onchange = () => {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const datos = JSON.parse(ev.target.result);
+        if (!Array.isArray(datos.favoritos) || !Array.isArray(datos.revisados))
+          throw new Error("Formato inválido");
+
+        closeAllMenus(); closeTempMenus();
+        createMenuOverlay(999, () => closeTempMenus());
+
+        const favN = datos.favoritos.length, revN = datos.revisados.length;
+        const modal = document.createElement("div"); modal.className = "temp-floating-menu"; modal.id = "importModal";
+        modal.innerHTML = `
+          <div class="temp-header">📂 Importar progreso <button id="importCancelBtn" title="Cerrar">✕</button></div>
+          <div style="font-size:.8rem;color:var(--text-secondary);line-height:1.6;padding:4px 0">
+            <div>⭐ Favoritos en archivo: <strong style="color:var(--accent)">${favN}</strong></div>
+            <div>◆ Revisados en archivo: <strong style="color:var(--accent)">${revN}</strong></div>
+            <div style="margin-top:8px;font-size:.72rem;color:#b8a87a">¿Qué deseas hacer con los datos actuales?</div>
+          </div>
+          <div class="temp-actions" id="importActions"></div>`;
+        document.body.appendChild(modal); modal.classList.add("show");
+        modal.querySelector("#importCancelBtn").onclick = () => closeTempMenus();
+        modal.addEventListener("click", e => e.stopPropagation());
+
+        const actDiv = modal.querySelector("#importActions");
+
+        // Botón Combinar
+        const btnCombinar = document.createElement("button"); btnCombinar.title = "Combinar (suma a los actuales)";
+        btnCombinar.innerHTML = "🔀"; btnCombinar.style.fontSize = "1.1rem";
+        btnCombinar.onclick = () => {
+          datos.favoritos.forEach(id => favoritos.add(id));
+          datos.revisados.forEach(id => revisados.add(id));
+          saveFavoritos(); saveRevisados();
+          closeTempMenus(); invalidateBaseCache(); render();
+          showTooltip(`Combinado: +${favN} fav, +${revN} rev`, window.innerWidth/2, 80, 2500);
+        };
+
+        // Botón Reemplazar
+        const btnReemplazar = document.createElement("button"); btnReemplazar.title = "Reemplazar (sustituye los actuales)";
+        btnReemplazar.innerHTML = "♻️"; btnReemplazar.style.fontSize = "1.1rem";
+        btnReemplazar.onclick = () => {
+          if (!confirm(`¿Reemplazar tus datos actuales (${favoritos.size} fav, ${revisados.size} rev) con los del archivo?`)) return;
+          favoritos = new Set(datos.favoritos);
+          revisados = new Set(datos.revisados);
+          saveFavoritos(); saveRevisados();
+          closeTempMenus(); invalidateBaseCache(); render();
+          showTooltip(`Reemplazado: ${favN} fav, ${revN} rev`, window.innerWidth/2, 80, 2500);
+        };
+
+        // Tooltip labels en los botones
+        [btnCombinar, btnReemplazar].forEach(b => {
+          b.addEventListener("mouseenter", () => { const r = b.getBoundingClientRect(); showTooltip(b.title, r.left + r.width/2, r.top - 10, 2000); });
+          b.addEventListener("mouseleave", () => hideTooltip());
+        });
+
+        actDiv.append(btnCombinar, btnReemplazar);
+
+      } catch (err) {
+        alert("Error al leer el archivo: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 function regenerarMenus() {
@@ -1517,7 +1604,7 @@ async function cargarDatos() {
       subcategorias:c.subcategorias || '',
       descripcion:  c.descripcion   || '',
       links:        c.links         || [],
-      foco:         c.foco          ?? 5   // 1-9, default 5 (centro)
+      foco:         c.foco          ?? 13  // 1-25, default 13 (centro 5×5)
     }));
 
     dataLoaded = true;
