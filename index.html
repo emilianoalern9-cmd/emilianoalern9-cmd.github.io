@@ -869,7 +869,7 @@ function actualizarIconoRevisadoTarjeta(id) {
   const card = document.querySelector(`.card[data-id="${id}"]`);
   if (card) {
     const ri = card.querySelector(".revisado-icon");
-    if (ri) { ri.innerHTML = icono; ri.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`; ri.title = estado ? "Revisado" : "No revisado"; }
+    if (ri) { ri.innerHTML = icono; ri.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`; }
   }
   if (currentModalCreature?.id === id && modalRevisadoBtn) {
     modalRevisadoBtn.innerHTML = icono;
