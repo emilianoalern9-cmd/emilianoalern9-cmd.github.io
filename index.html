@@ -1102,7 +1102,7 @@ function crearCardGrid(e, idx) {
   const fb = document.createElement("button"); fb.className = "fav-star"; fb.textContent = favoritos.has(e.id) ? "★" : "☆"; fb.setAttribute('aria-label','Marcar como favorito');
   fb.onclick = ev => { ev.stopPropagation(); toggleFavorito(e.id); };
   const ri = document.createElement("span"); ri.className = "revisado-icon"; const est = revisados.has(e.id); ri.innerHTML = est ? "◆" : "◇";
-  ri.classList.toggle("revisado", est); ri.classList.toggle("no_revisado", !est); ri.style.color = "var(--accent)"; ri.title = est ? "Revisado" : "No revisado"; ri.setAttribute('aria-label', est ? 'Revisado' : 'No revisado');
+  ri.classList.toggle("revisado", est); ri.classList.toggle("no_revisado", !est); ri.style.color = "var(--accent)"; ri.setAttribute('aria-label', est ? 'Revisado' : 'No revisado');
   ri.onclick = ev => { ev.stopPropagation(); ev.preventDefault(); toggleRevisado(e.id); };
   ad.append(fb, ri); footer.append(bw, ad); card.append(imgC, nombreB, footer); card.onclick = () => abrirDetalle(e);
   return card;
