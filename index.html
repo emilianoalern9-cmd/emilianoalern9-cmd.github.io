@@ -529,6 +529,40 @@ const cerrarBtn        = $('cerrar');
 /* ══ Helpers de iconos ════════════════════════════════════ */
 const getIcon = (cat, val) => CATEGORIAS[cat]?.icons[val] || '❓';
 
+/* ── Convierte número de celda 1-9 a object-position ────── */
+function gridToObjectPosition(gridNum) {
+  const map = {
+    1: '16.67% 16.67%',   // superior izquierda
+    2: '50% 16.67%',      // superior centro
+    3: '83.33% 16.67%',   // superior derecha
+    4: '16.67% 50%',      // centro izquierda
+    5: '50% 50%',         // centro (predeterminado)
+    6: '83.33% 50%',      // centro derecha
+    7: '16.67% 83.33%',   // inferior izquierda
+    8: '50% 83.33%',      // inferior centro
+    9: '83.33% 83.33%'    // inferior derecha
+  };
+  return map[gridNum] || map[5];
+}
+
+/* ── Aplica object-fit y object-position según grid ────── */
+function applyCreatureImageLayout(img, creature) {
+  // Limpiar estilos previos
+  img.style.transform = '';
+  img.style.objectFit = '';
+  img.style.objectPosition = '';
+
+  if (creature.foco) {
+    // Tiene celda definida (1-9)
+    img.style.objectFit = 'cover';
+    img.style.objectPosition = gridToObjectPosition(creature.grid);
+  } else {
+    // Sin grid → centro automático
+    img.style.objectFit = 'cover';
+    img.style.objectPosition = '50% 50%';
+  }
+}
+  
 /* ══ LocalStorage ═════════════════════════════════════════ */
 const saveLocal = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 const loadLocal = k => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch { return null; } };
@@ -738,13 +772,12 @@ function setupBadgeHover(badge, text) {
   badge.addEventListener("mouseleave", () => hideTooltip());
 }
 
-/* ══ Imagen con fallback ══════════════════════════════════ */
-const IMG_EXTS = ['jpg','jpeg','png'];
-
-function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false) {
+/* ── Imagen con fallback (sin transform, solo asigna src) ── */
+function setImageWithFallback(imgEl, nombre, isPriority = false) {
   if (isPriority) { imgEl.fetchPriority = "high"; imgEl.loading = "eager"; } else { imgEl.loading = "lazy"; }
   const parent = imgEl.parentNode;
   parent?.querySelectorAll('.img-placeholder').forEach(el => el.remove());
+
   let idx = 0;
   const tryNext = () => {
     if (idx >= IMG_EXTS.length) {
@@ -760,7 +793,6 @@ function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false)
     }
     imgEl.src = `img/${encodeURIComponent(nombre)}.${IMG_EXTS[idx]}`;
     imgEl.style.display = "block";
-    if (transform) imgEl.style.transform = transform;
     imgEl.onerror = () => { idx++; tryNext(); };
     imgEl.onload  = () => { parent?.querySelector(".img-placeholder")?.remove(); imgEl.style.display = "block"; };
   };
@@ -769,7 +801,7 @@ function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false)
 
 function crearImg(e, isPriority = false) {
   const img = document.createElement("img");
-  setImageWithFallback(img, e.nombre, `translate(${e.posX||0}px,${e.posY||0}px) scale(${e.zoom||1})`, isPriority);
+  setImageWithFallback(img, e.nombre, isPriority);   // sin transform
   return img;
 }
 
@@ -1094,7 +1126,7 @@ function crearBadgesRow(e) {
 /* ══ Tarjeta ══════════════════════════════════════════════ */
 function crearCardGrid(e, idx) {
   const card = document.createElement("div"); card.className = "card"; card.setAttribute("data-id", e.id);
-  const imgC = document.createElement("div"); imgC.className = "img-container"; imgC.appendChild(crearImg(e, idx < 12));
+  const imgC = document.createElement("div"); imgC.className = "img-container"; const img = crearImg(e, idx < 12); applyCreatureImageLayout(img, e); imgC.appendChild(img);
   const nombreB = document.createElement("b"); nombreB.textContent = e.nombre;
   const footer = document.createElement("div"); footer.className = "card-footer-row";
   const bw = document.createElement("div"); bw.className = "badges-wrapper"; crearBadgesRow(e).forEach(b => bw.appendChild(b));
@@ -1209,7 +1241,7 @@ function actualizarModal() {
   if (!currentModalCreature) return;
   const e = currentModalCreature;
   modalTitle.innerText = e.nombre; adjustModalTitleFontSize();
-  setImageWithFallback(modalImg, e.nombre, "", true);
+  setImageWithFallback(modalImg, e.nombre, true);
 
   const linksHtml = e.links?.length ? `<div class="links-list">${e.links.map(u => `<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>` : "";
   const subcatsHtml = e.subcategorias ? `<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>` : '';
@@ -1480,7 +1512,8 @@ async function cargarDatos() {
       links:        c.links         || [],
       posX:         c.posX ?? c.posx ?? 0,
       posY:         c.posY ?? c.posy ?? 0,
-      zoom:         c.zoom          || 1
+      zoom:         c.zoom          || 1,
+      foco:         c.foco ?? null, 
     }));
 
     dataLoaded = true;
