@@ -282,26 +282,26 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
 </head>
 <body>
 <div class="main-header" id="mainHeader">
-  <img id="headerCornerImg" class="header-corner" alt="Ayuda decorativa" role="button">
+  <img id="headerCornerImg" class="header-corner" alt="Ayuda decorativa" aria-label="Abrir ayuda" role="button">
   <div class="container" id="headerContainer">
-    <h2 id="mainTitle">✦ ÍNDICE DE SERES MÍSTICOS ✦</h2>
+    <h2 id="mainTitle" aria-label="Título principal">✦ ÍNDICE DE SERES MÍSTICOS ✦</h2>
     <div class="filtros-panel" id="filtrosPanel">
-      <div class="filtro-group"><button class="filtro-boton" id="btnMorfologia" title="Morfología">🔮</button><div class="filtro-menu" id="menu-morfologia"></div></div>
-      <div class="filtro-group"><button class="filtro-boton" id="btnTipo" title="Tipo de ser">🌙</button><div class="filtro-menu" id="menu-tipo"></div></div>
-      <div class="filtro-group"><button class="filtro-boton" id="btnElemento" title="Elemento">💧</button><div class="filtro-menu" id="menu-elemento"></div></div>
-      <div class="filtro-group"><button class="filtro-boton" id="btnAvistamiento" title="Avistamiento">👁️</button><div class="filtro-menu" id="menu-avistamiento"></div></div>
-      <div class="filtro-group"><button class="filtro-boton" id="btnUbicacion" title="Ubicación">📍</button></div>
-      <div class="filtro-group"><button class="filtro-boton" id="btnEpoca" title="Época">📅</button></div>
-      <div class="filtro-group"><button class="filtro-boton" id="btnSubcategorias" title="Subcategorías">🏷️</button></div>
-      <div class="filtro-group"><button class="filtro-boton" id="btnRevFilter" title="Revisado">✅</button><div class="rev-filter-menu" id="menu-rev"></div></div>
-      <button id="btnLimpiar" class="btn-limpiar" title="Limpiar filtros">🧹</button>
-      <div class="filtro-group" id="ordenGroup"><button class="filtro-boton" id="btnOrden" title="Ordenar">📊</button><div class="orden-menu" id="ordenMenu"></div></div>
-      <button id="favFilterBtn" class="fav-filter-btn" title="Favoritos">⭐</button>
-      <button id="btnResetTotal" class="btn-limpiar" title="Resetear todo">♻️</button>
-      <div class="filtro-group" id="configGroup"><button class="config-btn" id="configBtn" title="Configuración">⚙️</button><div id="configMenu" class="config-menu"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnMorfologia" title="Morfología" aria-label="Filtrar por morfología">🔮</button><div class="filtro-menu" id="menu-morfologia"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnTipo" title="Tipo de ser" aria-label="Filtrar por tipo">🌙</button><div class="filtro-menu" id="menu-tipo"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnElemento" title="Elemento" aria-label="Filtrar por elemento">💧</button><div class="filtro-menu" id="menu-elemento"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnAvistamiento" title="Avistamiento" aria-label="Filtrar por avistamiento">👁️</button><div class="filtro-menu" id="menu-avistamiento"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnUbicacion" title="Ubicación" aria-label="Filtrar por ubicación">📍</button></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnEpoca" title="Época" aria-label="Filtrar por época">📅</button></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnSubcategorias" title="Subcategorías" aria-label="Filtrar por subcategorías">🏷️</button></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnRevFilter" title="Revisado" aria-label="Filtrar por estado de revisión">✅</button><div class="rev-filter-menu" id="menu-rev"></div></div>
+      <button id="btnLimpiar" class="btn-limpiar" title="Limpiar filtros" aria-label="Limpiar todos los filtros">🧹</button>
+      <div class="filtro-group" id="ordenGroup"><button class="filtro-boton" id="btnOrden" title="Ordenar" aria-label="Ordenar resultados">📊</button><div class="orden-menu" id="ordenMenu"></div></div>
+      <button id="favFilterBtn" class="fav-filter-btn" title="Favoritos" aria-label="Mostrar solo favoritos">⭐</button>
+      <button id="btnResetTotal" class="btn-limpiar" title="Resetear todo" aria-label="Resetear filtros, favoritos y búsqueda">♻️</button>
+      <div class="filtro-group" id="configGroup"><button class="config-btn" id="configBtn" title="Configuración" aria-label="Abrir configuración">⚙️</button><div id="configMenu" class="config-menu"></div></div>
       <div class="result-count"><span>🐉</span><span id="resultText">0-0 / 0</span></div>
       <div id="paginationControls" class="pagination-controls"></div>
-      <div class="search-wrapper"><input type="text" id="searchInput" placeholder="🔍 Buscar..." list="searchSuggestions" autocomplete="off"><button id="clearSearch" class="search-clear disabled">✕</button><datalist id="searchSuggestions"></datalist></div>
+      <div class="search-wrapper"><input type="text" id="searchInput" placeholder="🔍 Buscar..." list="searchSuggestions" autocomplete="off" aria-label="Buscar criatura"><button id="clearSearch" class="search-clear disabled" aria-label="Limpiar búsqueda">✕</button><datalist id="searchSuggestions"></datalist></div>
     </div>
   </div>
 </div>
@@ -315,9 +315,9 @@ h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2p
       <div class="modal-header">
         <h3 id="modal-title">Nombre</h3>
         <div class="modal-header-actions">
-          <button id="modalFav" class="fav-star" title="Favorito">☆</button>
-          <button id="modalRevisado" class="revisado-icon" title="Marcar revisado">◇</button>
-          <span id="cerrar" title="Cerrar">✕</span>
+          <button id="modalFav" class="fav-star" title="Favorito" aria-label="Marcar como favorito">☆</button>
+          <button id="modalRevisado" class="revisado-icon" title="Marcar revisado" aria-label="Marcar como revisado">◇</button>
+          <span id="cerrar" title="Cerrar" aria-label="Cerrar ficha">✕</span>
         </div>
       </div>
       <div class="modal-body">
@@ -658,6 +658,7 @@ function setImageWithFallback(imgElement,nombre,transformStyle="",isPrioritario=
         placeholder.className="img-placeholder";
         placeholder.style.cssText="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--accent);background:rgba(0,0,0,.3);border-radius:16px;";
         placeholder.textContent="🖼️";
+        placeholder.setAttribute("aria-label","Imagen no disponible");
         parent.appendChild(placeholder);
       }
       return;
@@ -724,9 +725,9 @@ function crearModalFiltro(titulo, cat, valores, counts, filtroCat, modalVar) {
   modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show');
   if (cat === 'ubicacion') ubicacionModal = modal; else if (cat === 'epoca') epocaModal = modal; else if (cat === 'subcategorias') subcategoriasModal = modal;
   const grid = modal.querySelector(`#${cat}CheckboxGrid`), actionsDiv = modal.querySelector(`#${cat}Actions`);
-  const sa = document.createElement('button'); sa.textContent = '📋'; sa.title = 'Seleccionar todo';
-  const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo';
-  const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección';
+  const sa = document.createElement('button'); sa.textContent = '📋'; sa.title = 'Seleccionar todo'; sa.setAttribute('aria-label','Seleccionar todo');
+  const da = document.createElement('button'); da.textContent = '🗑️'; da.title = 'Deseleccionar todo'; da.setAttribute('aria-label','Deseleccionar todo');
+  const inv = document.createElement('button'); inv.textContent = '🔄'; inv.title = 'Invertir selección'; inv.setAttribute('aria-label','Invertir selección');
   actionsDiv.append(sa, da, inv);
 
   const actualizarEstadoBotones = () => {
@@ -839,15 +840,15 @@ function crearCardGrid(e,idx,totalPagina){
   const imgC=document.createElement("div");imgC.className="img-container";const esPrioritaria=idx<12||(totalPagina<=24&&idx<24);
   imgC.appendChild(crearImg(e,esPrioritaria));const nombreB=document.createElement("b");nombreB.textContent=e.nombre;
   const footer=document.createElement("div");footer.className="card-footer-row";const bw=document.createElement("div");bw.className="badges-wrapper";crearBadgesRow(e).forEach(b=>bw.appendChild(b));
-  const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";
+  const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";fb.setAttribute('aria-label','Marcar como favorito');
   fb.onclick=ev=>{ev.stopPropagation();toggleFavorito(e.id,false)};const ri=document.createElement("span");ri.className="revisado-icon";const est=revisados.has(e.id);
-  ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no_revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";
+  ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no_revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";ri.setAttribute('aria-label', est?'Revisado':'No revisado');
   ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault();toggleRevisado(e.id)};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;
 }
 
 function actualizarPaginacionHeader(tp){
   paginationControlsDiv.innerHTML="";const createBtn=(t,d)=>{const b=document.createElement("button");b.textContent=t;b.className="pagination-btn";b.disabled=d;return b};
-  const pi=document.createElement("input");pi.type="text";pi.inputMode="numeric";pi.value=currentPage;
+  const pi=document.createElement("input");pi.type="text";pi.inputMode="numeric";pi.value=currentPage;pi.setAttribute('aria-label','Número de página');
   if(tp<=1){pi.readOnly=true;const s=document.createElement("span");s.textContent=`/ ${tp}`;paginationControlsDiv.append(createBtn("<<",true),createBtn("<",true),pi,s,createBtn(">",true),createBtn(">>",true));return}
   pi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();let v=parseInt(pi.value);if(isNaN(v)||v<1||v>tp)v=currentPage;if(v!==currentPage){currentPage=v;render();window.scrollTo({top:0,behavior:'smooth'})}else{pi.blur()}pi.value=currentPage}});
   pi.addEventListener("input",()=>{let raw=pi.value.replace(/[^0-9]/g,'');pi.value=raw});
@@ -1153,17 +1154,16 @@ function actualizarMenuCSV(){
   const acceptBtn=document.createElement("button");acceptBtn.textContent="✓";acceptBtn.title="Aceptar y exportar";acceptBtn.className="accept";acceptBtn.disabled=!selectedFields.length;
   acceptBtn.onclick=()=>{exportarCSV();closeTempMenus()};
   const actionsDiv=document.createElement("div");actionsDiv.className="temp-actions";
-  const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";
+  const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";sa.setAttribute('aria-label','Seleccionar todo');
   sa.onclick=()=>{selectedFields=[...camposVisibles];cg.querySelectorAll("input").forEach(c=>c.checked=true);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";
+  const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";da.setAttribute('aria-label','Deseleccionar todo');
   da.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>c.checked=false);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
-  const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";
+  const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";inv.setAttribute('aria-label','Invertir selección');
   inv.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>{if(!c.checked)selectedFields.push(c.value);c.checked=!c.checked});actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};
   actionsDiv.append(sa,da,inv,acceptBtn);csvMenu.appendChild(actionsDiv);
   csvMenu.querySelector('#csvCloseBtn').onclick=()=>closeTempMenus();
   actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);
   cg.addEventListener("change",()=>{selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)});
-}
 }
 function exportarCSV(){
   if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return;
