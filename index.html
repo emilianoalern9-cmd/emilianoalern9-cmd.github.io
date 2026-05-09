@@ -1077,7 +1077,7 @@ headerCornerImg.addEventListener('click', e => { e.stopPropagation(); abrirVenta
 
 /* ══ Badges de tarjeta ════════════════════════════════════ */
 function crearBadge(ico, titulo) {
-  const btn = document.createElement("button"); btn.className = "mini-badge"; btn.textContent = ico; btn.setAttribute('aria-label', titulo); btn.title = titulo;
+  const btn = document.createElement("button"); btn.className = "mini-badge"; btn.textContent = ico; btn.setAttribute('aria-label', titulo); 
   setupBadgeHover(btn, titulo); btn.addEventListener("click", e => e.stopPropagation());
   return btn;
 }
