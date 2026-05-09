@@ -479,6 +479,29 @@ const ORDEN_OPCIONES = [
 const CSV_CAMPOS = ["id","nombre","morfologia","tipo","elemento","avistamiento","ubicacion","epoca","subcategorias","descripcion","links"];
 const STORAGE_VERSION = 12;
 
+/* ══ Mapa de foco → object-position ══════════════════════
+   Cuadrícula 3×3:
+     1=superior izquierda  2=superior centro  3=superior derecha
+     4=centro izquierda    5=centro           6=centro derecha
+     7=inferior izquierda  8=inferior centro  9=inferior derecha
+   ══════════════════════════════════════════════════════════ */
+const FOCO_POSITION = {
+  1: "left top",
+  2: "center top",
+  3: "right top",
+  4: "left center",
+  5: "center center",
+  6: "right center",
+  7: "left bottom",
+  8: "center bottom",
+  9: "right bottom"
+};
+
+function focoToObjectPosition(foco) {
+  const n = parseInt(foco, 10);
+  return FOCO_POSITION[n] || FOCO_POSITION[5]; // default: centro
+}
+
 /* ══ Estado de la app ═════════════════════════════════════ */
 let especies = [], dataLoaded = false;
 let filtrosState  = { morfologia:[], tipo:[], elemento:[], avistamiento:[], ubicacion:[], epoca:[], subcategorias:[] };
@@ -738,11 +761,27 @@ function setupBadgeHover(badge, text) {
   badge.addEventListener("mouseleave", () => hideTooltip());
 }
 
-/* ══ Imagen con fallback ══════════════════════════════════ */
+/* ══ Imagen con fallback y sistema de foco ════════════════ */
 const IMG_EXTS = ['jpg','jpeg','png'];
 
-function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false) {
+/**
+ * setImageWithFallback
+ * @param {HTMLImageElement} imgEl  - elemento <img>
+ * @param {string}           nombre - nombre de la criatura (base del archivo)
+ * @param {string|number}    foco   - valor 1-9; define object-position en miniaturas
+ * @param {boolean}          isPriority - si es imagen prioritaria (LCP)
+ * @param {boolean}          isModal    - si es la imagen del modal (no aplicar foco)
+ */
+function setImageWithFallback(imgEl, nombre, foco, isPriority = false, isModal = false) {
   if (isPriority) { imgEl.fetchPriority = "high"; imgEl.loading = "eager"; } else { imgEl.loading = "lazy"; }
+
+  // Aplicar posición de foco solo en miniaturas de la grid (no en el modal)
+  if (!isModal) {
+    imgEl.style.objectFit      = "cover";
+    imgEl.style.objectPosition = focoToObjectPosition(foco);
+    imgEl.style.transform      = "";
+  }
+
   const parent = imgEl.parentNode;
   parent?.querySelectorAll('.img-placeholder').forEach(el => el.remove());
   let idx = 0;
@@ -760,7 +799,6 @@ function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false)
     }
     imgEl.src = `img/${encodeURIComponent(nombre)}.${IMG_EXTS[idx]}`;
     imgEl.style.display = "block";
-    if (transform) imgEl.style.transform = transform;
     imgEl.onerror = () => { idx++; tryNext(); };
     imgEl.onload  = () => { parent?.querySelector(".img-placeholder")?.remove(); imgEl.style.display = "block"; };
   };
@@ -769,7 +807,7 @@ function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false)
 
 function crearImg(e, isPriority = false) {
   const img = document.createElement("img");
-  setImageWithFallback(img, e.nombre, `translate(${e.posX||0}px,${e.posY||0}px) scale(${e.zoom||1})`, isPriority);
+  setImageWithFallback(img, e.nombre, e.foco, isPriority, false);
   return img;
 }
 
@@ -1209,7 +1247,8 @@ function actualizarModal() {
   if (!currentModalCreature) return;
   const e = currentModalCreature;
   modalTitle.innerText = e.nombre; adjustModalTitleFontSize();
-  setImageWithFallback(modalImg, e.nombre, "", true);
+  // En el modal usamos object-fit:contain (ver CSS), sin foco
+  setImageWithFallback(modalImg, e.nombre, e.foco, true, true);
 
   const linksHtml = e.links?.length ? `<div class="links-list">${e.links.map(u => `<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>` : "";
   const subcatsHtml = e.subcategorias ? `<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>` : '';
@@ -1478,9 +1517,7 @@ async function cargarDatos() {
       subcategorias:c.subcategorias || '',
       descripcion:  c.descripcion   || '',
       links:        c.links         || [],
-      posX:         c.posX ?? c.posx ?? 0,
-      posY:         c.posY ?? c.posy ?? 0,
-      zoom:         c.zoom          || 1
+      foco:         c.foco          ?? 5   // 1-9, default 5 (centro)
     }));
 
     dataLoaded = true;
