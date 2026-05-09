@@ -8,323 +8,1502 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img2/anuncio1.gif">
 <style>
-:root{--bg-color:#0f0c18;--header-bg:rgba(10,8,18,.95);--card-bg:rgba(18,15,30,.85);--card-hover-border:#e6c275;--text-primary:#f0eef7;--text-secondary:#e5dccf;--accent:#e0bc6c;--accent-hover:#f3d27e;--border-color:#dbba6c;--badge-morfologia:#8b5a2b;--badge-tipo:#3a6ea5;--badge-elemento:#2f6b4a;--badge-avistamiento:#7a3b6e;--btn-active-bg:#2a2345;--filter-active-border:#f3d27e;--filter-active-shadow:0 0 4px #f3d27e;--disabled-opacity:.5;--title-gradient:linear-gradient(135deg,#ffe6b3,#f3d27e,#e0bc6c,#f3d27e,#ffe6b3)}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-padding-top:70px}
-body{background:var(--bg-color);color:var(--text-primary);font-family:'Inter',sans-serif;padding:0;position:relative;overflow-x:hidden}
-body.modal-open{overflow:hidden}
-body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZikiIG9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=');background-repeat:repeat;pointer-events:none;opacity:.2;z-index:0}
-.container,.main-header,.grid-wrapper,#overlay{position:relative;z-index:1}
-.main-header{position:sticky;top:0;z-index:100;background:var(--header-bg);padding:8px 16px;padding-right:60px;box-shadow:0 1px 3px rgba(0,0,0,.3);border-bottom:1px solid var(--border-color);overflow:visible}
-.header-corner{position:absolute;top:0;right:0;height:100%;max-height:100%;width:auto;object-fit:contain;pointer-events:all;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));cursor:pointer}
-@media(max-width:700px){.main-header{padding:4px 8px;padding-right:45px}.header-corner{max-width:40px}h2{font-size:1.2rem!important;margin-bottom:3px}.filtro-boton,.btn-limpiar,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{padding:3px 6px!important;font-size:.7rem!important}.result-count{font-size:.65rem!important;padding:1px 6px!important}.pagination-controls input{width:30px!important;font-size:.6rem!important}.search-wrapper input{width:90px!important;font-size:.65rem!important}.filtros-panel{gap:4px}}
-.container{max-width:1400px;margin:0 auto;position:relative;z-index:1}
-h2{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:800;letter-spacing:2px;background:var(--title-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px;text-shadow:0 0 6px rgba(224,188,108,.3);cursor:pointer;user-select:none}
-.filtros-panel{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;align-items:center;justify-content:flex-start}
-.filtros-panel.oculto{display:none}
-.filtro-group{position:relative}
-.filtro-boton,.btn-limpiar,.export-btn,.random-btn,.theme-btn,.view-btn,.fav-filter-btn,.pagination-btn,.config-btn,.help-btn{background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:40px;padding:5px 10px;font-family:'Cinzel',serif;font-weight:600;color:var(--text-primary);font-size:.9rem;cursor:pointer;transition:transform .1s ease,background .1s;white-space:nowrap;line-height:1;outline:none}
-.filtro-boton:disabled,.btn-limpiar:disabled,.fav-filter-btn:disabled,.pagination-btn:disabled,.config-btn:disabled,.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
-.search-clear{cursor:pointer;font-size:.9rem;font-weight:700;color:var(--accent);background:none;border:none;padding:0 2px;transition:opacity .2s}
-.search-clear.disabled{opacity:var(--disabled-opacity);pointer-events:none;cursor:default}
-.search-clear:active:not(.disabled){transform:scale(.9)}
-.filtro-menu input:disabled,.rev-filter-menu input:disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
-.filtro-menu label:has(input:disabled),.rev-filter-menu label:has(input:disabled){opacity:var(--disabled-opacity);cursor:default}
-@media(hover:hover){.filtro-boton:hover:not(:disabled),.btn-limpiar:hover:not(:disabled),.export-btn:hover,.random-btn:hover,.theme-btn:hover,.view-btn:hover,.fav-filter-btn:hover:not(:disabled),.pagination-btn:hover:not(:disabled),.config-btn:hover,.help-btn:hover{background:var(--accent-hover);color:#1a1625;border-color:var(--accent)}.filtro-menu button:hover,.rev-filter-menu label:hover:has(input:not(:disabled)),.orden-menu button:hover,.items-menu button:hover,.csv-menu button:hover,.config-menu button:hover,.config-submenu button:hover{background:var(--accent-hover);color:#1a1625}}
-.filtro-boton:active:not(:disabled),.btn-limpiar:active:not(:disabled),.export-btn:active,.random-btn:active,.theme-btn:active,.view-btn:active,.fav-filter-btn:active:not(:disabled),.pagination-btn:active:not(:disabled),.config-btn:active,.help-btn:active{background:var(--accent-hover);color:#1a1625;border-color:var(--accent);transform:scale(.98)}
-.filtro-boton.active-filter{border-color:var(--filter-active-border);box-shadow:var(--filter-active-shadow)}
-.fav-filter-btn.active,.theme-btn.active{background:var(--accent);color:#1a1625;border-color:var(--accent-hover);box-shadow:0 0 4px var(--accent)}
-.filtro-menu,.orden-menu,.items-menu,.csv-menu,.config-menu,.rev-filter-menu,.help-menu{position:absolute;top:110%;left:0;background:rgba(25,20,40,.9);backdrop-filter:blur(8px);border:1px solid var(--border-color);border-radius:20px;padding:8px 12px;min-width:180px;z-index:200;box-shadow:0 8px 20px rgba(0,0,0,.4);display:none;flex-direction:column;gap:4px}
-.config-menu{min-width:200px}
-.help-menu{min-width:240px;white-space:normal}
-.help-menu p{font-size:.7rem;margin-bottom:4px;color:#fff;line-height:1.3}
-.help-menu hr{margin:4px 0;border-color:var(--border-color)}
-.config-submenu{position:absolute;top:0;left:100%;margin-left:5px;background:rgba(25,20,40,.9);backdrop-filter:blur(8px);border:1px solid var(--border-color);border-radius:20px;padding:6px;min-width:100px;display:none;flex-direction:column;gap:4px;z-index:210}
-.config-submenu.show,.filtro-menu.show,.orden-menu.show,.items-menu.show,.csv-menu.show,.config-menu.show,.rev-filter-menu.show,.help-menu.show{display:flex}
-.filtro-menu label,.rev-filter-menu label,.orden-menu button,.items-menu button,.csv-menu button,.config-menu button,.config-submenu button{background:none;border:none;text-align:left;padding:4px 8px;font-family:'Cinzel',serif;font-size:.7rem;color:#fff;cursor:pointer;border-radius:30px;transition:all .2s;display:flex;align-items:center;width:100%;justify-content:space-between}
-.filtro-menu input,.rev-filter-menu input{accent-color:var(--accent);width:14px;height:14px;margin-right:6px;flex-shrink:0}
-.filtro-menu .label-text,.rev-filter-menu .label-text{flex-grow:1;margin-right:6px}
-.filtro-menu span.count,.rev-filter-menu span.count{color:#b8a87a;font-size:.6rem;flex-shrink:0;margin-left:auto}
-.limpiar-categoria{background:rgba(100,70,40,.7);border:1px solid var(--border-color);border-radius:30px;padding:2px 8px;font-family:'Cinzel',serif;font-size:.65rem;color:var(--text-primary);cursor:pointer;margin-top:4px;text-align:center}
-.limpiar-categoria:disabled{opacity:var(--disabled-opacity);cursor:not-allowed;pointer-events:none}
-.menu-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:transparent;z-index:199}
-.temp-floating-menu{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(25,20,40,.95);backdrop-filter:blur(12px);border:1px solid var(--border-color);border-radius:24px;padding:15px 18px;min-width:280px;max-width:90vw;z-index:1001;box-shadow:0 15px 35px rgba(0,0,0,.6);display:none;flex-direction:column;gap:10px}
-.temp-floating-menu.show{display:flex}
-.temp-floating-menu .temp-header{text-align:center;font-family:'Cinzel',serif;color:var(--accent);font-weight:600;font-size:.85rem;border-bottom:1px solid var(--border-color);padding-bottom:8px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
-.temp-floating-menu .temp-header button{background:none;border:none;font-size:1rem;color:var(--accent);cursor:pointer;padding:0 4px;margin-left:8px}
-.temp-floating-menu .slider-container{padding:0 5px}
-.temp-floating-menu input[type=range]{width:100%;accent-color:var(--accent);margin:6px 0}
-.temp-floating-menu .slider-labels{display:flex;justify-content:space-between;font-size:.65rem;color:var(--text-secondary);padding:0 2px;margin-bottom:4px}
-.temp-floating-menu .temp-value{text-align:center;font-family:'Cinzel',serif;color:var(--accent);font-size:.9rem;margin:4px 0}
-.temp-floating-menu .rev-options{display:flex;flex-direction:column;gap:8px;padding:4px 0}
-.temp-floating-menu .rev-option{background:rgba(25,20,40,.85);border:1px solid var(--border-color);border-radius:30px;padding:8px 14px;color:var(--text-primary);cursor:pointer;font-family:'Cinzel',serif;font-size:.75rem;text-align:center;transition:all .2s}
-.temp-floating-menu .rev-option:hover{background:var(--accent-hover);color:#1a1625}
-.temp-floating-menu .rev-option.active{background:var(--accent);color:#1a1625;border-color:var(--accent-hover);box-shadow:0 0 4px var(--accent)}
-.temp-floating-menu .temp-actions{display:flex;gap:10px;justify-content:center;margin-top:6px}
-.temp-floating-menu .temp-actions button{flex:0 0 auto;min-width:44px;width:44px;height:44px;background:rgba(100,70,40,.7);border:1px solid var(--border-color);border-radius:40px;font-size:1.3rem;color:var(--text-primary);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:500}
-.temp-floating-menu .temp-actions button:hover:not(:disabled){background:var(--accent-hover);color:#1a1625;transform:scale(.96)}
-.temp-floating-menu .temp-actions button:active:not(:disabled){transform:scale(.92)}
-.temp-floating-menu .temp-actions button:disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
-.modal-checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:50vh;overflow-y:auto;padding:4px 8px;margin-bottom:16px}
-.modal-checkbox-grid label{display:flex;align-items:center;gap:8px;font-size:.75rem;cursor:pointer;color:var(--text-primary);background:rgba(0,0,0,.2);padding:4px 8px;border-radius:20px}
-.modal-checkbox-grid label.disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
-.modal-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
-.modal-actions button{flex:0 0 auto;min-width:44px;width:44px;height:44px;background:rgba(100,70,40,.7);text-align:center;padding:0;font-size:1.4rem;border-radius:40px;transition:all .2s;font-family:'Inter',sans-serif;font-weight:500;border:1px solid var(--border-color);color:var(--text-primary);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
-.modal-actions button:hover:not(:disabled){background:var(--accent-hover);color:#1a1625;transform:scale(.96)}
-.modal-actions button:active:not(:disabled){transform:scale(.92)}
-.modal-actions button:disabled{opacity:var(--disabled-opacity);cursor:not-allowed}
-#csvModal.temp-floating-menu{min-width:360px;max-height:80vh;overflow-y:auto}
-#csvModal .csv-checkbox-group{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;max-height:40vh;overflow-y:auto;margin-bottom:16px;padding-right:4px}
-#csvModal .csv-checkbox-group label{display:flex;align-items:center;gap:8px;font-size:.75rem;cursor:pointer;color:var(--text-primary);background:rgba(0,0,0,.2);padding:4px 8px;border-radius:20px}
-.search-wrapper{display:inline-flex;align-items:center;gap:4px;background:rgba(25,20,40,.85);border-radius:40px;padding:2px 8px}
-.search-wrapper input{background:transparent;border:none;padding:4px 0;font-family:'Inter',sans-serif;font-size:.7rem;color:var(--text-primary);outline:none;width:140px}
-.result-count{background:rgba(0,0,0,.4);padding:2px 8px;border-radius:40px;font-size:.7rem;color:var(--accent);display:inline-flex;align-items:center;gap:4px}
-.pagination-controls{display:inline-flex;align-items:center;gap:3px;background:rgba(0,0,0,.2);border-radius:40px;padding:2px 5px}
-.pagination-controls input{width:40px;text-align:center;background:rgba(25,20,40,.7);border:1px solid var(--border-color);border-radius:30px;padding:2px 0;font-family:'Cinzel',serif;font-size:.65rem;color:var(--text-primary);outline:none}
-.pagination-controls input:read-only{opacity:.6;cursor:default}
-.grid-wrapper{padding:15px 20px 30px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;opacity:1;transition:opacity .2s}
-.card{background:var(--card-bg);border-radius:20px;cursor:pointer;border:1px solid var(--border-color);transition:transform .2s ease,border-color .2s ease,background .2s ease;display:flex;flex-direction:column;position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(224,188,108,.5),rgba(180,130,200,.5),rgba(100,160,220,.5),rgba(224,188,108,.5));background-size:300% 300%;opacity:0;transition:opacity .4s ease;z-index:-1;pointer-events:none}
-.card:hover::before{opacity:1;animation:gradientShift 4s ease infinite}
-@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-.card::after{content:"";position:absolute;top:0;left:0;width:200%;height:120%;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.08) 45%,rgba(255,255,255,.35) 50%,rgba(255,255,255,.08) 55%,transparent 65%);opacity:0;transition:opacity .3s ease;z-index:2;pointer-events:none;animation:none}
-.card:hover::after{opacity:1;animation:barridoCristal 1.65s linear infinite}
-@keyframes barridoCristal{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.card>*{position:relative;z-index:1}
-.card:hover{transform:translateY(-2px);border-color:var(--accent)}
-.img-container{width:100%;height:150px;position:relative;overflow:hidden;border-radius:20px 20px 0 0;background:rgba(0,0,0,.3)}
-.img-container img{width:100%;height:100%;object-fit:cover}
-.card-footer-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px 10px;gap:8px;margin-top:auto;position:relative;z-index:2}
-.badges-wrapper{display:flex;flex-wrap:wrap;gap:2px;align-items:center}
-.card-actions{display:flex;gap:6px;align-items:center}
-.mini-badge{width:20px;height:20px;border-radius:30px;background:rgba(0,0,0,.7);backdrop-filter:none;display:flex;align-items:center;justify-content:center;font-size:10px;border:1px solid var(--border-color);cursor:pointer;transition:transform .1s;padding:0}
-.mini-badge:active{transform:scale(.96)}
-.card b{display:block;padding:12px 8px 6px;text-align:center;font-family:'Cinzel',serif;font-weight:700;font-size:.9rem;background:var(--title-gradient);-webkit-background-clip:text;background-clip:text;color:transparent;word-break:break-word;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .05s linear;flex:1;position:relative;z-index:2}
-.card b.wrap-name{white-space:normal!important;overflow:visible;text-overflow:unset;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-height:calc(2*1.2em+12px);line-height:1.2;padding-bottom:6px}
-.modal-header h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 100px);transition:font-size .05s linear;font-family:'Cinzel',serif;font-weight:800;background:var(--title-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
-.modal-header h3.wrap-name{white-space:normal!important}
-#detalle{position:relative;overflow:hidden;border:1px solid var(--border-color)}
-#detalle::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:35%;background:linear-gradient(to bottom,transparent 0%,rgba(219,186,108,.15) 100%);pointer-events:none;z-index:1}
-#detalle>*{position:relative;z-index:2}
-.fav-star,.revisado-icon,.copy-link{cursor:pointer;font-size:1.2rem;transition:transform .1s;background:none;border:none;font-family:inherit;color:var(--accent);padding:2px;line-height:1}
-.fav-star:active,.copy-link:active{transform:scale(.95)}
-.fav-star.active{color:gold;text-shadow:0 0 2px orange}
-.revisado-icon{color:var(--accent)}
-.temp-tooltip{position:fixed;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);color:var(--accent);font-family:'Cinzel',serif;font-size:.7rem;padding:4px 8px;border-radius:20px;border:1px solid var(--border-color);white-space:nowrap;z-index:10001;pointer-events:none;transition:opacity .2s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
-.no-results{text-align:center;padding:30px 20px;font-family:'Cinzel',serif;color:var(--accent);font-size:1rem}
-.no-results img{display:block;margin:20px auto 0;max-width:200px;border-radius:16px;border:1px solid var(--border-color);background:rgba(0,0,0,.3)}
-#overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(8,5,18,.94);backdrop-filter:blur(12px);display:none;justify-content:center;align-items:center;z-index:1000;opacity:0;transition:opacity .3s ease}
-#overlay.show{display:flex;opacity:1}
-.modal-container{position:relative;width:90%;max-width:850px;margin:auto}
-.modal-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(4px);border-radius:12px;width:32px;height:110px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;z-index:1010;border:1px solid var(--border-color);opacity:.85;font-size:24px;color:var(--accent);font-weight:300}
-.modal-arrow:hover{background:rgba(0,0,0,.8);border-color:var(--accent-hover);opacity:1}
-.modal-arrow:active{transform:translateY(-50%) scale(.96)}
-.modal-arrow.disabled{opacity:.3;pointer-events:none}
-.modal-arrow.prev{left:-20px}
-.modal-arrow.next{right:-20px}
-@media(max-width:700px){.modal-arrow{width:28px;height:80px;font-size:20px}.modal-arrow.prev{left:-14px}.modal-arrow.next{right:-14px}}
-#detalle{background:var(--card-bg);border-radius:30px;border:1px solid var(--border-color);max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
-.modal-header{padding:12px 18px;border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center}
-.modal-header h3{margin:0}
-.modal-header-actions{display:flex;gap:10px;align-items:center}
-.modal-header-actions button{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--accent);transition:transform .1s;padding:2px;line-height:1}
-.modal-header-actions button:active{transform:scale(.95)}
-#cerrar{font-size:1.5rem;cursor:pointer;color:var(--accent)}
-.modal-body{display:flex;gap:20px;padding:16px 20px;overflow-y:auto;flex:1}
-.info-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;max-height:65vh}
-.image-fixed{flex:.6;min-width:120px;text-align:center}
-.image-fixed img{max-width:100%;max-height:180px;object-fit:contain;border-radius:20px;border:1px solid var(--border-color);background:#000}
-.info-grid{background:rgba(0,0,0,.4);border-radius:20px;padding:10px 14px;margin-bottom:12px}
-.info-item{display:flex;gap:8px;font-size:.75rem;margin-bottom:4px;flex-wrap:wrap}
-.info-label{font-weight:700;color:var(--accent);min-width:90px}
-.modal-description{line-height:1.5;font-size:.85rem;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word}
-.links-list{margin-top:12px;border-top:1px dashed var(--border-color);padding-top:8px}
-.link-item{display:block;color:var(--accent);font-size:.75rem;margin-bottom:4px;text-decoration:none;word-break:break-word}
-.link-item:active{text-decoration:underline}
-@media(max-width:700px){.modal-body{flex-direction:column}.image-fixed{order:2;margin-top:16px;flex:none}.info-scroll{order:1;max-height:50vh}}
+/* ── Variables ──────────────────────────────── */
+:root {
+  --bg:              #0f0c18;
+  --header-bg:       rgba(10,8,18,.95);
+  --card-bg:         rgba(18,15,30,.85);
+  --text-primary:    #f0eef7;
+  --text-secondary:  #e5dccf;
+  --accent:          #e0bc6c;
+  --accent-hover:    #f3d27e;
+  --border:          #dbba6c;
+  --disabled-op:     0.5;
+  --filter-shadow:   0 0 4px #f3d27e;
+  --title-gradient:  linear-gradient(135deg,#ffe6b3,#f3d27e,#e0bc6c,#f3d27e,#ffe6b3);
+}
+
+/* ── Reset & Base ───────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+html { scroll-padding-top:70px }
+body {
+  background:var(--bg); color:var(--text-primary);
+  font-family:'Inter',sans-serif; overflow-x:hidden; position:relative;
+}
+body.modal-open { overflow:hidden }
+body::before {
+  content:""; position:fixed; inset:0;
+  background-image:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjMiLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZikiIG9wYWNpdHk9IjAuMDYiLz48L3N2Zz4=');
+  background-repeat:repeat; opacity:.2; pointer-events:none; z-index:0;
+}
+
+/* ── Layout z-index ─────────────────────────── */
+.container, .main-header, .grid-wrapper, #overlay { position:relative; z-index:1 }
+
+/* ── Header ─────────────────────────────────── */
+.main-header {
+  position:sticky; top:0; z-index:100;
+  background:var(--header-bg); padding:8px 16px 8px 16px; padding-right:60px;
+  box-shadow:0 1px 3px rgba(0,0,0,.3); border-bottom:1px solid var(--border);
+}
+.header-corner {
+  position:absolute; top:0; right:0; height:100%; max-height:100%; width:auto;
+  object-fit:contain; z-index:2; filter:drop-shadow(0 1px 2px rgba(0,0,0,.2));
+  cursor:pointer; pointer-events:all;
+}
+
+/* ── Título ─────────────────────────────────── */
+h2 {
+  font-family:'Cinzel',serif; font-size:1.6rem; font-weight:800; letter-spacing:2px;
+  background:var(--title-gradient); -webkit-background-clip:text; background-clip:text;
+  color:transparent; margin-bottom:6px; text-shadow:0 0 6px rgba(224,188,108,.3);
+  cursor:pointer; user-select:none;
+}
+
+/* ── Panel de filtros ───────────────────────── */
+.filtros-panel { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0; align-items:center }
+.filtros-panel.oculto { display:none }
+.filtro-group { position:relative }
+
+/* ── Botones generales ──────────────────────── */
+.filtro-boton, .btn-limpiar, .fav-filter-btn, .pagination-btn, .config-btn {
+  background:rgba(25,20,40,.85); border:1px solid var(--border); border-radius:40px;
+  padding:5px 10px; font-family:'Cinzel',serif; font-weight:600;
+  color:var(--text-primary); font-size:.9rem; cursor:pointer;
+  transition:transform .1s ease, background .1s; white-space:nowrap; line-height:1; outline:none;
+}
+.filtro-boton:disabled, .btn-limpiar:disabled,
+.fav-filter-btn:disabled, .pagination-btn:disabled, .config-btn:disabled,
+.limpiar-categoria:disabled { opacity:var(--disabled-op); cursor:not-allowed; pointer-events:none }
+
+.search-clear {
+  cursor:pointer; font-size:.9rem; font-weight:700; color:var(--accent);
+  background:none; border:none; padding:0 2px; transition:opacity .2s;
+}
+.search-clear.disabled { opacity:var(--disabled-op); pointer-events:none; cursor:default }
+.search-clear:active:not(.disabled) { transform:scale(.9) }
+.filtro-menu input:disabled, .rev-filter-menu input:disabled { opacity:var(--disabled-op); cursor:not-allowed }
+.filtro-menu label:has(input:disabled), .rev-filter-menu label:has(input:disabled) { opacity:var(--disabled-op); cursor:default }
+
+/* Hover (solo dispositivos con puntero fino) */
+@media (hover:hover) {
+  .filtro-boton:hover:not(:disabled), .btn-limpiar:hover:not(:disabled),
+  .fav-filter-btn:hover:not(:disabled), .pagination-btn:hover:not(:disabled),
+  .config-btn:hover {
+    background:var(--accent-hover); color:#1a1625; border-color:var(--accent);
+  }
+  .filtro-menu button:hover, .rev-filter-menu label:hover:has(input:not(:disabled)),
+  .orden-menu button:hover, .config-menu button:hover, .config-submenu button:hover {
+    background:var(--accent-hover); color:#1a1625;
+  }
+}
+
+/* Active state compartido */
+.filtro-boton:active:not(:disabled), .btn-limpiar:active:not(:disabled),
+.fav-filter-btn:active:not(:disabled), .pagination-btn:active:not(:disabled),
+.config-btn:active {
+  background:var(--accent-hover); color:#1a1625; border-color:var(--accent); transform:scale(.98);
+}
+.filtro-boton.active-filter { border-color:var(--accent-hover); box-shadow:var(--filter-shadow) }
+.fav-filter-btn.active { background:var(--accent); color:#1a1625; border-color:var(--accent-hover); box-shadow:0 0 4px var(--accent) }
+
+/* ── Menús flotantes (dropdown) ─────────────── */
+.filtro-menu, .orden-menu, .config-menu, .rev-filter-menu {
+  position:absolute; top:110%; left:0;
+  background:rgba(25,20,40,.9); backdrop-filter:blur(8px);
+  border:1px solid var(--border); border-radius:20px; padding:8px 12px;
+  min-width:180px; z-index:200; box-shadow:0 8px 20px rgba(0,0,0,.4);
+  display:none; flex-direction:column; gap:4px;
+}
+.config-menu { min-width:200px }
+.config-submenu {
+  position:absolute; top:0; left:100%; margin-left:5px;
+  background:rgba(25,20,40,.9); backdrop-filter:blur(8px);
+  border:1px solid var(--border); border-radius:20px; padding:6px;
+  min-width:100px; display:none; flex-direction:column; gap:4px; z-index:210;
+}
+.config-submenu.show, .filtro-menu.show, .orden-menu.show,
+.config-menu.show, .rev-filter-menu.show { display:flex }
+
+.filtro-menu label, .rev-filter-menu label,
+.orden-menu button, .config-menu button, .config-submenu button {
+  background:none; border:none; text-align:left; padding:4px 8px;
+  font-family:'Cinzel',serif; font-size:.7rem; color:#fff;
+  cursor:pointer; border-radius:30px; transition:all .2s;
+  display:flex; align-items:center; width:100%; justify-content:space-between;
+}
+.filtro-menu input, .rev-filter-menu input { accent-color:var(--accent); width:14px; height:14px; margin-right:6px; flex-shrink:0 }
+.filtro-menu .label-text, .rev-filter-menu .label-text { flex-grow:1; margin-right:6px }
+.filtro-menu span.count, .rev-filter-menu span.count { color:#b8a87a; font-size:.6rem; flex-shrink:0; margin-left:auto }
+.limpiar-categoria {
+  background:rgba(100,70,40,.7); border:1px solid var(--border); border-radius:30px;
+  padding:2px 8px; font-family:'Cinzel',serif; font-size:.65rem;
+  color:var(--text-primary); cursor:pointer; margin-top:4px; text-align:center;
+}
+
+/* ── Overlay de cierre de menús ─────────────── */
+.menu-overlay { position:fixed; inset:0; background:transparent; z-index:199 }
+
+/* ── Modales flotantes genéricos ────────────── */
+.temp-floating-menu {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:rgba(25,20,40,.95); backdrop-filter:blur(12px);
+  border:1px solid var(--border); border-radius:24px;
+  padding:15px 18px; min-width:280px; max-width:90vw;
+  z-index:1001; box-shadow:0 15px 35px rgba(0,0,0,.6);
+  display:none; flex-direction:column; gap:10px;
+}
+.temp-floating-menu.show { display:flex }
+.temp-floating-menu .temp-header {
+  text-align:center; font-family:'Cinzel',serif; color:var(--accent);
+  font-weight:600; font-size:.85rem; border-bottom:1px solid var(--border);
+  padding-bottom:8px; margin-bottom:4px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.temp-floating-menu .temp-header button { background:none; border:none; font-size:1rem; color:var(--accent); cursor:pointer; padding:0 4px; margin-left:8px }
+.temp-floating-menu input[type=range] { width:100%; accent-color:var(--accent); margin:6px 0 }
+.temp-floating-menu .slider-labels { display:flex; justify-content:space-between; font-size:.65rem; color:var(--text-secondary); padding:0 2px; margin-bottom:4px }
+.temp-floating-menu .temp-value { text-align:center; font-family:'Cinzel',serif; color:var(--accent); font-size:.9rem; margin:4px 0 }
+.temp-floating-menu .temp-actions {
+  display:flex; gap:10px; justify-content:center; margin-top:6px;
+}
+.temp-floating-menu .temp-actions button, .modal-actions button {
+  flex:0 0 auto; min-width:44px; width:44px; height:44px;
+  background:rgba(100,70,40,.7); border:1px solid var(--border); border-radius:40px;
+  font-size:1.3rem; color:var(--text-primary); cursor:pointer; transition:all .2s;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:'Inter',sans-serif; font-weight:500;
+}
+.temp-floating-menu .temp-actions button:hover:not(:disabled),
+.modal-actions button:hover:not(:disabled) { background:var(--accent-hover); color:#1a1625; transform:scale(.96) }
+.temp-floating-menu .temp-actions button:active:not(:disabled),
+.modal-actions button:active:not(:disabled) { transform:scale(.92) }
+.temp-floating-menu .temp-actions button:disabled,
+.modal-actions button:disabled { opacity:var(--disabled-op); cursor:not-allowed }
+
+/* Grid de checkboxes en modales */
+.modal-checkbox-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:8px; max-height:50vh; overflow-y:auto; padding:4px 8px; margin-bottom:16px;
+}
+.modal-checkbox-grid label {
+  display:flex; align-items:center; gap:8px; font-size:.75rem; cursor:pointer;
+  color:var(--text-primary); background:rgba(0,0,0,.2); padding:4px 8px; border-radius:20px;
+}
+.modal-checkbox-grid label.disabled { opacity:var(--disabled-op); cursor:not-allowed }
+.modal-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px }
+.modal-actions button { font-size:1.4rem }
+
+/* Modal CSV */
+#csvModal.temp-floating-menu { min-width:360px; max-height:80vh; overflow-y:auto }
+#csvModal .csv-checkbox-group {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:8px; max-height:40vh; overflow-y:auto; margin-bottom:16px; padding-right:4px;
+}
+#csvModal .csv-checkbox-group label {
+  display:flex; align-items:center; gap:8px; font-size:.75rem; cursor:pointer;
+  color:var(--text-primary); background:rgba(0,0,0,.2); padding:4px 8px; border-radius:20px;
+}
+
+/* ── Barra superior (búsqueda, conteo, paginación) ── */
+.search-wrapper {
+  display:inline-flex; align-items:center; gap:4px;
+  background:rgba(25,20,40,.85); border-radius:40px; padding:2px 8px;
+}
+.search-wrapper input {
+  background:transparent; border:none; padding:4px 0;
+  font-family:'Inter',sans-serif; font-size:.7rem; color:var(--text-primary);
+  outline:none; width:140px;
+}
+.result-count {
+  background:rgba(0,0,0,.4); padding:2px 8px; border-radius:40px;
+  font-size:.7rem; color:var(--accent); display:inline-flex; align-items:center; gap:4px;
+}
+.pagination-controls { display:inline-flex; align-items:center; gap:3px; background:rgba(0,0,0,.2); border-radius:40px; padding:2px 5px }
+.pagination-controls input {
+  width:40px; text-align:center; background:rgba(25,20,40,.7); border:1px solid var(--border);
+  border-radius:30px; padding:2px 0; font-family:'Cinzel',serif; font-size:.65rem;
+  color:var(--text-primary); outline:none;
+}
+.pagination-controls input:read-only { opacity:.6; cursor:default }
+
+/* ── Grid de tarjetas ───────────────────────── */
+.grid-wrapper { padding:15px 20px 30px }
+.grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:20px; opacity:1; transition:opacity .2s;
+}
+
+/* ── Tarjeta ────────────────────────────────── */
+.card {
+  background:var(--card-bg); border-radius:20px; cursor:pointer;
+  border:1px solid var(--border); transition:transform .2s ease, border-color .2s ease, background .2s ease;
+  display:flex; flex-direction:column; position:relative; overflow:hidden;
+}
+/* Gradiente animado de fondo */
+.card::before {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(224,188,108,.5),rgba(180,130,200,.5),rgba(100,160,220,.5),rgba(224,188,108,.5));
+  background-size:300% 300%; opacity:0; transition:opacity .4s ease; z-index:-1; pointer-events:none;
+}
+.card:hover::before { opacity:1; animation:gradientShift 4s ease infinite }
+@keyframes gradientShift {
+  0%,100% { background-position:0% 50% }
+  50%      { background-position:100% 50% }
+}
+/* Barrido cristalino */
+.card::after {
+  content:""; position:absolute; top:0; left:0; width:200%; height:120%;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.08) 45%,rgba(255,255,255,.35) 50%,rgba(255,255,255,.08) 55%,transparent 65%);
+  opacity:0; transition:opacity .3s ease; z-index:2; pointer-events:none;
+}
+.card:hover::after { opacity:1; animation:barridoCristal 1.65s linear infinite }
+@keyframes barridoCristal {
+  0%   { transform:translateX(-100%) }
+  100% { transform:translateX(100%) }
+}
+.card > * { position:relative; z-index:1 }
+.card:hover { transform:translateY(-2px); border-color:var(--accent) }
+
+.img-container { width:100%; height:150px; position:relative; overflow:hidden; border-radius:20px 20px 0 0; background:rgba(0,0,0,.3) }
+.img-container img { width:100%; height:100%; object-fit:cover }
+
+.card-footer-row { display:flex; justify-content:space-between; align-items:center; padding:6px 10px 10px; gap:8px; margin-top:auto; position:relative; z-index:2 }
+.badges-wrapper { display:flex; flex-wrap:wrap; gap:2px; align-items:center }
+.card-actions { display:flex; gap:6px; align-items:center }
+
+.mini-badge {
+  width:20px; height:20px; border-radius:30px; background:rgba(0,0,0,.7);
+  display:flex; align-items:center; justify-content:center; font-size:10px;
+  border:1px solid var(--border); cursor:pointer; transition:transform .1s; padding:0;
+}
+.mini-badge:active { transform:scale(.96) }
+
+.card b {
+  display:block; padding:12px 8px 6px; text-align:center;
+  font-family:'Cinzel',serif; font-weight:700; font-size:.9rem;
+  background:var(--title-gradient); -webkit-background-clip:text; background-clip:text; color:transparent;
+  word-break:break-word; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  transition:font-size .05s linear; flex:1; position:relative; z-index:2;
+}
+.card b.wrap-name {
+  white-space:normal !important; overflow:visible; text-overflow:unset;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  max-height:calc(2 * 1.2em + 12px); line-height:1.2; padding-bottom:6px;
+}
+
+/* ── Modal de detalle ───────────────────────── */
+#overlay {
+  position:fixed; inset:0; background:rgba(8,5,18,.94); backdrop-filter:blur(12px);
+  display:none; justify-content:center; align-items:center;
+  z-index:1000; opacity:0; transition:opacity .3s ease;
+}
+#overlay.show { display:flex; opacity:1 }
+
+.modal-container { position:relative; width:90%; max-width:850px; margin:auto }
+
+.modal-arrow {
+  position:absolute; top:50%; transform:translateY(-50%);
+  background:rgba(0,0,0,.6); backdrop-filter:blur(4px); border-radius:12px;
+  width:32px; height:110px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:background .2s; z-index:1010;
+  border:1px solid var(--border); opacity:.85; font-size:24px; color:var(--accent); font-weight:300;
+}
+.modal-arrow:hover { background:rgba(0,0,0,.8); border-color:var(--accent-hover); opacity:1 }
+.modal-arrow:active { transform:translateY(-50%) scale(.96) }
+.modal-arrow.disabled { opacity:.3; pointer-events:none }
+.modal-arrow.prev { left:-20px }
+.modal-arrow.next { right:-20px }
+
+#detalle {
+  background:var(--card-bg); border-radius:30px; border:1px solid var(--border);
+  max-height:85vh; display:flex; flex-direction:column; overflow:hidden; position:relative;
+}
+#detalle::before {
+  content:''; position:absolute; bottom:0; left:0; width:100%; height:35%;
+  background:linear-gradient(to bottom,transparent,rgba(219,186,108,.15));
+  pointer-events:none; z-index:1;
+}
+#detalle > * { position:relative; z-index:2 }
+
+.modal-header { padding:12px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center }
+.modal-header h3 {
+  margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  max-width:calc(100% - 100px); transition:font-size .05s linear;
+  font-family:'Cinzel',serif; font-weight:800;
+  background:var(--title-gradient); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.modal-header h3.wrap-name { white-space:normal !important }
+.modal-header-actions { display:flex; gap:10px; align-items:center }
+.modal-header-actions button { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--accent); transition:transform .1s; padding:2px; line-height:1 }
+.modal-header-actions button:active { transform:scale(.95) }
+#cerrar { font-size:1.5rem; cursor:pointer; color:var(--accent) }
+
+.modal-body { display:flex; gap:20px; padding:16px 20px; overflow-y:auto; flex:1 }
+.info-scroll { flex:1; overflow-y:auto; overflow-x:hidden; padding-right:8px; max-height:65vh }
+.image-fixed { flex:.6; min-width:120px; text-align:center }
+.image-fixed img { max-width:100%; max-height:180px; object-fit:contain; border-radius:20px; border:1px solid var(--border); background:#000 }
+
+.info-grid { background:rgba(0,0,0,.4); border-radius:20px; padding:10px 14px; margin-bottom:12px }
+.info-item { display:flex; gap:8px; font-size:.75rem; margin-bottom:4px; flex-wrap:wrap }
+.info-label { font-weight:700; color:var(--accent); min-width:90px }
+.modal-description { line-height:1.5; font-size:.85rem; color:var(--text-secondary); white-space:pre-wrap; word-break:break-word }
+.links-list { margin-top:12px; border-top:1px dashed var(--border); padding-top:8px }
+.link-item { display:block; color:var(--accent); font-size:.75rem; margin-bottom:4px; text-decoration:none; word-break:break-word }
+.link-item:active { text-decoration:underline }
+
+/* ── Tooltip ────────────────────────────────── */
+.temp-tooltip {
+  position:fixed; background:rgba(0,0,0,.8); backdrop-filter:blur(4px);
+  color:var(--accent); font-family:'Cinzel',serif; font-size:.7rem;
+  padding:4px 8px; border-radius:20px; border:1px solid var(--border);
+  white-space:nowrap; z-index:10001; pointer-events:none;
+  transition:opacity .2s; box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+
+/* ── Sin resultados ─────────────────────────── */
+.no-results { text-align:center; padding:30px 20px; font-family:'Cinzel',serif; color:var(--accent); font-size:1rem }
+.no-results img { display:block; margin:20px auto 0; max-width:200px; border-radius:16px; border:1px solid var(--border); background:rgba(0,0,0,.3) }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width:700px) {
+  .main-header { padding:4px 8px; padding-right:45px }
+  .header-corner { max-width:40px }
+  h2 { font-size:1.2rem !important; margin-bottom:3px }
+  .filtro-boton, .btn-limpiar, .fav-filter-btn, .pagination-btn, .config-btn { padding:3px 6px !important; font-size:.7rem !important }
+  .result-count { font-size:.65rem !important; padding:1px 6px !important }
+  .pagination-controls input { width:30px !important; font-size:.6rem !important }
+  .search-wrapper input { width:90px !important; font-size:.65rem !important }
+  .filtros-panel { gap:4px }
+  .modal-arrow { width:28px; height:80px; font-size:20px }
+  .modal-arrow.prev { left:-14px }
+  .modal-arrow.next { right:-14px }
+  .modal-body { flex-direction:column }
+  .image-fixed { order:2; margin-top:16px; flex:none }
+  .info-scroll { order:1; max-height:50vh }
+}
 </style>
 </head>
 <body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
 <div class="main-header" id="mainHeader">
-<img id="headerCornerImg" class="header-corner" alt="Ayuda decorativa" aria-label="Abrir ayuda" role="button">
-<div class="container" id="headerContainer">
-<h2 id="mainTitle" aria-label="Título principal">✦ ÍNDICE DE SERES MÍSTICOS ✦</h2>
-<div class="filtros-panel" id="filtrosPanel">
-<div class="filtro-group"><button class="filtro-boton" id="btnMorfologia" title="Morfología" aria-label="Filtrar por morfología">🔮</button><div class="filtro-menu" id="menu-morfologia"></div></div>
-<div class="filtro-group"><button class="filtro-boton" id="btnTipo" title="Tipo de ser" aria-label="Filtrar por tipo">🌙</button><div class="filtro-menu" id="menu-tipo"></div></div>
-<div class="filtro-group"><button class="filtro-boton" id="btnElemento" title="Elemento" aria-label="Filtrar por elemento">💧</button><div class="filtro-menu" id="menu-elemento"></div></div>
-<div class="filtro-group"><button class="filtro-boton" id="btnAvistamiento" title="Avistamiento" aria-label="Filtrar por avistamiento">👁️</button><div class="filtro-menu" id="menu-avistamiento"></div></div>
-<div class="filtro-group"><button class="filtro-boton" id="btnUbicacion" title="Ubicación" aria-label="Filtrar por ubicación">📍</button></div>
-<div class="filtro-group"><button class="filtro-boton" id="btnEpoca" title="Época" aria-label="Filtrar por época">📅</button></div>
-<div class="filtro-group"><button class="filtro-boton" id="btnSubcategorias" title="Subcategorías" aria-label="Filtrar por subcategorías">🏷️</button></div>
-<div class="filtro-group"><button class="filtro-boton" id="btnRevFilter" title="Revisado" aria-label="Filtrar por estado de revisión">✅</button><div class="rev-filter-menu" id="menu-rev"></div></div>
-<button id="btnLimpiar" class="btn-limpiar" title="Limpiar filtros" aria-label="Limpiar todos los filtros">🧹</button>
-<div class="filtro-group" id="ordenGroup"><button class="filtro-boton" id="btnOrden" title="Ordenar" aria-label="Ordenar resultados">📊</button><div class="orden-menu" id="ordenMenu"></div></div>
-<button id="favFilterBtn" class="fav-filter-btn" title="Favoritos" aria-label="Mostrar solo favoritos">⭐</button>
-<button id="btnResetTotal" class="btn-limpiar" title="Resetear todo" aria-label="Resetear filtros, favoritos y búsqueda">♻️</button>
-<div class="filtro-group" id="configGroup"><button class="config-btn" id="configBtn" title="Configuración" aria-label="Abrir configuración">⚙️</button><div id="configMenu" class="config-menu"></div></div>
-<div class="result-count"><span>🐉</span><span id="resultText">0-0 / 0</span></div>
-<div id="paginationControls" class="pagination-controls"></div>
-<div class="search-wrapper"><input type="text" id="searchInput" placeholder="🔍 Buscar..." list="searchSuggestions" autocomplete="off" aria-label="Buscar criatura"><button id="clearSearch" class="search-clear disabled" aria-label="Limpiar búsqueda">✕</button><datalist id="searchSuggestions"></datalist></div>
+  <img id="headerCornerImg" class="header-corner" alt="Ayuda decorativa" aria-label="Abrir ayuda" role="button">
+  <div class="container" id="headerContainer">
+    <h2 id="mainTitle" aria-label="Título principal">✦ ÍNDICE DE SERES MÍSTICOS ✦</h2>
+    <div class="filtros-panel" id="filtrosPanel">
+      <!-- Filtros con submenú inline -->
+      <div class="filtro-group"><button class="filtro-boton" id="btnMorfologia" title="Morfología" aria-label="Filtrar por morfología">🔮</button><div class="filtro-menu" id="menu-morfologia"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnTipo" title="Tipo de ser" aria-label="Filtrar por tipo">🌙</button><div class="filtro-menu" id="menu-tipo"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnElemento" title="Elemento" aria-label="Filtrar por elemento">💧</button><div class="filtro-menu" id="menu-elemento"></div></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnAvistamiento" title="Avistamiento" aria-label="Filtrar por avistamiento">👁️</button><div class="filtro-menu" id="menu-avistamiento"></div></div>
+      <!-- Filtros con modal flotante -->
+      <div class="filtro-group"><button class="filtro-boton" id="btnUbicacion" title="Ubicación" aria-label="Filtrar por ubicación">📍</button></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnEpoca" title="Época" aria-label="Filtrar por época">📅</button></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnSubcategorias" title="Subcategorías" aria-label="Filtrar por subcategorías">🏷️</button></div>
+      <div class="filtro-group"><button class="filtro-boton" id="btnRevFilter" title="Revisado" aria-label="Filtrar por estado de revisión">✅</button><div class="rev-filter-menu" id="menu-rev"></div></div>
+      <!-- Acciones -->
+      <button id="btnLimpiar"    class="btn-limpiar"    title="Limpiar filtros"             aria-label="Limpiar todos los filtros">🧹</button>
+      <div class="filtro-group"><button class="filtro-boton" id="btnOrden" title="Ordenar" aria-label="Ordenar resultados">📊</button><div class="orden-menu" id="ordenMenu"></div></div>
+      <button id="favFilterBtn"  class="fav-filter-btn" title="Favoritos"                   aria-label="Mostrar solo favoritos">⭐</button>
+      <button id="btnResetTotal" class="btn-limpiar"    title="Resetear todo"               aria-label="Resetear filtros, favoritos y búsqueda">♻️</button>
+      <div class="filtro-group"><button class="config-btn" id="configBtn" title="Configuración" aria-label="Abrir configuración">⚙️</button><div id="configMenu" class="config-menu"></div></div>
+      <!-- Info -->
+      <div class="result-count"><span>🐉</span><span id="resultText">0-0 / 0</span></div>
+      <div id="paginationControls" class="pagination-controls"></div>
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar..." list="searchSuggestions" autocomplete="off" aria-label="Buscar criatura">
+        <button id="clearSearch" class="search-clear disabled" aria-label="Limpiar búsqueda">✕</button>
+        <datalist id="searchSuggestions"></datalist>
+      </div>
+    </div>
+  </div>
 </div>
-</div>
-</div>
+
+<!-- ══ GRID ═════════════════════════════════════════════════ -->
 <div class="grid-wrapper">
-<div id="grid" class="grid"></div>
+  <div id="grid" class="grid"></div>
 </div>
+
+<!-- ══ MODAL DE DETALLE ══════════════════════════════════════ -->
 <div id="overlay">
-<div class="modal-container">
-<div class="modal-arrow prev" id="modalPrevArrow"><span>◀</span></div>
-<div id="detalle">
-<div class="modal-header">
-<h3 id="modal-title">Nombre</h3>
-<div class="modal-header-actions">
-<button id="modalFav" class="fav-star" title="Favorito" aria-label="Marcar como favorito">☆</button>
-<button id="modalRevisado" class="revisado-icon" title="Marcar revisado" aria-label="Marcar como revisado">◇</button>
-<span id="cerrar" title="Cerrar" aria-label="Cerrar ficha">✕</span>
+  <div class="modal-container">
+    <div class="modal-arrow prev" id="modalPrevArrow"><span>◀</span></div>
+    <div id="detalle">
+      <div class="modal-header">
+        <h3 id="modal-title">Nombre</h3>
+        <div class="modal-header-actions">
+          <button id="modalFav"      class="fav-star"      title="Favorito"         aria-label="Marcar como favorito">☆</button>
+          <button id="modalRevisado" class="revisado-icon" title="Marcar revisado"  aria-label="Marcar como revisado">◇</button>
+          <span   id="cerrar"                              title="Cerrar"           aria-label="Cerrar ficha">✕</span>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="info-scroll" id="modal-info-scroll"></div>
+        <div class="image-fixed"><img id="modal-image" src="" alt="Imagen de la criatura"></div>
+      </div>
+    </div>
+    <div class="modal-arrow next" id="modalNextArrow"><span>▶</span></div>
+  </div>
 </div>
-</div>
-<div class="modal-body">
-<div class="info-scroll" id="modal-info-scroll"></div>
-<div class="image-fixed"><img id="modal-image" src="" alt="Imagen de la criatura"></div>
-</div>
-</div>
-<div class="modal-arrow next" id="modalNextArrow"><span>▶</span></div>
-</div>
-</div>
+
+<style>
+/* Estilos inline de iconos de acción (fuera del bloque principal para claridad) */
+.fav-star, .revisado-icon, .copy-link {
+  cursor:pointer; font-size:1.2rem; transition:transform .1s;
+  background:none; border:none; font-family:inherit; color:var(--accent); padding:2px; line-height:1;
+}
+.fav-star:active, .copy-link:active { transform:scale(.95) }
+.fav-star.active { color:gold; text-shadow:0 0 2px orange }
+</style>
+
 <script>
-const STORAGE_VERSION=12, defaultCategorias={morfologia:{options:["Humano","Humanoide","Mamífero","Híbrido","Ave","Reptil","Pez","Insecto","Amorfo","Etéreo","Artificial","Otro"],icons:{"Humano":"🧑","Humanoide":"🧝","Mamífero":"🦌","Híbrido":"🦄","Ave":"🕊️","Reptil":"🐍","Pez":"🐟","Insecto":"🐞","Amorfo":"🌀","Etéreo":"✨","Artificial":"🤖","Otro":"❓"},buttonIcon:"🔮",buttonTitle:"Morfología"},tipo:{options:["Mitológico","Criptido","Difuso"],icons:{"Mitológico":"🏛️","Criptido":"🐾","Difuso":"🌫️"},buttonIcon:"🌙",buttonTitle:"Tipo de ser"},elemento:{options:["Aéreo","Acuático","Terrestre","Subterráneo","Anfibio","Misceláneo"],icons:{"Aéreo":"💨","Acuático":"💧","Terrestre":"🌿","Subterráneo":"⛰️","Anfibio":"🐸","Misceláneo":"⚙️"},buttonIcon:"💧",buttonTitle:"Elemento"},avistamiento:{options:["Grabado / Capturado","Documentado","Crónicas","Avistamiento","Ficción","Tradición oral","Difuso"],icons:{"Grabado / Capturado":"📹","Documentado":"📜","Crónicas":"📖","Avistamiento":"👁️","Ficción":"📚","Tradición oral":"🗣️","Difuso":"❓"},buttonIcon:"👁️",buttonTitle:"Avistamiento"}};
-let especies=[],filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]},revFilterState=[],currentPage=1,perPage=24,dataLoaded=!1,onlyFavorites=!1,currentOrderedList=[],currentModalIndex=-1,currentModalCreature=null,searchTerm='',navegacionBloqueada=!1,revisados=new Set,modoRevision="automatico",favoritos=new Set,csvFields=["id","nombre","morfologia","tipo","elemento","avistamiento","ubicacion","epoca","subcategorias","descripcion","links"],selectedFields=csvFields.filter(f=>f!=='nombre'),csvMenu=null,ubicacionModal=null,epocaModal=null,subcategoriasModal=null,ordenActual="nombre_asc",touchStartX=0,tempPerPage=24,tempModoRevision="automatico",panelVisible=!0,menuOverlay=null,headerOriginalZIndex='100';
-let opcionesMorfologia=defaultCategorias.morfologia.options,opcionesTipo=defaultCategorias.tipo.options,opcionesElemento=defaultCategorias.elemento.options,opcionesAvistamiento=defaultCategorias.avistamiento.options;
-const iconMap={morfologia:defaultCategorias.morfologia.icons,tipo:defaultCategorias.tipo.icons,elemento:defaultCategorias.elemento.icons,avistamiento:v=>defaultCategorias.avistamiento.icons[v]||"❓"};
-const btnMorfologia=document.getElementById('btnMorfologia'),btnTipo=document.getElementById('btnTipo'),btnElemento=document.getElementById('btnElemento'),btnAvistamiento=document.getElementById('btnAvistamiento'),btnUbicacion=document.getElementById('btnUbicacion'),btnEpoca=document.getElementById('btnEpoca'),btnSubcategorias=document.getElementById('btnSubcategorias'),btnRevFilter=document.getElementById('btnRevFilter'),btnLimpiar=document.getElementById('btnLimpiar'),btnOrden=document.getElementById('btnOrden'),ordenMenu=document.getElementById('ordenMenu'),favFilterBtn=document.getElementById('favFilterBtn'),configBtn=document.getElementById('configBtn'),configMenu=document.getElementById('configMenu'),revFilterMenu=document.getElementById('menu-rev'),overlayEl=document.getElementById('overlay'),modalTitle=document.getElementById('modal-title'),modalImg=document.getElementById('modal-image'),modalInfoScroll=document.getElementById('modal-info-scroll'),modalRevisadoBtn=document.getElementById('modalRevisado'),modalFavBtn=document.getElementById('modalFav'),cerrarBtn=document.getElementById('cerrar'),filtrosPanel=document.getElementById('filtrosPanel'),mainTitle=document.getElementById('mainTitle'),headerCornerImg=document.getElementById('headerCornerImg'),mainHeader=document.getElementById('mainHeader'),headerContainer=document.getElementById('headerContainer'),gridDiv=document.getElementById('grid'),resultSpan=document.getElementById('resultText'),searchInput=document.getElementById('searchInput'),clearSearchBtn=document.getElementById('clearSearch'),searchDatalist=document.getElementById('searchSuggestions'),paginationControlsDiv=document.getElementById('paginationControls'),modalPrevArrow=document.getElementById('modalPrevArrow'),modalNextArrow=document.getElementById('modalNextArrow'),btnResetTotal=document.getElementById('btnResetTotal');
-btnMorfologia.textContent=defaultCategorias.morfologia.buttonIcon;btnMorfologia.title=defaultCategorias.morfologia.buttonTitle;
-btnTipo.textContent=defaultCategorias.tipo.buttonIcon;btnTipo.title=defaultCategorias.tipo.buttonTitle;
-btnElemento.textContent=defaultCategorias.elemento.buttonIcon;btnElemento.title=defaultCategorias.elemento.buttonTitle;
-btnAvistamiento.textContent=defaultCategorias.avistamiento.buttonIcon;btnAvistamiento.title=defaultCategorias.avistamiento.buttonTitle;
-const $=id=>document.getElementById(id), getIconForMorfologia=e=>iconMap.morfologia[e]||"🔮", getIconForTipo=e=>iconMap.tipo[e]||"🌙", getIconForElemento=e=>iconMap.elemento[e]||"💧", getIconForAvistamiento=v=>iconMap.avistamiento(v);
-function saveLocal(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function loadLocal(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
-function persistState(){saveLocal('catalogo_filtros',filtrosState);saveLocal('catalogo_orden',ordenActual);saveLocal('catalogo_perpage',perPage);saveLocal('catalogo_onlyFav',onlyFavorites);saveRevFilterState()}
-let tooltipElement=null,tooltipTimeout=null;
-function crearTooltipElement(){if(tooltipElement)return;tooltipElement=document.createElement("div");tooltipElement.className="temp-tooltip";tooltipElement.style.opacity="0";document.body.appendChild(tooltipElement)}
-function showTooltip(text,x,y,duration=1500){crearTooltipElement();if(tooltipTimeout)clearTimeout(tooltipTimeout);tooltipElement.textContent=text;tooltipElement.style.left=x+"px";tooltipElement.style.top=y+"px";tooltipElement.style.opacity="1";const rect=tooltipElement.getBoundingClientRect();let finalX=x,finalY=y;if(finalX+rect.width>window.innerWidth-10)finalX=window.innerWidth-rect.width-10;if(finalY+rect.height>window.innerHeight-10)finalY=window.innerHeight-rect.height-10;if(finalX<10)finalX=10;if(finalY<10)finalY=10;tooltipElement.style.left=finalX+"px";tooltipElement.style.top=finalY+"px";tooltipTimeout=setTimeout(()=>hideTooltip(),duration)}
-function hideTooltip(){if(!tooltipElement)return;tooltipElement.style.opacity="0";if(tooltipTimeout){clearTimeout(tooltipTimeout);tooltipTimeout=null}}
-document.addEventListener("click",(e)=>{if(tooltipElement&&e.target!==tooltipElement)hideTooltip()});
-let idxMorfologia,idxTipo,idxElemento,idxAvistamiento,idxUbicacion,idxEpoca,idxSubcategorias;
-function buildIndexes(){idxMorfologia=new Map();idxTipo=new Map();idxElemento=new Map();idxAvistamiento=new Map();idxUbicacion=new Map();idxEpoca=new Map();idxSubcategorias=new Map();for(let e of especies){const id=e.id;[{map:idxMorfologia,val:e.morfologia},{map:idxTipo,val:e.tipo},{map:idxElemento,val:e.elemento},{map:idxAvistamiento,val:e.avistamiento}].forEach(({map,val})=>{if(!map.has(val))map.set(val,new Set);map.get(val).add(id)});if(e.ubicacion){if(!idxUbicacion.has(e.ubicacion))idxUbicacion.set(e.ubicacion,new Set);idxUbicacion.get(e.ubicacion).add(id)}if(e.epoca){if(!idxEpoca.has(e.epoca))idxEpoca.set(e.epoca,new Set);idxEpoca.get(e.epoca).add(id)}if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t){if(!idxSubcategorias.has(t))idxSubcategorias.set(t,new Set);idxSubcategorias.get(t).add(id)}});}}
-function invalidateBaseCache(){baseFilterVersion++;invalidateCountCaches()}
-let baseFilterVersion=0,cachedBaseIds=null,cachedBaseVersion=-1,cachedIgnoreCat=null;
-const categoriasFiltro=['morfologia','tipo','elemento','avistamiento','ubicacion','epoca','subcategorias'];
-function buildPredicate(ignoreCat=null,extraCheck=null){return e=>{for(let cat of categoriasFiltro){if(ignoreCat===cat)continue;const state=filtrosState[cat];if(state.length){if(cat==='subcategorias'){const subcats=e.subcategorias?e.subcategorias.split(',').map(s=>s.trim()).filter(s=>s):[];if(!state.some(sel=>subcats.includes(sel)))return false;}else if(!state.includes(e[cat]))return false;}}if(onlyFavorites&&!favoritos.has(e.id))return false;if(searchTerm.trim()&&!e.nombre.toLowerCase().includes(searchTerm.toLowerCase()))return false;if(revFilterState.length&&ignoreCat!=='revisado'){const r=revisados.has(e.id);if(!(revFilterState.includes("revisado")&&revFilterState.includes("no_revisado"))&&((revFilterState.includes("revisado")&&!r)||(revFilterState.includes("no_revisado")&&r)))return false;}return extraCheck?extraCheck(e):true;};}
-function getBaseFilteredIds(ignoreCat=null){if(baseFilterVersion===cachedBaseVersion&&ignoreCat===cachedIgnoreCat&&cachedBaseIds!==null)return cachedBaseIds;const pred=buildPredicate(ignoreCat),ids=new Set();for(let e of especies)if(pred(e))ids.add(e.id);cachedBaseIds=ids;cachedBaseVersion=baseFilterVersion;cachedIgnoreCat=ignoreCat;return ids;}
-const aplicarFiltrosCompletos=()=>especies.filter(buildPredicate());
-function ordenarEspecies(lista){const[campo,dir]=ordenActual.split('_');const order=dir==="asc"?1:-1;return[...lista].sort((a,b)=>{let va=a[campo]||"",vb=b[campo]||"";return va<vb?-order:va>vb?order:0});}
-let filterCountCache=new Map, revCountCache={revisado:-1,no_revisado:-1};
-function clearFilterCountCache(){filterCountCache.clear()}
-function cachedContarConOpcion(categoria,opcion){const key=`${categoria}_${opcion}`;if(filterCountCache.has(key))return filterCountCache.get(key);let count=0;if(categoria==='revisado')count=contarPorEstado(opcion);else{const baseIds=getBaseFilteredIds(categoria);if(baseIds.size){const map={morfologia:idxMorfologia,tipo:idxTipo,elemento:idxElemento,avistamiento:idxAvistamiento,ubicacion:idxUbicacion,epoca:idxEpoca,subcategorias:idxSubcategorias}[categoria];const opSet=map?map.get(opcion):null;if(opSet&&opSet.size)count=baseIds.size<opSet.size?[...baseIds].filter(id=>opSet.has(id)).length:[...opSet].filter(id=>baseIds.has(id)).length;}}filterCountCache.set(key,count);return count;}
-const contarConOpcion=cachedContarConOpcion;
-function cachedContarPorEstado(estado){if(revCountCache[estado]!==-1)return revCountCache[estado];const baseIds=getBaseFilteredIds(null);if(!baseIds.size){revCountCache[estado]=0;return 0}let count=0;for(let id of baseIds){const r=revisados.has(id);if(estado==="revisado"?r:!r)count++}revCountCache[estado]=count;return count;}
-const contarPorEstado=cachedContarPorEstado;
-function invalidateCountCaches(){clearFilterCountCache();revCountCache={revisado:-1,no_revisado:-1}}
-function resetAllData(){localStorage.clear();filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};revFilterState=[];revisados.clear();favoritos.clear();onlyFavorites=!1;ordenActual="nombre_asc";perPage=24;currentPage=1;searchTerm='';saveLocal('catalogo_version',STORAGE_VERSION);persistState();saveRevisados();saveFavoritos();}
-function checkVersion(){const v=loadLocal('catalogo_version');if(v!==STORAGE_VERSION){resetAllData();return false}return true}
-function loadRevisados(){const s=loadLocal('catalogo_revisados');if(s)revisados=new Set(s)}
-function saveRevisados(){saveLocal('catalogo_revisados',[...revisados])}
-function loadModoRevision(){const m=localStorage.getItem('catalogo_modo_revision');if(m)modoRevision=m;tempModoRevision=modoRevision}
-function saveModoRevision(){localStorage.setItem('catalogo_modo_revision',modoRevision)}
-function loadFavoritos(){const f=loadLocal('catalogo_favoritos');if(f)favoritos=new Set(f);actualizarEstadoFavoritosYBoton()}
-function saveFavoritos(){saveLocal('catalogo_favoritos',[...favoritos]);actualizarEstadoFavoritosYBoton()}
-function loadRevFilterState(){const s=loadLocal('catalogo_rev_filter');revFilterState=s||[]}
-function saveRevFilterState(){saveLocal('catalogo_rev_filter',revFilterState);updateRevFilterBadge()}
-function loadPersistedState(){if(!checkVersion())return;const f=loadLocal('catalogo_filtros');if(f)filtrosState=f;const o=loadLocal('catalogo_orden');ordenActual=o||"nombre_asc";const pp=loadLocal('catalogo_perpage');if(pp)perPage=+pp;const of=loadLocal('catalogo_onlyFav');onlyFavorites=(of===true||of==='true');loadRevFilterState();if(especies.length){for(let cat of['morfologia','tipo','elemento','avistamiento','ubicacion','epoca']){const valoresExistentes=new Set(especies.map(e=>e[cat]).filter(v=>v));if(filtrosState[cat]&&filtrosState[cat].length)filtrosState[cat]=filtrosState[cat].filter(v=>valoresExistentes.has(v));}const todasSubs=new Set();especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todasSubs.add(t)})});if(filtrosState.subcategorias&&filtrosState.subcategorias.length)filtrosState.subcategorias=filtrosState.subcategorias.filter(v=>todasSubs.has(v));persistState();}actualizarTooltipOrden();actualizarEstadoFavoritosYBoton();}
-function actualizarTooltipOrden(){const m={"nombre_asc":"Alfabético A→Z","nombre_desc":"Alfabético Z→A","morfologia_asc":"Morfología A→Z","morfologia_desc":"Morfología Z→A","tipo_asc":"Tipo A→Z","tipo_desc":"Tipo Z→A","elemento_asc":"Elemento A→Z","elemento_desc":"Elemento Z→A","avistamiento_asc":"Avistamiento A→Z","avistamiento_desc":"Avistamiento Z→A"};btnOrden.title=m[ordenActual]||"Ordenar"}
-function isFavorito(id){return favoritos.has(id)}
-function actualizarEstadoFavoritosYBoton(){const h=favoritos.size>0;favFilterBtn.disabled=!h;if(!h&&onlyFavorites){onlyFavorites=!1;render()}}
-function toggleFavorito(id,uiOnly=!1){favoritos.has(id)?favoritos.delete(id):favoritos.add(id);saveFavoritos();if(!uiOnly){if(onlyFavorites)render();else{actualizarEstrellaEnTarjeta(id);if(currentModalCreature&&currentModalCreature.id===id&&modalFavBtn)modalFavBtn.textContent=favoritos.has(id)?"★":"☆"}}updateFilterBadges();actualizarEstadoFavoritosYBoton();invalidateBaseCache();}
-function actualizarEstrellaEnTarjeta(id){const card=document.querySelector(`.card[data-id="${id}"]`);if(card){const fb=card.querySelector(".fav-star");if(fb)fb.textContent=favoritos.has(id)?"★":"☆"}}
-function toggleRevisado(id,esAuto=!1){const estaba=revisados.has(id);if(modoRevision==="bloqueo"){if(!esAuto&&estaba){if(confirm("¿Estás seguro de marcar como NO revisado?")){revisados.delete(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);afterRevisadoToggle();return}}if(!esAuto&&!estaba)return;if(!estaba){revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);afterRevisadoToggle();return;}}estaba?revisados.delete(id):revisados.add(id);saveRevisados();actualizarIconoRevisadoTarjeta(id);afterRevisadoToggle();}
-function afterRevisadoToggle(){invalidateBaseCache();actualizarEstadoBotonRevisado();(revFilterState.length===0||revFilterState.length===2)?(updateFilterBadges(),regenerarMenus(),updateSearchSuggestions(),actualizarContadorYPaginacion(),adjustTitleFontSize(),actualizarImagenEsquina()):render()}
-function actualizarDisabledOtrosFiltros(){[{btn:btnMorfologia,cat:'morfologia'},{btn:btnTipo,cat:'tipo'},{btn:btnElemento,cat:'elemento'},{btn:btnAvistamiento,cat:'avistamiento'},{btn:btnUbicacion,cat:'ubicacion'},{btn:btnEpoca,cat:'epoca'},{btn:btnSubcategorias,cat:'subcategorias'}].forEach(({btn,cat})=>{if(btn)btn.disabled=(getCachedOpcionesConDatos(cat)<=1)})}
-function actualizarEstadoBotonRevisado(){invalidateBaseCache();const opcionesData=(contarPorEstado("revisado")>0?1:0)+(contarPorEstado("no_revisado")>0?1:0);btnRevFilter.disabled=opcionesData<=1}
-function marcarRevisadoPorLink(id){if(!revisados.has(id))toggleRevisado(id,!0)}
-function actualizarIconoRevisadoTarjeta(id){const estado=revisados.has(id),icono=estado?"◆":"◇";document.querySelectorAll(`.card[data-id="${id}"] .revisado-icon`).forEach(ri=>{ri.innerHTML=icono;ri.classList.toggle("revisado",estado);ri.classList.toggle("no_revisado",!estado);ri.title=estado?"Revisado":"No revisado"});if(currentModalCreature&&currentModalCreature.id===id&&modalRevisadoBtn){modalRevisadoBtn.innerHTML=icono;modalRevisadoBtn.classList.toggle("revisado",estado);modalRevisadoBtn.classList.toggle("no_revisado",!estado);modalRevisadoBtn.title=estado?"Revisado":"No revisado"}}
-function updateRevFilterBadge(){btnRevFilter.title=revFilterState.length===0?"Filtrar por revisado":revFilterState.length===1?`Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}`:"Filtrar: revisado y no revisado";actualizarFiltroActivo(btnRevFilter,revFilterState.length>0)}
-function setImageWithFallback(imgElement,nombre,transformStyle="",isPrioritario=!1){const extensions=['jpg','jpeg','png'];let currentExtIndex=0;if(isPrioritario){imgElement.fetchPriority="high";imgElement.loading="eager"}else imgElement.loading="lazy";const parent=imgElement.parentNode;if(parent)parent.querySelectorAll('.img-placeholder').forEach(el=>el.remove());(function tryNext(){if(currentExtIndex>=extensions.length){imgElement.style.display="none";if(!parent.querySelector(".img-placeholder")){const placeholder=document.createElement("div");placeholder.className="img-placeholder";placeholder.style.cssText="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--accent);background:rgba(0,0,0,.3);border-radius:16px;";placeholder.textContent="🖼️";placeholder.setAttribute("aria-label","Imagen no disponible");parent.appendChild(placeholder)}return}const ext=extensions[currentExtIndex];imgElement.src=`img/${encodeURIComponent(nombre)}.${ext}`;imgElement.style.display="block";if(transformStyle)imgElement.style.transform=transformStyle;imgElement.onerror=()=>{currentExtIndex++;tryNext()};imgElement.onload=()=>{parent.querySelectorAll('.img-placeholder').forEach(el=>el.remove());imgElement.style.display="block"};})();}
-function crearImg(e,isPrioritario=!1){const img=document.createElement("img");setImageWithFallback(img,e.nombre,`translate(${e.posX||0}px, ${e.posY||0}px) scale(${e.zoom||1})`,isPrioritario);return img}
-function createMenuOverlay(zIndex,onClick){removeMenuOverlay();const overlay=document.createElement('div');overlay.className='menu-overlay';overlay.style.zIndex=zIndex;overlay.onclick=onClick;document.body.appendChild(overlay);menuOverlay=overlay;mainHeader.style.zIndex='201'}
-function removeMenuOverlay(){if(menuOverlay){menuOverlay.remove();menuOverlay=null;mainHeader.style.zIndex=headerOriginalZIndex}}
-function closeAllMenus(){document.querySelectorAll(".filtro-menu,.config-menu,.orden-menu,.csv-menu,.config-submenu,.rev-filter-menu,.help-menu").forEach(m=>m.classList.remove("show"));removeMenuOverlay();hideTooltip()}
-const closeTempMenus=()=>{document.querySelectorAll(".temp-floating-menu").forEach(m=>{m.classList.remove("show");setTimeout(()=>{if(!m.classList.contains("show"))m.remove()},300)});if(csvMenu)csvMenu.classList.remove("show");if(ubicacionModal)ubicacionModal.classList.remove("show");if(epocaModal)epocaModal.classList.remove("show");if(subcategoriasModal)subcategoriasModal.classList.remove("show");removeMenuOverlay();hideTooltip()};
-function aplicarCambioModalFiltro(cat,nuevosValores,opcionesVisiblesCount){const antesTodos=(filtrosState[cat].length===0||filtrosState[cat].length===opcionesVisiblesCount),despuesTodos=(nuevosValores.length===0||nuevosValores.length===opcionesVisiblesCount);filtrosState[cat]=nuevosValores;currentPage=1;persistState();invalidateBaseCache();(antesTodos&&despuesTodos)?(updateFilterBadges(),regenerarMenus(),updateSearchSuggestions(),actualizarContadorYPaginacion(),adjustTitleFontSize(),actualizarImagenEsquina()):render();}
-function crearModalFiltro(titulo,cat,valores,counts,modalVar){closeAllMenus();closeTempMenus();if(modalVar)modalVar.remove();createMenuOverlay(999,()=>{closeTempMenus()});const modal=document.createElement('div');modal.className='temp-floating-menu';modal.id=cat+'Modal';const opcionesConDatos=valores.filter(v=>counts.get(v)>0),totalVisibles=opcionesConDatos.length;modal.innerHTML=`<div class="temp-header">${titulo} <button id="${cat}CancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="${cat}CheckboxGrid">${opcionesConDatos.map(val=>{const count=counts.get(val),checked=filtrosState[cat].includes(val),soloUna=totalVisibles===1;return`<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${checked?'checked':''} ${soloUna?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:0.6rem;">(${count})</span></label>`}).join('')}</div><div class="modal-actions" id="${cat}Actions"></div>`;document.body.appendChild(modal);modal.classList.add('show');if(cat==='ubicacion')ubicacionModal=modal;else if(cat==='epoca')epocaModal=modal;else if(cat==='subcategorias')subcategoriasModal=modal;const grid=modal.querySelector(`#${cat}CheckboxGrid`),actionsDiv=modal.querySelector(`#${cat}Actions`);const sa=document.createElement('button');sa.textContent='📋';sa.title='Seleccionar todo';sa.setAttribute('aria-label','Seleccionar todo');const da=document.createElement('button');da.textContent='🗑️';da.title='Deseleccionar todo';da.setAttribute('aria-label','Deseleccionar todo');const inv=document.createElement('button');inv.textContent='🔄';inv.title='Invertir selección';inv.setAttribute('aria-label','Invertir selección');actionsDiv.append(sa,da,inv);const actualizarEstadoBotones=()=>{const checks=grid.querySelectorAll('input[type="checkbox"]:not([disabled])');const checkedCount=[...checks].filter(cb=>cb.checked).length;sa.disabled=checkedCount===checks.length;da.disabled=checkedCount===0};grid.addEventListener('change',()=>{const selected=[...grid.querySelectorAll('input[type="checkbox"]:checked')].map(cb=>cb.value);aplicarCambioModalFiltro(cat,selected,totalVisibles);actualizarEstadoBotones()});sa.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!0);aplicarCambioModalFiltro(cat,[...grid.querySelectorAll('input[type="checkbox"]:not([disabled])')].map(cb=>cb.value),totalVisibles);actualizarEstadoBotones()};da.onclick=()=>{grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>cb.checked=!1);aplicarCambioModalFiltro(cat,[],totalVisibles);actualizarEstadoBotones()};inv.onclick=()=>{const newSelected=[];grid.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(cb=>{cb.checked=!cb.checked;if(cb.checked)newSelected.push(cb.value)});aplicarCambioModalFiltro(cat,newSelected,totalVisibles);actualizarEstadoBotones()};modal.querySelector(`#${cat}CancelBtn`).onclick=()=>{closeTempMenus()};actualizarEstadoBotones();modal.addEventListener('click',e=>e.stopPropagation());}
-function abrirModalUbicacion(){const valores=[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].sort(),counts=new Map();valores.forEach(v=>counts.set(v,contarConOpcion('ubicacion',v)));crearModalFiltro('📍 Ubicación','ubicacion',valores,counts,ubicacionModal)}
-function abrirModalEpoca(){const valores=[...new Set(especies.map(e=>e.epoca).filter(v=>v))].sort(),counts=new Map();valores.forEach(v=>counts.set(v,contarConOpcion('epoca',v)));crearModalFiltro('📅 Época','epoca',valores,counts,epocaModal)}
-function abrirModalSubcategorias(){const todas=new Set();especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});const valores=Array.from(todas).sort(),counts=new Map();valores.forEach(v=>counts.set(v,contarConOpcion('subcategorias',v)));crearModalFiltro('🏷️ Subcategorías','subcategorias',valores,counts,subcategoriasModal)}
-function debounce(func,wait){let timeout;return function(...args){clearTimeout(timeout);timeout=setTimeout(()=>func.apply(this,args),wait)}}
-const debouncedAdjustTitleFontSize=debounce(adjustTitleFontSize,100),debouncedActualizarImagenEsquina=debounce(actualizarImagenEsquina,100);
-function actualizarImagenEsquina(){const ancho=window.innerWidth,esCelular=ancho<=700,src=esCelular?'img2/esquina.png':'img2/esquina.gif';if(headerCornerImg.src!==src)headerCornerImg.src=src;headerCornerImg.onerror=()=>{headerCornerImg.style.display='none'};headerCornerImg.onload=()=>{headerCornerImg.style.display='block'}}
-function abrirVentanaAyudaEsquina(){closeAllMenus();closeTempMenus();const existente=document.getElementById('ayudaEsquinaMenu');if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement('div');menu.id='ayudaEsquinaMenu';menu.className='temp-floating-menu';menu.innerHTML=`<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><p style="text-align:center;color:var(--accent);margin-bottom:12px;">emilianoalern9@gmail.com</p><div style="display:flex;justify-content:center;"><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high" style="max-width:200px;width:100%;height:auto;"></div></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#ayudaEsquinaCerrarBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation());}
-headerCornerImg.addEventListener('click',(e)=>{e.stopPropagation();abrirVentanaAyudaEsquina()});
-function levenshteinDistance(a,b){if(!a.length)return b.length;if(!b.length)return a.length;const m=[];for(let i=0;i<=b.length;i++)m[i]=[i];for(let j=0;j<=a.length;j++)m[0][j]=j;for(let i=1;i<=b.length;i++)for(let j=1;j<=a.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[j-1]===b[i-1]?0:1));return m[b.length][a.length]}
-function showTemporaryTooltip(el,text,duration=1500){if(!el)return;const rect=el.getBoundingClientRect();showTooltip(text,rect.left+rect.width/2,rect.top-10,duration)}
-function crearBadge(ico,tit,cls){const btn=document.createElement("button");btn.className=`mini-badge ${cls}`;btn.textContent=ico;btn.setAttribute('aria-label',tit);btn.title=tit;btn.addEventListener("mouseenter",()=>{const rect=btn.getBoundingClientRect();showTooltip(tit,rect.left+rect.width/2,rect.top-10,2000)});btn.addEventListener("mouseleave",()=>hideTooltip());btn.addEventListener("click",e=>e.stopPropagation());return btn}
-function crearBadgesRow(e){return[crearBadge(getIconForMorfologia(e.morfologia),`Morfología: ${e.morfologia}`,"badge-morfologia"),crearBadge(getIconForTipo(e.tipo),`Tipo: ${e.tipo}`,"badge-tipo"),crearBadge(getIconForElemento(e.elemento),`Elemento: ${e.elemento}`,"badge-elemento"),crearBadge(getIconForAvistamiento(e.avistamiento),`Avistamiento: ${e.avistamiento}`,"badge-avistamiento")]}
-function crearCardGrid(e,idx,totalPagina){const card=document.createElement("div");card.className="card";card.setAttribute("data-id",e.id);const imgC=document.createElement("div");imgC.className="img-container";imgC.appendChild(crearImg(e,idx<12||(totalPagina<=24&&idx<24)));const nombreB=document.createElement("b");nombreB.textContent=e.nombre;const footer=document.createElement("div");footer.className="card-footer-row";const bw=document.createElement("div");bw.className="badges-wrapper";crearBadgesRow(e).forEach(b=>bw.appendChild(b));const ad=document.createElement("div");ad.className="card-actions";const fb=document.createElement("button");fb.className="fav-star";fb.textContent=isFavorito(e.id)?"★":"☆";fb.setAttribute('aria-label','Marcar como favorito');fb.onclick=ev=>{ev.stopPropagation();toggleFavorito(e.id,!1)};const ri=document.createElement("span");ri.className="revisado-icon";const est=revisados.has(e.id);ri.innerHTML=est?"◆":"◇";ri.classList.toggle("revisado",est);ri.classList.toggle("no_revisado",!est);ri.style.color="var(--accent)";ri.title=est?"Revisado":"No revisado";ri.setAttribute('aria-label',est?'Revisado':'No revisado');ri.onclick=ev=>{ev.stopPropagation();ev.preventDefault();toggleRevisado(e.id)};ad.append(fb,ri);footer.append(bw,ad);card.append(imgC,nombreB,footer);card.onclick=()=>abrirDetalle(e);return card;}
-function actualizarPaginacionHeader(tp){paginationControlsDiv.innerHTML="";const createBtn=(t,d)=>{const b=document.createElement("button");b.textContent=t;b.className="pagination-btn";b.disabled=d;return b};const pi=document.createElement("input");pi.type="text";pi.inputMode="numeric";pi.value=currentPage;pi.setAttribute('aria-label','Número de página');if(tp<=1){pi.readOnly=!0;const s=document.createElement("span");s.textContent=`/ ${tp}`;paginationControlsDiv.append(createBtn("<<",!0),createBtn("<",!0),pi,s,createBtn(">",!0),createBtn(">>",!0));return}pi.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();let v=parseInt(pi.value);if(isNaN(v)||v<1||v>tp)v=currentPage;if(v!==currentPage){currentPage=v;render();window.scrollTo({top:0,behavior:'smooth'})}else pi.blur();pi.value=currentPage}});pi.addEventListener("input",()=>{pi.value=pi.value.replace(/[^0-9]/g,'')});pi.addEventListener("blur",()=>{let v=parseInt(pi.value);if(isNaN(v)||v<1||v>tp)v=currentPage;if(v!==currentPage){currentPage=v;render();window.scrollTo({top:0,behavior:'smooth'})}pi.value=currentPage});const s=document.createElement("span");s.textContent=`/ ${tp}`;const bf=createBtn("<<",currentPage===1),bp=createBtn("<",currentPage===1),bn=createBtn(">",currentPage===tp),bl=createBtn(">>",currentPage===tp);if(tp===2){bf.disabled=!0;bl.disabled=!0}bf.onclick=()=>{if(!bf.disabled){currentPage=1;render();window.scrollTo({top:0,behavior:'smooth'})}};bp.onclick=()=>{if(!bp.disabled){currentPage--;render();window.scrollTo({top:0,behavior:'smooth'})}};bn.onclick=()=>{if(!bn.disabled){currentPage++;render();window.scrollTo({top:0,behavior:'smooth'})}};bl.onclick=()=>{if(!bl.disabled){currentPage=tp;render();window.scrollTo({top:0,behavior:'smooth'})}};paginationControlsDiv.append(bf,bp,pi,s,bn,bl);}
-function getCachedOpcionesConDatos(categoria){if(!getCachedOpcionesConDatos.cache)getCachedOpcionesConDatos.cache=new Map;if(getCachedOpcionesConDatos.cache.has(categoria))return getCachedOpcionesConDatos.cache.get(categoria);let result;if(categoria==='revisado'){let c=0;if(contarPorEstado("revisado")>0)c++;if(contarPorEstado("no_revisado")>0)c++;result=c}else if(categoria==='ubicacion')result=[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length;else if(categoria==='epoca')result=[...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length;else if(categoria==='subcategorias'){const todas=new Set;especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});result=Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length}else{const opciones={morfologia:opcionesMorfologia,tipo:opcionesTipo,elemento:opcionesElemento,avistamiento:opcionesAvistamiento}[categoria];result=opciones?opciones.filter(op=>contarConOpcion(categoria,op)>0).length:0}getCachedOpcionesConDatos.cache.set(categoria,result);return result;}
-async function render(){if(!dataLoaded)return;gridDiv.classList.add("fade-out");await new Promise(r=>setTimeout(r,30));invalidateBaseCache();const filtradas=aplicarFiltrosCompletos(),ordenadas=ordenarEspecies(filtradas);currentOrderedList=ordenadas;let total=ordenadas.length,favoritosEnResultados=onlyFavorites?total:ordenadas.filter(e=>favoritos.has(e.id)).length,necesitaReRender=!1;if(onlyFavorites&&favoritosEnResultados===0){onlyFavorites=!1;necesitaReRender=!0}if(!necesitaReRender&&revFilterState.includes("revisado")&&!revFilterState.includes("no_revisado")&&contarPorEstado("revisado")===0){revFilterState=revFilterState.filter(v=>v!=="revisado");saveRevFilterState();necesitaReRender=!0}if(!necesitaReRender&&revFilterState.includes("no_revisado")&&!revFilterState.includes("revisado")&&contarPorEstado("no_revisado")===0){revFilterState=revFilterState.filter(v=>v!=="no_revisado");saveRevFilterState();necesitaReRender=!0}if(necesitaReRender){persistState();render();return}getCachedOpcionesConDatos.cache=new Map;const tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp;const hayResultados=total>0;if(!hayResultados){document.querySelectorAll('.filtro-boton').forEach(btn=>btn.disabled=!0);btnOrden.disabled=!0;favFilterBtn.disabled=!0;btnLimpiar.disabled=!0;configBtn.disabled=!0}else{document.querySelectorAll('.filtro-boton').forEach(btn=>btn.disabled=!1);btnOrden.disabled=total===1;favFilterBtn.disabled=favoritos.size===0||favoritosEnResultados===0;btnLimpiar.disabled=Object.values(filtrosState).every(a=>a.length===0)&&revFilterState.length===0;configBtn.disabled=!1;[{btn:btnMorfologia,cat:'morfologia'},{btn:btnTipo,cat:'tipo'},{btn:btnElemento,cat:'elemento'},{btn:btnAvistamiento,cat:'avistamiento'},{btn:btnUbicacion,cat:'ubicacion'},{btn:btnEpoca,cat:'epoca'},{btn:btnSubcategorias,cat:'subcategorias'},{btn:btnRevFilter,cat:'revisado'}].forEach(({btn,cat})=>{if(btn){const n=getCachedOpcionesConDatos(cat);btn.disabled=n===0||n===1}});}const start=(currentPage-1)*perPage,paginated=ordenadas.slice(start,start+perPage),end=Math.min(start+perPage,total);resultSpan.innerText=`${start+1}-${end} / ${total}`;gridDiv.className='grid';gridDiv.innerHTML="";if(!paginated.length){const nd=document.createElement("div");nd.className="no-results";nd.innerHTML=especies.length===0?`<div>🜁 No se pudieron cargar los datos desde dtsk/Datos*.json.</div><img src="img2/non.jpeg" alt="Error de carga" loading="lazy">`:`<div>🜁 No se encontraron criaturas con esos filtros.</div><img src="img2/non.jpeg" alt="Sin resultados" loading="lazy">`;gridDiv.appendChild(nd);}else{const frag=document.createDocumentFragment();paginated.forEach((e,i)=>frag.appendChild(crearCardGrid(e,i,paginated.length)));gridDiv.appendChild(frag)}actualizarPaginacionHeader(tp);gridDiv.classList.remove("fade-out");updateFilterBadges();regenerarMenus();updateSearchSuggestions();adjustTitleFontSize();actualizarImagenEsquina();}
-function actualizarContadorYPaginacion(){const total=currentOrderedList.length,tp=Math.max(1,Math.ceil(total/perPage));if(currentPage>tp)currentPage=tp;resultSpan.innerText=`${(currentPage-1)*perPage+1}-${Math.min((currentPage-1)*perPage+perPage,total)} / ${total}`;actualizarPaginacionHeader(tp)}
-function actualizarModal(){if(!currentModalCreature)return;const e=currentModalCreature;modalTitle.innerText=e.nombre;adjustModalTitleFontSize();setImageWithFallback(modalImg,e.nombre,"",!0);modalInfoScroll.innerHTML=`<div class="info-grid"><div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div><div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div><div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div><div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div><div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div><div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>${e.subcategorias?`<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>`:''}</div><div class="modal-description">${e.descripcion}</div>${e.links&&e.links.length?`<div class="links-list">${e.links.map(u=>`<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>`:""}`;const est=revisados.has(e.id);modalRevisadoBtn.innerHTML=est?"◆":"◇";modalRevisadoBtn.classList.toggle("revisado",est);modalRevisadoBtn.classList.toggle("no_revisado",!est);modalRevisadoBtn.style.color="var(--accent)";modalRevisadoBtn.onclick=()=>{if(modoRevision==="bloqueo"){if(revisados.has(e.id))toggleRevisado(e.id,!1)}else toggleRevisado(e.id,!1)};if(modalFavBtn)modalFavBtn.textContent=isFavorito(e.id)?"★":"☆";modalPrevArrow.style.display=modalNextArrow.style.display=navegacionBloqueada?"none":"flex";actualizarFlechasModal();requestAnimationFrame(()=>adjustModalTitleFontSize());}
-function abrirDetalle(e){currentModalCreature=e;currentModalIndex=currentOrderedList.findIndex(c=>c.id===e.id);actualizarModal();actualizarFlechasModal();overlayEl.style.display="flex";document.body.classList.add("modal-open");setTimeout(()=>{overlayEl.classList.add("show");adjustModalTitleFontSize()},10)}
-function actualizarFlechasModal(){if(!currentOrderedList.length||navegacionBloqueada)return;modalPrevArrow.classList.toggle("disabled",currentModalIndex===0);modalNextArrow.classList.toggle("disabled",currentModalIndex===currentOrderedList.length-1)}
-function navegarModal(d){if(navegacionBloqueada||!currentOrderedList.length)return;let ni=currentModalIndex+d;if(ni<0)ni=0;if(ni>=currentOrderedList.length)ni=currentOrderedList.length-1;if(ni!==currentModalIndex){currentModalIndex=ni;currentModalCreature=currentOrderedList[ni];actualizarModal();actualizarFlechasModal()}}
-async function closeModal(){const eraAleatorio=navegacionBloqueada;navegacionBloqueada=!1;if(!eraAleatorio&&currentModalCreature){const idx=currentOrderedList.findIndex(c=>c.id===currentModalCreature.id);if(idx!==-1){const newPage=Math.floor(idx/perPage)+1;if(newPage!==currentPage){currentPage=newPage;await render()}requestAnimationFrame(()=>{const card=document.querySelector(`.card[data-id="${currentModalCreature.id}"]`);if(card)card.scrollIntoView({behavior:'smooth',block:'center'})})}}overlayEl.classList.remove("show");document.body.classList.remove("modal-open");setTimeout(()=>{if(!overlayEl.classList.contains("show"))overlayEl.style.display="none"},300);}
-window.marcarRevisadoPorLink=marcarRevisadoPorLink;
-function updateFilterBadges(){btnMorfologia.title=`Morfología${filtrosState.morfologia.length?` (${filtrosState.morfologia.length})`:''}`;btnTipo.title=`Tipo${filtrosState.tipo.length?` (${filtrosState.tipo.length})`:''}`;btnElemento.title=`Elemento${filtrosState.elemento.length?` (${filtrosState.elemento.length})`:''}`;btnAvistamiento.title=`Avistamiento${filtrosState.avistamiento.length?` (${filtrosState.avistamiento.length})`:''}`;btnUbicacion.title=`Ubicación${filtrosState.ubicacion.length?` (${filtrosState.ubicacion.length})`:''}`;btnEpoca.title=`Época${filtrosState.epoca.length?` (${filtrosState.epoca.length})`:''}`;btnSubcategorias.title=`Subcategorías${filtrosState.subcategorias.length?` (${filtrosState.subcategorias.length})`:''}`;actualizarFiltroActivo(btnMorfologia,filtrosState.morfologia.length>0);actualizarFiltroActivo(btnTipo,filtrosState.tipo.length>0);actualizarFiltroActivo(btnElemento,filtrosState.elemento.length>0);actualizarFiltroActivo(btnAvistamiento,filtrosState.avistamiento.length>0);actualizarFiltroActivo(btnUbicacion,filtrosState.ubicacion.length>0);actualizarFiltroActivo(btnEpoca,filtrosState.epoca.length>0);actualizarFiltroActivo(btnSubcategorias,filtrosState.subcategorias.length>0);favFilterBtn.classList.toggle('active',onlyFavorites);updateRevFilterBadge();actualizarBotonLimpiar();}
-function actualizarBotonLimpiar(){btnLimpiar.disabled=currentOrderedList.length===0||!(Object.values(filtrosState).some(a=>a.length)||revFilterState.length>0)}
-function actualizarFiltroActivo(btn,activo){btn.classList.toggle('active-filter',activo)}
-let searchTimeout;function onSearchInput(){clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>{searchTerm=searchInput.value;currentPage=1;render();updateClearSearchState();updateSearchSuggestions();invalidateBaseCache()},300)}
-function updateSearchSuggestions(){const term=searchInput.value.trim().toLowerCase(),cand=aplicarFiltrosCompletos();let sug=term?[]:ordenarEspecies(cand).slice(0,6).map(e=>e.nombre);if(term){const comienzan=cand.filter(e=>e.nombre.toLowerCase().startsWith(term));sug=comienzan.slice(0,6).map(e=>e.nombre);if(comienzan.length<6){const otros=cand.filter(e=>!e.nombre.toLowerCase().startsWith(term));if(otros.length){const wd=otros.map(e=>({nombre:e.nombre,dist:levenshteinDistance(term,e.nombre.toLowerCase())}));wd.sort((a,b)=>a.dist-b.dist);sug.push(...wd.slice(0,6-sug.length).map(s=>s.nombre))}}}searchDatalist.innerHTML=sug.map(s=>`<option value="${s}">`).join('');}
-function updateClearSearchState(){clearSearchBtn.classList.toggle("disabled",!searchInput.value.trim())}
-function limpiarCategoriaORevisados(cat){const opcionesVisibles=cat==='revisado'?(contarPorEstado("revisado")>0?1:0)+(contarPorEstado("no_revisado")>0?1:0):(cat==='morfologia'?opcionesMorfologia:cat==='tipo'?opcionesTipo:cat==='elemento'?opcionesElemento:opcionesAvistamiento).filter(op=>contarConOpcion(cat,op)>0).length;const todasMarcadas=cat==='revisado'?revFilterState.length===opcionesVisibles:filtrosState[cat].length===opcionesVisibles;if(cat==='revisado'){revFilterState=[];saveRevFilterState()}else filtrosState[cat]=[];currentPage=1;persistState();invalidateBaseCache();if(todasMarcadas){updateFilterBadges();regenerarMenus();updateSearchSuggestions();actualizarContadorYPaginacion();adjustTitleFontSize();actualizarImagenEsquina();actualizarDisabledOtrosFiltros()}else render();}
-function generarMenuCategoria(cat,menuId,opciones){const menu=document.getElementById(menuId);menu.innerHTML="";let opcionesVisibles=0;opciones.forEach(val=>{if(contarConOpcion(cat,val)>0)opcionesVisibles++});opciones.forEach(val=>{const count=contarConOpcion(cat,val);if(count===0)return;const label=document.createElement("label"),cb=document.createElement("input");cb.type="checkbox";cb.value=val;cb.checked=filtrosState[cat].includes(val);if(opcionesVisibles===1&&count>0)cb.disabled=!0;cb.addEventListener("change",()=>{if(cb.disabled)return;if(cb.checked){if(!filtrosState[cat].includes(val))filtrosState[cat].push(val)}else filtrosState[cat]=filtrosState[cat].filter(v=>v!==val);currentPage=1;render();persistState();invalidateBaseCache()});label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${val}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);menu.appendChild(label);});const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=filtrosState[cat].length===0;bc.addEventListener('click',(e)=>{e.stopPropagation();limpiarCategoriaORevisados(cat)});menu.appendChild(bc);}
-function generarMenuMorfologia(){generarMenuCategoria("morfologia","menu-morfologia",opcionesMorfologia)}
-function generarMenuTipo(){generarMenuCategoria("tipo","menu-tipo",opcionesTipo)}
-function generarMenuElemento(){generarMenuCategoria("elemento","menu-elemento",opcionesElemento)}
-function generarMenuAvistamiento(){generarMenuCategoria("avistamiento","menu-avistamiento",opcionesAvistamiento)}
-function generarMenuOrden(){const ops=[{v:"nombre_asc",l:"Alfabético A→Z"},{v:"nombre_desc",l:"Alfabético Z→A"},{v:"morfologia_asc",l:"Morfología A→Z"},{v:"morfologia_desc",l:"Morfología Z→A"},{v:"tipo_asc",l:"Tipo A→Z"},{v:"tipo_desc",l:"Tipo Z→A"},{v:"elemento_asc",l:"Elemento A→Z"},{v:"elemento_desc",l:"Elemento Z→A"},{v:"avistamiento_asc",l:"Avistamiento A→Z"},{v:"avistamiento_desc",l:"Avistamiento Z→A"}];ordenMenu.innerHTML=ops.map(o=>`<button ${ordenActual===o.v?'disabled':''}>${o.l} ${ordenActual===o.v?'◉':''}</button>`).join('');[...ordenMenu.children].forEach((b,i)=>{b.onclick=()=>{if(btnOrden.disabled||b.disabled)return;ordenActual=ops[i].v;currentPage=1;actualizarTooltipOrden();render();persistState();closeAllMenus();invalidateBaseCache()}});}
-function generarRevFilterMenu(){revFilterMenu.innerHTML="";const ops=[{id:"revisado",label:"Revisado"},{id:"no_revisado",label:"No revisado"}];let opcionesVisibles=0;ops.forEach(opt=>{if(contarPorEstado(opt.id)>0)opcionesVisibles++});ops.forEach(opt=>{const count=contarPorEstado(opt.id);if(count===0)return;const label=document.createElement("label"),cb=document.createElement("input");cb.type="checkbox";cb.value=opt.id;cb.checked=revFilterState.includes(opt.id);if(opcionesVisibles===1&&count>0)cb.disabled=!0;cb.addEventListener("change",()=>{if(cb.disabled)return;cb.checked?(!revFilterState.includes(opt.id)&&revFilterState.push(opt.id)):revFilterState=revFilterState.filter(v=>v!==opt.id);saveRevFilterState();currentPage=1;render();invalidateBaseCache()});label.appendChild(cb);const ts=document.createElement("span");ts.className="label-text";ts.textContent=` ${opt.label}`;label.appendChild(ts);const cs=document.createElement("span");cs.className="count";cs.textContent=`(${count})`;label.appendChild(cs);revFilterMenu.appendChild(label);});const bc=document.createElement("button");bc.textContent="Limpiar esta categoría";bc.className="limpiar-categoria";bc.disabled=revFilterState.length===0;bc.addEventListener('click',(e)=>{e.stopPropagation();limpiarCategoriaORevisados('revisado')});revFilterMenu.appendChild(bc);}
-function abrirMenuAyuda(){closeAllMenus();closeTempMenus();const existente=document.getElementById("helpFloatingMenu");if(existente)existente.remove();createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="helpFloatingMenu";menu.className="temp-floating-menu";menu.innerHTML=`<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico</p><p><strong>📍 Ubicación</strong> - Filtro por lugar</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong></p><p><strong>📊 Ordenar</strong></p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo</p></div>`;document.body.appendChild(menu);menu.classList.add('show');menu.querySelector('#helpCloseBtn').onclick=()=>closeTempMenus();menu.addEventListener('click',e=>e.stopPropagation())}
-function abrirMenuItemsPerPage(){closeAllMenus();closeTempMenus();configMenu.classList.remove("show");tempPerPage=perPage;createMenuOverlay(999,()=>{closeTempMenus()});const menu=document.createElement("div");menu.id="itemsPerPageMenu";menu.className="temp-floating-menu";const valores=[12,24,48,96],idx=valores.indexOf(perPage),sliderIdx=idx>=0?idx:1;menu.innerHTML=`<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPerPage}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;document.body.appendChild(menu);menu.classList.add('show');const slider=menu.querySelector("#itemsSlider"),valSpan=menu.querySelector("#itemsTempVal"),acceptBtn=menu.querySelector("#itemsAcceptBtn");const actualizarEstadoAceptar=()=>{acceptBtn.disabled=tempPerPage===perPage};slider.addEventListener("input",()=>{tempPerPage=valores[parseInt(slider.value)];valSpan.textContent=tempPerPage;actualizarEstadoAceptar()});acceptBtn.onclick=()=>{if(acceptBtn.disabled)return;perPage=tempPerPage;currentPage=1;render();persistState();regenerarMenuConfigBtn();closeTempMenus()};menu.querySelector("#itemsCancelBtn").onclick=()=>closeTempMenus();menu.addEventListener("click",e=>e.stopPropagation())}
-function regenerarMenuConfigBtn(){generarMenuConfig()}
-function generarMenuConfig(){configMenu.innerHTML="";const addBtn=(html,click)=>{const b=document.createElement("button");b.innerHTML=html;b.onclick=click;configMenu.appendChild(b)};addBtn("🎲 Azar",()=>{const f=aplicarFiltrosCompletos();if(f.length){navegacionBloqueada=!0;abrirDetalle(f[Math.floor(Math.random()*f.length)])}closeAllMenus()});addBtn(`🔢 Ítems por página (${perPage})`,(e)=>{e.stopPropagation();closeAllMenus();abrirMenuItemsPerPage()});addBtn("📎 Exportar CSV",(e)=>{e.stopPropagation();closeAllMenus();crearMenuCSV();csvMenu.classList.add("show")});addBtn(`📌 Modo revisión (${modoRevision==="automatico"?"Automático":"Bloqueo"})`,(e)=>{e.stopPropagation();modoRevision=modoRevision==="automatico"?"bloqueo":"automatico";saveModoRevision();generarMenuConfig();closeAllMenus()});addBtn("📖 Ayuda",(e)=>{e.stopPropagation();closeAllMenus();abrirMenuAyuda()});}
-function crearMenuCSV(){if(csvMenu)csvMenu.remove();csvMenu=document.createElement("div");csvMenu.id="csvModal";csvMenu.className="temp-floating-menu";actualizarMenuCSV();document.body.appendChild(csvMenu);csvMenu.addEventListener("click",e=>e.stopPropagation())}
-function actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn){const marcados=cg.querySelectorAll("input[type='checkbox']:checked").length,total=cg.querySelectorAll("input[type='checkbox']").length;sa.disabled=marcados===total;da.disabled=marcados===0;acceptBtn.disabled=!selectedFields.length}
-function actualizarMenuCSV(){if(!csvMenu)return;const camposVisibles=csvFields.filter(f=>f!=='nombre');csvMenu.innerHTML=`<div class="temp-header">📎 Seleccionar campos a exportar (nombre siempre incluido) <button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f=>`<label><input type="checkbox" value="${f}" ${selectedFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;const cg=csvMenu.querySelector(".csv-checkbox-group"),acceptBtn=document.createElement("button");acceptBtn.textContent="✓";acceptBtn.title="Aceptar y exportar";acceptBtn.className="accept";acceptBtn.disabled=!selectedFields.length;acceptBtn.onclick=()=>{exportarCSV();closeTempMenus()};const actionsDiv=document.createElement("div");actionsDiv.className="temp-actions";const sa=document.createElement("button");sa.textContent="📋";sa.title="Seleccionar todo";sa.setAttribute('aria-label','Seleccionar todo');sa.onclick=()=>{selectedFields=[...camposVisibles];cg.querySelectorAll("input").forEach(c=>c.checked=!0);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};const da=document.createElement("button");da.textContent="🗑️";da.title="Deseleccionar todo";da.setAttribute('aria-label','Deseleccionar todo');da.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>c.checked=!1);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};const inv=document.createElement("button");inv.textContent="🔄";inv.title="Invertir selección";inv.setAttribute('aria-label','Invertir selección');inv.onclick=()=>{selectedFields=[];cg.querySelectorAll("input").forEach(c=>{if(!c.checked)selectedFields.push(c.value);c.checked=!c.checked});actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)};actionsDiv.append(sa,da,inv,acceptBtn);csvMenu.appendChild(actionsDiv);csvMenu.querySelector('#csvCloseBtn').onclick=()=>closeTempMenus();actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn);cg.addEventListener("change",()=>{selectedFields=[...cg.querySelectorAll("input:checked")].map(c=>c.value);actualizarEstadoBotonesCSV(cg,sa,da,acceptBtn)});}
-function exportarCSV(){if(!dataLoaded)return;const filtradas=aplicarFiltrosCompletos();if(!filtradas.length)return;const ordenadas=ordenarEspecies(filtradas),headers=['nombre',...selectedFields],rows=[headers.join(",")];ordenadas.forEach(e=>{rows.push(headers.map(h=>{let v=e[h];if(h==="links")v=e.links?e.links.join(";"):"";if(typeof v==="string"&&(v.includes(",")||v.includes("\n")||v.includes('"')))v=`"${v.replace(/"/g,'""')}"`;return v||""}).join(","))});const blob=new Blob([rows.join("\n")],{type:"text/csv"}),link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="indice_seres.csv";link.click();URL.revokeObjectURL(link.href);}
-function regenerarMenus(){generarMenuMorfologia();generarMenuTipo();generarMenuElemento();generarMenuAvistamiento();generarMenuOrden();generarMenuConfig();generarRevFilterMenu();if(csvMenu)csvMenu.remove();crearMenuCSV()}
-function initMenus(){document.querySelectorAll(".filtro-group").forEach(g=>{const b=g.querySelector(".filtro-boton,.config-btn,.help-btn"),m=g.querySelector(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu,.help-menu");if(b&&m&&(b.id!=='btnUbicacion'&&b.id!=='btnEpoca'&&b.id!=='btnSubcategorias')){b.addEventListener("click",e=>{e.stopPropagation();const wasOpen=m.classList.contains("show");closeAllMenus();if(!wasOpen){m.classList.add("show");createMenuOverlay(199,()=>{closeAllMenus()});setTimeout(()=>{const r=b.getBoundingClientRect(),mr=m.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;mr.height>vh-r.bottom&&r.top>mr.height?(m.style.top='auto',m.style.bottom='110%'):(m.style.top='110%',m.style.bottom='auto');r.left+mr.width>vw?(m.style.left='auto',m.style.right='0'):(m.style.left='0',m.style.right='auto')},10)}})}}});btnUbicacion.addEventListener("click",(e)=>{e.stopPropagation();abrirModalUbicacion()});btnEpoca.addEventListener("click",(e)=>{e.stopPropagation();abrirModalEpoca()});btnSubcategorias.addEventListener("click",(e)=>{e.stopPropagation();abrirModalSubcategorias()});document.addEventListener("click",e=>{if(!e.target.closest(".filtro-group")&&!e.target.closest("#ordenGroup")&&!e.target.closest("#configGroup")&&!e.target.closest(".csv-menu")&&!e.target.closest(".temp-floating-menu")){closeAllMenus();closeTempMenus()}});}
+/* ══════════════════════════════════════════════════════════
+   CONFIGURACIÓN DE CATEGORÍAS
+   ══════════════════════════════════════════════════════════ */
+const CATEGORIAS = {
+  morfologia:   { options:["Humano","Humanoide","Mamífero","Híbrido","Ave","Reptil","Pez","Insecto","Amorfo","Etéreo","Artificial","Otro"],  icons:{"Humano":"🧑","Humanoide":"🧝","Mamífero":"🦌","Híbrido":"🦄","Ave":"🕊️","Reptil":"🐍","Pez":"🐟","Insecto":"🐞","Amorfo":"🌀","Etéreo":"✨","Artificial":"🤖","Otro":"❓"}, btn:"🔮", titulo:"Morfología" },
+  tipo:         { options:["Mitológico","Criptido","Difuso"],                                                                                icons:{"Mitológico":"🏛️","Criptido":"🐾","Difuso":"🌫️"},                                                                                                                                                  btn:"🌙", titulo:"Tipo de ser" },
+  elemento:     { options:["Aéreo","Acuático","Terrestre","Subterráneo","Anfibio","Misceláneo"],                                              icons:{"Aéreo":"💨","Acuático":"💧","Terrestre":"🌿","Subterráneo":"⛰️","Anfibio":"🐸","Misceláneo":"⚙️"},                                                                                         btn:"💧", titulo:"Elemento" },
+  avistamiento: { options:["Grabado / Capturado","Documentado","Crónicas","Avistamiento","Ficción","Tradición oral","Difuso"],                icons:{"Grabado / Capturado":"📹","Documentado":"📜","Crónicas":"📖","Avistamiento":"👁️","Ficción":"📚","Tradición oral":"🗣️","Difuso":"❓"},                                                    btn:"👁️", titulo:"Avistamiento" }
+};
+
+const ORDEN_OPCIONES = [
+  {v:"nombre_asc",       l:"Alfabético A→Z"},     {v:"nombre_desc",       l:"Alfabético Z→A"},
+  {v:"morfologia_asc",   l:"Morfología A→Z"},     {v:"morfologia_desc",   l:"Morfología Z→A"},
+  {v:"tipo_asc",         l:"Tipo A→Z"},           {v:"tipo_desc",         l:"Tipo Z→A"},
+  {v:"elemento_asc",     l:"Elemento A→Z"},       {v:"elemento_desc",     l:"Elemento Z→A"},
+  {v:"avistamiento_asc", l:"Avistamiento A→Z"},   {v:"avistamiento_desc", l:"Avistamiento Z→A"}
+];
+
+const CSV_CAMPOS = ["id","nombre","morfologia","tipo","elemento","avistamiento","ubicacion","epoca","subcategorias","descripcion","links"];
+const STORAGE_VERSION = 12;
+
+/* ══ Estado de la app ═════════════════════════════════════ */
+let especies = [], dataLoaded = false;
+let filtrosState  = { morfologia:[], tipo:[], elemento:[], avistamiento:[], ubicacion:[], epoca:[], subcategorias:[] };
+let revFilterState = [], ordenActual = "nombre_asc", perPage = 24, currentPage = 1;
+let onlyFavorites = false, searchTerm = '';
+let favoritos = new Set(), revisados = new Set();
+let modoRevision = "automatico";
+let currentOrderedList = [], currentModalCreature = null, currentModalIndex = -1;
+let navegacionBloqueada = false;
+let selectedCsvFields = [...CSV_CAMPOS.filter(f => f !== 'nombre')];
+let touchStartX = 0, panelVisible = true;
+// Referencias a modales flotantes reutilizados
+let csvMenu = null, ubicacionModal = null, epocaModal = null, subcategoriasModal = null;
+let menuOverlay = null;
+const HEADER_Z = '100';
+
+/* ══ Referencias DOM ══════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const btnMorfologia    = $('btnMorfologia'),  btnTipo          = $('btnTipo');
+const btnElemento      = $('btnElemento'),    btnAvistamiento  = $('btnAvistamiento');
+const btnUbicacion     = $('btnUbicacion'),   btnEpoca         = $('btnEpoca');
+const btnSubcategorias = $('btnSubcategorias'),btnRevFilter    = $('btnRevFilter');
+const btnLimpiar       = $('btnLimpiar'),      btnOrden        = $('btnOrden');
+const favFilterBtn     = $('favFilterBtn'),   configBtn        = $('configBtn');
+const btnResetTotal    = $('btnResetTotal');
+const ordenMenu        = $('ordenMenu'),      configMenu       = $('configMenu');
+const revFilterMenu    = $('menu-rev');
+const overlayEl        = $('overlay'),        mainTitle        = $('mainTitle');
+const headerCornerImg  = $('headerCornerImg'),mainHeader       = $('mainHeader');
+const gridDiv          = $('grid'),           resultSpan       = $('resultText');
+const searchInput      = $('searchInput'),    clearSearchBtn   = $('clearSearch');
+const searchDatalist   = $('searchSuggestions');
+const paginationControlsDiv = $('paginationControls');
+const modalPrevArrow   = $('modalPrevArrow'), modalNextArrow   = $('modalNextArrow');
+const modalTitle       = $('modal-title'),    modalImg         = $('modal-image');
+const modalInfoScroll  = $('modal-info-scroll');
+const modalRevisadoBtn = $('modalRevisado'),  modalFavBtn      = $('modalFav');
+const cerrarBtn        = $('cerrar');
+
+/* ══ Inicialización de botones de categorías ══════════════ */
+(function configurarBotonesCategorias() {
+  for (const [cat, cfg] of Object.entries(CATEGORIAS)) {
+    const btn = { morfologia:btnMorfologia, tipo:btnTipo, elemento:btnElemento, avistamiento:btnAvistamiento }[cat];
+    if (btn) { btn.textContent = cfg.btn; btn.title = cfg.titulo; }
+  }
+})();
+
+/* ══ Helpers de iconos ════════════════════════════════════ */
+const getIcon = (cat, val) => CATEGORIAS[cat]?.icons[val] || '❓';
+
+/* ══ LocalStorage ═════════════════════════════════════════ */
+const saveLocal = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const loadLocal = k => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch { return null; } };
+
+function persistState() {
+  saveLocal('catalogo_filtros',  filtrosState);
+  saveLocal('catalogo_orden',    ordenActual);
+  saveLocal('catalogo_perpage',  perPage);
+  saveLocal('catalogo_onlyFav',  onlyFavorites);
+  saveRevFilterState();
+}
+const loadRevisados     = () => { const s = loadLocal('catalogo_revisados'); if (s) revisados = new Set(s); };
+const saveRevisados     = () => saveLocal('catalogo_revisados', [...revisados]);
+const loadFavoritos     = () => { const f = loadLocal('catalogo_favoritos'); if (f) { favoritos = new Set(f); actualizarEstadoFavoritosYBoton(); } };
+const saveFavoritos     = () => { saveLocal('catalogo_favoritos', [...favoritos]); actualizarEstadoFavoritosYBoton(); };
+const loadRevFilterState= () => { revFilterState = loadLocal('catalogo_rev_filter') || []; };
+const saveRevFilterState= () => { saveLocal('catalogo_rev_filter', revFilterState); updateRevFilterBadge(); };
+const loadModoRevision  = () => { const m = localStorage.getItem('catalogo_modo_revision'); if (m) modoRevision = m; };
+const saveModoRevision  = () => localStorage.setItem('catalogo_modo_revision', modoRevision);
+
+function resetAllData() {
+  localStorage.clear();
+  filtrosState = { morfologia:[], tipo:[], elemento:[], avistamiento:[], ubicacion:[], epoca:[], subcategorias:[] };
+  revFilterState = []; revisados.clear(); favoritos.clear();
+  onlyFavorites = false; ordenActual = "nombre_asc"; perPage = 24; currentPage = 1; searchTerm = '';
+  saveLocal('catalogo_version', STORAGE_VERSION);
+  persistState(); saveRevisados(); saveFavoritos();
+}
+function checkVersion() { const v = loadLocal('catalogo_version'); if (v !== STORAGE_VERSION) { resetAllData(); return false; } return true; }
+
+function validarFiltrosState() {
+  if (!especies.length) return;
+  const catSimples = ['morfologia','tipo','elemento','avistamiento','ubicacion','epoca'];
+  for (const cat of catSimples) {
+    const existentes = new Set(especies.map(e => e[cat]).filter(Boolean));
+    if (filtrosState[cat]?.length) filtrosState[cat] = filtrosState[cat].filter(v => existentes.has(v));
+  }
+  const todasSubs = new Set();
+  especies.forEach(e => { if (e.subcategorias) e.subcategorias.split(',').forEach(s => { const t = s.trim(); if (t) todasSubs.add(t); }); });
+  if (filtrosState.subcategorias?.length) filtrosState.subcategorias = filtrosState.subcategorias.filter(v => todasSubs.has(v));
+  persistState();
+}
+
+function loadPersistedState() {
+  if (!checkVersion()) return;
+  const f = loadLocal('catalogo_filtros'); if (f) filtrosState = f;
+  ordenActual = loadLocal('catalogo_orden') || "nombre_asc";
+  const pp = loadLocal('catalogo_perpage'); if (pp) perPage = +pp;
+  const of = loadLocal('catalogo_onlyFav'); onlyFavorites = (of === true || of === 'true');
+  loadRevFilterState();
+  if (especies.length) validarFiltrosState();
+  actualizarTooltipOrden();
+  actualizarEstadoFavoritosYBoton();
+}
+
+/* ══ Índices e invalidación de caché ══════════════════════ */
+let idxMorfologia, idxTipo, idxElemento, idxAvistamiento, idxUbicacion, idxEpoca, idxSubcategorias;
+
+function buildIndexes() {
+  idxMorfologia = new Map(); idxTipo = new Map(); idxElemento = new Map();
+  idxAvistamiento = new Map(); idxUbicacion = new Map(); idxEpoca = new Map(); idxSubcategorias = new Map();
+  for (const e of especies) {
+    const id = e.id;
+    addToIndex(idxMorfologia,   e.morfologia,   id);
+    addToIndex(idxTipo,         e.tipo,         id);
+    addToIndex(idxElemento,     e.elemento,     id);
+    addToIndex(idxAvistamiento, e.avistamiento, id);
+    if (e.ubicacion) addToIndex(idxUbicacion, e.ubicacion, id);
+    if (e.epoca)     addToIndex(idxEpoca,     e.epoca,     id);
+    if (e.subcategorias) e.subcategorias.split(',').forEach(s => { const t = s.trim(); if (t) addToIndex(idxSubcategorias, t, id); });
+  }
+}
+const addToIndex = (map, key, id) => { if (!map.has(key)) map.set(key, new Set()); map.get(key).add(id); };
+
+let baseFilterVersion = 0, cachedBaseIds = null, cachedBaseVersion = -1, cachedIgnoreCat = null;
+let filterCountCache = new Map();
+let revCountCache = { revisado:-1, no_revisado:-1 };
+
+function invalidateBaseCache() {
+  baseFilterVersion++;
+  filterCountCache.clear();
+  revCountCache = { revisado:-1, no_revisado:-1 };
+}
+
+function getBaseFilteredIds(ignoreCat = null) {
+  if (baseFilterVersion === cachedBaseVersion && ignoreCat === cachedIgnoreCat && cachedBaseIds !== null) return cachedBaseIds;
+  const pred = buildPredicate(ignoreCat);
+  const ids = new Set();
+  for (const e of especies) if (pred(e)) ids.add(e.id);
+  cachedBaseIds = ids; cachedBaseVersion = baseFilterVersion; cachedIgnoreCat = ignoreCat;
+  return ids;
+}
+
+/* ══ Predicado de filtro ══════════════════════════════════ */
+function buildPredicate(ignoreCat = null) {
+  return e => {
+    if (ignoreCat !== 'morfologia'    && filtrosState.morfologia.length    && !filtrosState.morfologia.includes(e.morfologia))    return false;
+    if (ignoreCat !== 'tipo'          && filtrosState.tipo.length          && !filtrosState.tipo.includes(e.tipo))                return false;
+    if (ignoreCat !== 'elemento'      && filtrosState.elemento.length      && !filtrosState.elemento.includes(e.elemento))        return false;
+    if (ignoreCat !== 'avistamiento'  && filtrosState.avistamiento.length  && !filtrosState.avistamiento.includes(e.avistamiento))return false;
+    if (ignoreCat !== 'ubicacion'     && filtrosState.ubicacion.length     && !filtrosState.ubicacion.includes(e.ubicacion))      return false;
+    if (ignoreCat !== 'epoca'         && filtrosState.epoca.length         && !filtrosState.epoca.includes(e.epoca))              return false;
+    if (ignoreCat !== 'subcategorias' && filtrosState.subcategorias.length) {
+      const subcats = e.subcategorias ? e.subcategorias.split(',').map(s => s.trim()).filter(Boolean) : [];
+      if (!filtrosState.subcategorias.some(sel => subcats.includes(sel))) return false;
+    }
+    if (onlyFavorites && !favoritos.has(e.id)) return false;
+    if (searchTerm.trim() && !e.nombre.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (revFilterState.length && ignoreCat !== 'revisado') {
+      const r = revisados.has(e.id);
+      const ambos = revFilterState.includes("revisado") && revFilterState.includes("no_revisado");
+      if (!ambos && ((revFilterState.includes("revisado") && !r) || (revFilterState.includes("no_revisado") && r))) return false;
+    }
+    return true;
+  };
+}
+
+/* ══ Contadores con caché ═════════════════════════════════ */
+function contarConOpcion(categoria, opcion) {
+  const key = `${categoria}_${opcion}`;
+  if (filterCountCache.has(key)) return filterCountCache.get(key);
+  const baseIds = getBaseFilteredIds(categoria);
+  if (!baseIds.size) { filterCountCache.set(key, 0); return 0; }
+  const idx = { morfologia:idxMorfologia, tipo:idxTipo, elemento:idxElemento, avistamiento:idxAvistamiento, ubicacion:idxUbicacion, epoca:idxEpoca, subcategorias:idxSubcategorias }[categoria];
+  const opSet = idx?.get(opcion);
+  let count = 0;
+  if (opSet?.size) {
+    const [small, big] = baseIds.size < opSet.size ? [baseIds, opSet] : [opSet, baseIds];
+    for (const id of small) if (big.has(id)) count++;
+  }
+  filterCountCache.set(key, count);
+  return count;
+}
+
+function contarPorEstado(estado) {
+  if (revCountCache[estado] !== -1) return revCountCache[estado];
+  const baseIds = getBaseFilteredIds(null);
+  let count = 0;
+  for (const id of baseIds) { const r = revisados.has(id); if (estado === "revisado" ? r : !r) count++; }
+  revCountCache[estado] = count;
+  return count;
+}
+
+// Caché de conteo de opciones visibles por categoría
+const opcionesConDatosCache = { cache: new Map() };
+function getCachedOpcionesConDatos(categoria) {
+  if (opcionesConDatosCache.cache.has(categoria)) return opcionesConDatosCache.cache.get(categoria);
+  let result;
+  if (categoria === 'revisado') {
+    result = (contarPorEstado("revisado") > 0 ? 1 : 0) + (contarPorEstado("no_revisado") > 0 ? 1 : 0);
+  } else if (['ubicacion','epoca','subcategorias'].includes(categoria)) {
+    const valores = obtenerValoresCategoria(categoria);
+    result = valores.filter(op => contarConOpcion(categoria, op) > 0).length;
+  } else {
+    result = CATEGORIAS[categoria]?.options.filter(op => contarConOpcion(categoria, op) > 0).length ?? 0;
+  }
+  opcionesConDatosCache.cache.set(categoria, result);
+  return result;
+}
+
+function obtenerValoresCategoria(categoria) {
+  if (categoria === 'ubicacion')     return [...new Set(especies.map(e => e.ubicacion).filter(Boolean))].sort();
+  if (categoria === 'epoca')         return [...new Set(especies.map(e => e.epoca).filter(Boolean))].sort();
+  if (categoria === 'subcategorias') {
+    const todas = new Set();
+    especies.forEach(e => { if (e.subcategorias) e.subcategorias.split(',').forEach(s => { const t = s.trim(); if (t) todas.add(t); }); });
+    return [...todas].sort();
+  }
+  return CATEGORIAS[categoria]?.options ?? [];
+}
+
+/* ══ Filtrado y ordenamiento ══════════════════════════════ */
+const aplicarFiltrosCompletos = () => especies.filter(buildPredicate());
+
+function ordenarEspecies(lista) {
+  const [campo, dir] = ordenActual.split('_');
+  const order = dir === "asc" ? 1 : -1;
+  return [...lista].sort((a, b) => {
+    const va = a[campo] || '', vb = b[campo] || '';
+    return va < vb ? -order : va > vb ? order : 0;
+  });
+}
+
+function actualizarTooltipOrden() {
+  const mapa = Object.fromEntries(ORDEN_OPCIONES.map(o => [o.v, o.l]));
+  btnOrden.title = mapa[ordenActual] || "Ordenar";
+}
+
+/* ══ Tooltip ══════════════════════════════════════════════ */
+let tooltipEl = null, tooltipTimeout = null;
+
+function showTooltip(text, x, y, duration = 1500) {
+  if (!tooltipEl) { tooltipEl = document.createElement("div"); tooltipEl.className = "temp-tooltip"; tooltipEl.style.opacity = "0"; document.body.appendChild(tooltipEl); }
+  if (tooltipTimeout) clearTimeout(tooltipTimeout);
+  tooltipEl.textContent = text; tooltipEl.style.left = x + "px"; tooltipEl.style.top = y + "px"; tooltipEl.style.opacity = "1";
+  const r = tooltipEl.getBoundingClientRect();
+  let fx = Math.max(10, Math.min(x, window.innerWidth - r.width - 10));
+  let fy = Math.max(10, Math.min(y, window.innerHeight - r.height - 10));
+  tooltipEl.style.left = fx + "px"; tooltipEl.style.top = fy + "px";
+  tooltipTimeout = setTimeout(() => { tooltipEl.style.opacity = "0"; tooltipTimeout = null; }, duration);
+}
+function hideTooltip() { if (tooltipEl) tooltipEl.style.opacity = "0"; if (tooltipTimeout) { clearTimeout(tooltipTimeout); tooltipTimeout = null; } }
+document.addEventListener("click", () => hideTooltip());
+
+function setupBadgeHover(badge, text) {
+  badge.addEventListener("mouseenter", () => { const r = badge.getBoundingClientRect(); showTooltip(text, r.left + r.width / 2, r.top - 10, 2000); });
+  badge.addEventListener("mouseleave", () => hideTooltip());
+}
+
+/* ══ Imagen con fallback ══════════════════════════════════ */
+const IMG_EXTS = ['jpg','jpeg','png'];
+
+function setImageWithFallback(imgEl, nombre, transform = "", isPriority = false) {
+  if (isPriority) { imgEl.fetchPriority = "high"; imgEl.loading = "eager"; } else { imgEl.loading = "lazy"; }
+  const parent = imgEl.parentNode;
+  parent?.querySelectorAll('.img-placeholder').forEach(el => el.remove());
+  let idx = 0;
+  const tryNext = () => {
+    if (idx >= IMG_EXTS.length) {
+      imgEl.style.display = "none";
+      if (!parent?.querySelector(".img-placeholder")) {
+        const ph = document.createElement("div");
+        ph.className = "img-placeholder";
+        ph.style.cssText = "width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--accent);background:rgba(0,0,0,.3);border-radius:16px;";
+        ph.textContent = "🖼️"; ph.setAttribute("aria-label","Imagen no disponible");
+        parent?.appendChild(ph);
+      }
+      return;
+    }
+    imgEl.src = `img/${encodeURIComponent(nombre)}.${IMG_EXTS[idx]}`;
+    imgEl.style.display = "block";
+    if (transform) imgEl.style.transform = transform;
+    imgEl.onerror = () => { idx++; tryNext(); };
+    imgEl.onload  = () => { parent?.querySelector(".img-placeholder")?.remove(); imgEl.style.display = "block"; };
+  };
+  tryNext();
+}
+
+function crearImg(e, isPriority = false) {
+  const img = document.createElement("img");
+  setImageWithFallback(img, e.nombre, `translate(${e.posX||0}px,${e.posY||0}px) scale(${e.zoom||1})`, isPriority);
+  return img;
+}
+
+/* ══ Favoritos y revisados ════════════════════════════════ */
+function actualizarEstadoFavoritosYBoton() {
+  favFilterBtn.disabled = favoritos.size === 0;
+  if (favoritos.size === 0 && onlyFavorites) { onlyFavorites = false; render(); }
+}
+
+function toggleFavorito(id, uiOnly = false) {
+  favoritos.has(id) ? favoritos.delete(id) : favoritos.add(id);
+  saveFavoritos();
+  if (!uiOnly) {
+    if (onlyFavorites) { render(); }
+    else {
+      const card = document.querySelector(`.card[data-id="${id}"]`);
+      card?.querySelector(".fav-star")?.textContent && (card.querySelector(".fav-star").textContent = favoritos.has(id) ? "★" : "☆");
+      if (currentModalCreature?.id === id && modalFavBtn) modalFavBtn.textContent = favoritos.has(id) ? "★" : "☆";
+    }
+  }
+  updateFilterBadges(); actualizarEstadoFavoritosYBoton(); invalidateBaseCache();
+}
+
+function toggleRevisado(id, esAuto = false) {
+  const estaba = revisados.has(id);
+  if (modoRevision === "bloqueo") {
+    if (!esAuto && estaba && !confirm("¿Estás seguro de marcar como NO revisado?")) return;
+    if (!esAuto && !estaba) return;
+  }
+  estaba ? revisados.delete(id) : revisados.add(id);
+  saveRevisados(); actualizarIconoRevisadoTarjeta(id); afterRevisadoToggle();
+}
+
+function afterRevisadoToggle() {
+  invalidateBaseCache(); actualizarEstadoBotonRevisado();
+  const soloRevFilter = revFilterState.length > 0 && revFilterState.length < 2;
+  if (soloRevFilter) { render(); }
+  else { updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); actualizarContadorYPaginacion(); adjustTitleFontSize(); actualizarImagenEsquina(); actualizarDisabledOtrosFiltros(); }
+}
+
+function actualizarDisabledOtrosFiltros() {
+  const cats = [
+    [btnMorfologia,'morfologia'], [btnTipo,'tipo'], [btnElemento,'elemento'], [btnAvistamiento,'avistamiento'],
+    [btnUbicacion,'ubicacion'],   [btnEpoca,'epoca'], [btnSubcategorias,'subcategorias']
+  ];
+  cats.forEach(([btn, cat]) => { if (btn) btn.disabled = getCachedOpcionesConDatos(cat) <= 1; });
+}
+
+function actualizarEstadoBotonRevisado() {
+  invalidateBaseCache();
+  btnRevFilter.disabled = (contarPorEstado("revisado") > 0 ? 1 : 0) + (contarPorEstado("no_revisado") > 0 ? 1 : 0) <= 1;
+}
+
+function marcarRevisadoPorLink(id) { if (!revisados.has(id)) toggleRevisado(id, true); }
+window.marcarRevisadoPorLink = marcarRevisadoPorLink;
+
+function actualizarIconoRevisadoTarjeta(id) {
+  const estado = revisados.has(id), icono = estado ? "◆" : "◇";
+  const card = document.querySelector(`.card[data-id="${id}"]`);
+  if (card) {
+    const ri = card.querySelector(".revisado-icon");
+    if (ri) { ri.innerHTML = icono; ri.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`; ri.title = estado ? "Revisado" : "No revisado"; }
+  }
+  if (currentModalCreature?.id === id && modalRevisadoBtn) {
+    modalRevisadoBtn.innerHTML = icono;
+    modalRevisadoBtn.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`;
+    modalRevisadoBtn.title = estado ? "Revisado" : "No revisado";
+  }
+}
+
+/* ══ Overlays y cierre de menús ═══════════════════════════ */
+function createMenuOverlay(zIndex, onClick) {
+  removeMenuOverlay();
+  const o = document.createElement('div'); o.className = 'menu-overlay'; o.style.zIndex = zIndex; o.onclick = onClick;
+  document.body.appendChild(o); menuOverlay = o; mainHeader.style.zIndex = '201';
+}
+function removeMenuOverlay() { menuOverlay?.remove(); menuOverlay = null; mainHeader.style.zIndex = HEADER_Z; }
+function closeAllMenus() {
+  document.querySelectorAll(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu").forEach(m => m.classList.remove("show"));
+  removeMenuOverlay(); hideTooltip();
+}
+function closeTempMenus() {
+  document.querySelectorAll(".temp-floating-menu").forEach(m => { m.classList.remove("show"); setTimeout(() => { if (!m.classList.contains("show")) m.remove(); }, 300); });
+  if (csvMenu) csvMenu.classList.remove("show");
+  ubicacionModal = epocaModal = subcategoriasModal = null;
+  removeMenuOverlay(); hideTooltip();
+}
+
+/* ══ Construcción de menús de categorías ══════════════════ */
+function generarMenuCategoria(cat, menuId) {
+  const menu = document.getElementById(menuId); menu.innerHTML = "";
+  const opciones = CATEGORIAS[cat]?.options ?? [];
+  const opcionesVisibles = opciones.filter(v => contarConOpcion(cat, v) > 0);
+  const solaUna = opcionesVisibles.length === 1;
+
+  opcionesVisibles.forEach(val => {
+    const count = contarConOpcion(cat, val);
+    const label = document.createElement("label");
+    const cb = document.createElement("input"); cb.type = "checkbox"; cb.value = val; cb.checked = filtrosState[cat].includes(val); cb.disabled = solaUna;
+    cb.addEventListener("change", () => {
+      if (cb.checked) { if (!filtrosState[cat].includes(val)) filtrosState[cat].push(val); }
+      else { filtrosState[cat] = filtrosState[cat].filter(v => v !== val); }
+      currentPage = 1; render(); persistState(); invalidateBaseCache();
+    });
+    const ts = document.createElement("span"); ts.className = "label-text"; ts.textContent = ` ${val}`;
+    const cs = document.createElement("span"); cs.className = "count"; cs.textContent = `(${count})`;
+    label.append(cb, ts, cs); menu.appendChild(label);
+  });
+
+  const bc = document.createElement("button"); bc.textContent = "Limpiar esta categoría"; bc.className = "limpiar-categoria"; bc.disabled = !filtrosState[cat].length;
+  bc.addEventListener('click', e => { e.stopPropagation(); limpiarCategoriaORevisados(cat); });
+  menu.appendChild(bc);
+}
+
+function generarRevFilterMenu() {
+  revFilterMenu.innerHTML = "";
+  const ops = [{ id:"revisado", label:"Revisado" }, { id:"no_revisado", label:"No revisado" }];
+  const visibles = ops.filter(o => contarPorEstado(o.id) > 0);
+  const solaUna = visibles.length === 1;
+
+  visibles.forEach(opt => {
+    const count = contarPorEstado(opt.id);
+    const label = document.createElement("label");
+    const cb = document.createElement("input"); cb.type = "checkbox"; cb.value = opt.id; cb.checked = revFilterState.includes(opt.id); cb.disabled = solaUna;
+    cb.addEventListener("change", () => {
+      cb.checked ? (!revFilterState.includes(opt.id) && revFilterState.push(opt.id)) : (revFilterState = revFilterState.filter(v => v !== opt.id));
+      saveRevFilterState(); currentPage = 1; render(); invalidateBaseCache();
+    });
+    const ts = document.createElement("span"); ts.className = "label-text"; ts.textContent = ` ${opt.label}`;
+    const cs = document.createElement("span"); cs.className = "count"; cs.textContent = `(${count})`;
+    label.append(cb, ts, cs); revFilterMenu.appendChild(label);
+  });
+
+  const bc = document.createElement("button"); bc.textContent = "Limpiar esta categoría"; bc.className = "limpiar-categoria"; bc.disabled = !revFilterState.length;
+  bc.addEventListener('click', e => { e.stopPropagation(); limpiarCategoriaORevisados('revisado'); });
+  revFilterMenu.appendChild(bc);
+}
+
+function generarMenuOrden() {
+  ordenMenu.innerHTML = ORDEN_OPCIONES.map(o => `<button ${ordenActual === o.v ? 'disabled' : ''}>${o.l} ${ordenActual === o.v ? '◉' : ''}</button>`).join('');
+  [...ordenMenu.children].forEach((b, i) => {
+    b.onclick = () => {
+      if (b.disabled) return;
+      ordenActual = ORDEN_OPCIONES[i].v; currentPage = 1; actualizarTooltipOrden();
+      render(); persistState(); closeAllMenus(); invalidateBaseCache();
+    };
+  });
+}
+
+function generarMenuConfig() {
+  configMenu.innerHTML = "";
+  const addBtn = (html, click) => { const b = document.createElement("button"); b.innerHTML = html; b.onclick = click; configMenu.appendChild(b); return b; };
+  addBtn("🎲 Azar", () => {
+    const f = aplicarFiltrosCompletos(); if (f.length) { navegacionBloqueada = true; abrirDetalle(f[Math.floor(Math.random() * f.length)]); } closeAllMenus();
+  });
+  addBtn(`🔢 Ítems por página (${perPage})`, e => { e.stopPropagation(); closeAllMenus(); abrirMenuItemsPerPage(); });
+  addBtn("📎 Exportar CSV",                  e => { e.stopPropagation(); closeAllMenus(); crearMenuCSV(); csvMenu.classList.add("show"); });
+  addBtn(`📌 Modo revisión (${modoRevision === "automatico" ? "Automático" : "Bloqueo"})`, e => {
+    e.stopPropagation(); modoRevision = modoRevision === "automatico" ? "bloqueo" : "automatico"; saveModoRevision(); generarMenuConfig(); closeAllMenus();
+  });
+  addBtn("📖 Ayuda", e => { e.stopPropagation(); closeAllMenus(); abrirMenuAyuda(); });
+}
+
+function regenerarMenus() {
+  generarMenuCategoria('morfologia',   'menu-morfologia');
+  generarMenuCategoria('tipo',         'menu-tipo');
+  generarMenuCategoria('elemento',     'menu-elemento');
+  generarMenuCategoria('avistamiento', 'menu-avistamiento');
+  generarMenuOrden(); generarMenuConfig(); generarRevFilterMenu();
+  csvMenu?.remove(); crearMenuCSV();
+}
+
+/* ══ Modal de filtro genérico (ubicación/época/subcats) ═══ */
+function aplicarCambioModalFiltro(cat, nuevosValores, totalVisibles) {
+  const antesTotal = !filtrosState[cat].length || filtrosState[cat].length === totalVisibles;
+  const despuesTotal = !nuevosValores.length || nuevosValores.length === totalVisibles;
+  filtrosState[cat] = nuevosValores; currentPage = 1; persistState(); invalidateBaseCache();
+  if (antesTotal && despuesTotal) { updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); actualizarContadorYPaginacion(); adjustTitleFontSize(); actualizarImagenEsquina(); }
+  else render();
+}
+
+function crearModalFiltro(titulo, cat, valores, counts) {
+  closeAllMenus(); closeTempMenus();
+  createMenuOverlay(999, () => closeTempMenus());
+
+  const modal = document.createElement('div'); modal.className = 'temp-floating-menu'; modal.id = cat + 'Modal';
+  const opcionesConDatos = valores.filter(v => counts.get(v) > 0);
+  const totalVisibles = opcionesConDatos.length;
+
+  let html = `<div class="temp-header">${titulo} <button id="${cat}CancelBtn" title="Cerrar">✕</button></div><div class="modal-checkbox-grid" id="${cat}Grid">`;
+  opcionesConDatos.forEach(val => {
+    html += `<label><input type="checkbox" value="${val.replace(/"/g,'&quot;')}" ${filtrosState[cat].includes(val)?'checked':''} ${totalVisibles===1?'disabled':''}> ${val} <span style="color:#b8a87a;font-size:.6rem">(${counts.get(val)})</span></label>`;
+  });
+  html += `</div><div class="modal-actions" id="${cat}Actions"></div>`;
+  modal.innerHTML = html; document.body.appendChild(modal); modal.classList.add('show');
+
+  if (cat === 'ubicacion')     ubicacionModal    = modal;
+  else if (cat === 'epoca')    epocaModal        = modal;
+  else if (cat === 'subcategorias') subcategoriasModal = modal;
+
+  const grid = modal.querySelector(`#${cat}Grid`), actionsDiv = modal.querySelector(`#${cat}Actions`);
+  const mkBtn = (icon, title) => { const b = document.createElement('button'); b.textContent = icon; b.title = title; b.setAttribute('aria-label', title); return b; };
+  const sa = mkBtn('📋','Seleccionar todo'), da = mkBtn('🗑️','Deseleccionar todo'), inv = mkBtn('🔄','Invertir selección');
+  actionsDiv.append(sa, da, inv);
+
+  const getChecks    = () => grid.querySelectorAll('input[type="checkbox"]:not([disabled])');
+  const getSelected  = () => Array.from(getChecks()).filter(cb => cb.checked).map(cb => cb.value);
+  const syncBotones  = () => { const checks = getChecks(); const n = Array.from(checks).filter(cb=>cb.checked).length; sa.disabled = n === checks.length; da.disabled = n === 0; };
+
+  grid.addEventListener('change', () => { aplicarCambioModalFiltro(cat, getSelected(), totalVisibles); syncBotones(); });
+  sa.onclick  = () => { getChecks().forEach(cb => cb.checked = true);  aplicarCambioModalFiltro(cat, getSelected(), totalVisibles); syncBotones(); };
+  da.onclick  = () => { getChecks().forEach(cb => cb.checked = false); aplicarCambioModalFiltro(cat, [],            totalVisibles); syncBotones(); };
+  inv.onclick = () => { const ns = []; getChecks().forEach(cb => { cb.checked = !cb.checked; if (cb.checked) ns.push(cb.value); }); aplicarCambioModalFiltro(cat, ns, totalVisibles); syncBotones(); };
+  modal.querySelector(`#${cat}CancelBtn`).onclick = () => closeTempMenus();
+  modal.addEventListener('click', e => e.stopPropagation());
+  syncBotones();
+}
+
+const abrirModalUbicacion     = () => { const v = obtenerValoresCategoria('ubicacion');     const c = new Map(v.map(x => [x, contarConOpcion('ubicacion',x)]));     crearModalFiltro('📍 Ubicación',    'ubicacion',     v, c); };
+const abrirModalEpoca         = () => { const v = obtenerValoresCategoria('epoca');         const c = new Map(v.map(x => [x, contarConOpcion('epoca',x)]));         crearModalFiltro('📅 Época',        'epoca',         v, c); };
+const abrirModalSubcategorias = () => { const v = obtenerValoresCategoria('subcategorias'); const c = new Map(v.map(x => [x, contarConOpcion('subcategorias',x)])); crearModalFiltro('🏷️ Subcategorías','subcategorias', v, c); };
+
+/* ══ CSV ══════════════════════════════════════════════════ */
+function crearMenuCSV() {
+  csvMenu?.remove();
+  csvMenu = document.createElement("div"); csvMenu.id = "csvModal"; csvMenu.className = "temp-floating-menu";
+  renderMenuCSV(); document.body.appendChild(csvMenu);
+  csvMenu.addEventListener("click", e => e.stopPropagation());
+}
+
+function renderMenuCSV() {
+  if (!csvMenu) return;
+  const camposVisibles = CSV_CAMPOS.filter(f => f !== 'nombre');
+  csvMenu.innerHTML = `<div class="temp-header">📎 Exportar CSV (nombre siempre incluido) <button id="csvCloseBtn" title="Cerrar">✕</button></div><div class="csv-checkbox-group">${camposVisibles.map(f => `<label><input type="checkbox" value="${f}" ${selectedCsvFields.includes(f)?'checked':''}> ${f}</label>`).join('')}</div>`;
+  const cg = csvMenu.querySelector(".csv-checkbox-group");
+  const actionsDiv = document.createElement("div"); actionsDiv.className = "temp-actions";
+  const sa = document.createElement("button"); sa.textContent = "📋"; sa.title = "Seleccionar todo"; sa.setAttribute('aria-label','Seleccionar todo');
+  const da = document.createElement("button"); da.textContent = "🗑️"; da.title = "Deseleccionar todo"; da.setAttribute('aria-label','Deseleccionar todo');
+  const inv = document.createElement("button"); inv.textContent = "🔄"; inv.title = "Invertir selección"; inv.setAttribute('aria-label','Invertir selección');
+  const acceptBtn = document.createElement("button"); acceptBtn.textContent = "✓"; acceptBtn.title = "Exportar"; acceptBtn.disabled = !selectedCsvFields.length;
+  actionsDiv.append(sa, da, inv, acceptBtn);
+  csvMenu.appendChild(actionsDiv);
+
+  const sync = () => { const n = cg.querySelectorAll("input:checked").length, t = cg.querySelectorAll("input").length; sa.disabled = n === t; da.disabled = n === 0; acceptBtn.disabled = !selectedCsvFields.length; };
+  cg.addEventListener("change", () => { selectedCsvFields = [...cg.querySelectorAll("input:checked")].map(c => c.value); sync(); });
+  sa.onclick  = () => { selectedCsvFields = [...camposVisibles]; cg.querySelectorAll("input").forEach(c => c.checked = true);  sync(); };
+  da.onclick  = () => { selectedCsvFields = [];                  cg.querySelectorAll("input").forEach(c => c.checked = false); sync(); };
+  inv.onclick = () => { selectedCsvFields = []; cg.querySelectorAll("input").forEach(c => { if (!c.checked) selectedCsvFields.push(c.value); c.checked = !c.checked; }); sync(); };
+  acceptBtn.onclick = () => { exportarCSV(); closeTempMenus(); };
+  csvMenu.querySelector('#csvCloseBtn').onclick = () => closeTempMenus();
+  sync();
+}
+
+function exportarCSV() {
+  if (!dataLoaded) return;
+  const ordenadas = ordenarEspecies(aplicarFiltrosCompletos()); if (!ordenadas.length) return;
+  const headers = ['nombre', ...selectedCsvFields]; if (!headers.length) return;
+  const rows = [headers.join(",")];
+  ordenadas.forEach(e => {
+    rows.push(headers.map(h => {
+      let v = h === "links" ? (e.links?.join(";") ?? "") : (e[h] ?? "");
+      if (typeof v === "string" && (v.includes(",") || v.includes("\n") || v.includes('"'))) v = `"${v.replace(/"/g,'""')}"`;
+      return v;
+    }).join(","));
+  });
+  const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([rows.join("\n")], { type:"text/csv" })); link.download = "indice_seres.csv"; link.click(); URL.revokeObjectURL(link.href);
+}
+
+/* ══ Menús especiales ═════════════════════════════════════ */
+function abrirMenuItemsPerPage() {
+  closeAllMenus(); closeTempMenus();
+  createMenuOverlay(999, () => closeTempMenus());
+  const valores = [12,24,48,96], sliderIdx = Math.max(0, valores.indexOf(perPage));
+  let tempPP = perPage;
+  const menu = document.createElement("div"); menu.id = "itemsPerPageMenu"; menu.className = "temp-floating-menu";
+  menu.innerHTML = `<div class="temp-header">🔢 Ítems por página<button id="itemsCancelBtn" title="Cancelar">✕</button></div><div class="slider-container"><input type="range" id="itemsSlider" min="0" max="3" step="1" value="${sliderIdx}"><div class="slider-labels"><span>12</span><span>24</span><span>48</span><span>96</span></div></div><div class="temp-value">Seleccionado: <strong id="itemsTempVal">${tempPP}</strong></div><div class="temp-actions"><button id="itemsAcceptBtn" title="Aceptar" disabled>✓</button></div>`;
+  document.body.appendChild(menu); menu.classList.add('show');
+  const slider = menu.querySelector("#itemsSlider"), valSpan = menu.querySelector("#itemsTempVal"), acceptBtn = menu.querySelector("#itemsAcceptBtn");
+  slider.addEventListener("input", () => { tempPP = valores[+slider.value]; valSpan.textContent = tempPP; acceptBtn.disabled = tempPP === perPage; });
+  acceptBtn.onclick = () => { if (!acceptBtn.disabled) { perPage = tempPP; currentPage = 1; render(); persistState(); generarMenuConfig(); closeTempMenus(); } };
+  menu.querySelector("#itemsCancelBtn").onclick = () => closeTempMenus();
+  menu.addEventListener("click", e => e.stopPropagation());
+}
+
+function abrirMenuAyuda() {
+  closeAllMenus(); closeTempMenus();
+  createMenuOverlay(999, () => closeTempMenus());
+  const menu = document.createElement("div"); menu.id = "helpFloatingMenu"; menu.className = "temp-floating-menu";
+  menu.innerHTML = `<div class="temp-header">📖 Ayuda <button id="helpCloseBtn" title="Cerrar">✕</button></div><div class="help-content"><p><strong>🔮 Morfología</strong> - Forma del ser</p><p><strong>🌙 Tipo</strong> - Mitológico, Criptido, Difuso</p><p><strong>💧 Elemento</strong> - Aéreo, Acuático, etc.</p><p><strong>👁️ Avistamiento</strong> - Jerárquico</p><p><strong>📍 Ubicación</strong> - Filtro por lugar</p><p><strong>📅 Época</strong> - Período histórico</p><p><strong>🏷️ Subcategorías</strong> - Etiquetas</p><p><strong>✅ Revisado</strong> - Solo revisados</p><p><strong>⭐ Favoritos</strong> - Solo favoritos</p><p><strong>🧹 Limpiar filtros</strong></p><p><strong>📊 Ordenar</strong></p><p><strong>⚙️ Configuración</strong> - Ítems, CSV, modo</p></div>`;
+  document.body.appendChild(menu); menu.classList.add('show');
+  menu.querySelector('#helpCloseBtn').onclick = () => closeTempMenus();
+  menu.addEventListener('click', e => e.stopPropagation());
+}
+
+function abrirVentanaAyudaEsquina() {
+  closeAllMenus(); closeTempMenus(); $('ayudaEsquinaMenu')?.remove();
+  createMenuOverlay(999, () => closeTempMenus());
+  const menu = document.createElement('div'); menu.id = 'ayudaEsquinaMenu'; menu.className = 'temp-floating-menu';
+  menu.innerHTML = `<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><p style="text-align:center;color:var(--accent);margin-bottom:12px;">emilianoalern9@gmail.com</p><div style="display:flex;justify-content:center;"><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high" style="max-width:200px;width:100%;height:auto;"></div></div>`;
+  document.body.appendChild(menu); menu.classList.add('show');
+  menu.querySelector('#ayudaEsquinaCerrarBtn').onclick = () => closeTempMenus();
+  menu.addEventListener('click', e => e.stopPropagation());
+}
+headerCornerImg.addEventListener('click', e => { e.stopPropagation(); abrirVentanaAyudaEsquina(); });
+
+/* ══ Badges de tarjeta ════════════════════════════════════ */
+function crearBadge(ico, titulo) {
+  const btn = document.createElement("button"); btn.className = "mini-badge"; btn.textContent = ico; btn.setAttribute('aria-label', titulo); btn.title = titulo;
+  setupBadgeHover(btn, titulo); btn.addEventListener("click", e => e.stopPropagation());
+  return btn;
+}
+
+function crearBadgesRow(e) {
+  return [
+    crearBadge(getIcon('morfologia',   e.morfologia),   `Morfología: ${e.morfologia}`),
+    crearBadge(getIcon('tipo',         e.tipo),         `Tipo: ${e.tipo}`),
+    crearBadge(getIcon('elemento',     e.elemento),     `Elemento: ${e.elemento}`),
+    crearBadge(getIcon('avistamiento', e.avistamiento), `Avistamiento: ${e.avistamiento}`)
+  ];
+}
+
+/* ══ Tarjeta ══════════════════════════════════════════════ */
+function crearCardGrid(e, idx) {
+  const card = document.createElement("div"); card.className = "card"; card.setAttribute("data-id", e.id);
+  const imgC = document.createElement("div"); imgC.className = "img-container"; imgC.appendChild(crearImg(e, idx < 12));
+  const nombreB = document.createElement("b"); nombreB.textContent = e.nombre;
+  const footer = document.createElement("div"); footer.className = "card-footer-row";
+  const bw = document.createElement("div"); bw.className = "badges-wrapper"; crearBadgesRow(e).forEach(b => bw.appendChild(b));
+  const ad = document.createElement("div"); ad.className = "card-actions";
+  const fb = document.createElement("button"); fb.className = "fav-star"; fb.textContent = favoritos.has(e.id) ? "★" : "☆"; fb.setAttribute('aria-label','Marcar como favorito');
+  fb.onclick = ev => { ev.stopPropagation(); toggleFavorito(e.id); };
+  const ri = document.createElement("span"); ri.className = "revisado-icon"; const est = revisados.has(e.id); ri.innerHTML = est ? "◆" : "◇";
+  ri.classList.toggle("revisado", est); ri.classList.toggle("no_revisado", !est); ri.style.color = "var(--accent)"; ri.title = est ? "Revisado" : "No revisado"; ri.setAttribute('aria-label', est ? 'Revisado' : 'No revisado');
+  ri.onclick = ev => { ev.stopPropagation(); ev.preventDefault(); toggleRevisado(e.id); };
+  ad.append(fb, ri); footer.append(bw, ad); card.append(imgC, nombreB, footer); card.onclick = () => abrirDetalle(e);
+  return card;
+}
+
+/* ══ Paginación ═══════════════════════════════════════════ */
+function actualizarPaginacionHeader(tp) {
+  paginationControlsDiv.innerHTML = "";
+  const mkBtn = (t, d) => { const b = document.createElement("button"); b.textContent = t; b.className = "pagination-btn"; b.disabled = d; return b; };
+  const pi = document.createElement("input"); pi.type = "text"; pi.inputMode = "numeric"; pi.value = currentPage; pi.setAttribute('aria-label','Número de página');
+  const s  = document.createElement("span"); s.textContent = `/ ${tp}`;
+
+  if (tp <= 1) { pi.readOnly = true; paginationControlsDiv.append(mkBtn("<<",true), mkBtn("<",true), pi, s, mkBtn(">",true), mkBtn(">>",true)); return; }
+
+  const goTo = v => { if (v < 1) v = 1; if (v > tp) v = tp; if (v !== currentPage) { currentPage = v; render(); window.scrollTo({top:0,behavior:'smooth'}); } pi.value = currentPage; };
+  pi.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); goTo(parseInt(pi.value)||currentPage); pi.blur(); } });
+  pi.addEventListener("input",   () => { pi.value = pi.value.replace(/[^0-9]/g,''); });
+  pi.addEventListener("blur",    () => goTo(parseInt(pi.value)||currentPage));
+
+  const bf = mkBtn("<<", currentPage===1),  bp = mkBtn("<", currentPage===1);
+  const bn = mkBtn(">",  currentPage===tp), bl = mkBtn(">>", currentPage===tp);
+  if (tp === 2) { bf.disabled = true; bl.disabled = true; }
+  bf.onclick = () => { if (!bf.disabled) goTo(1); };
+  bp.onclick = () => { if (!bp.disabled) goTo(currentPage - 1); };
+  bn.onclick = () => { if (!bn.disabled) goTo(currentPage + 1); };
+  bl.onclick = () => { if (!bl.disabled) goTo(tp); };
+  paginationControlsDiv.append(bf, bp, pi, s, bn, bl);
+}
+
+/* ══ Búsqueda ═════════════════════════════════════════════ */
+function levenshteinDistance(a, b) {
+  if (!a.length) return b.length; if (!b.length) return a.length;
+  const m = Array.from({length: b.length+1}, (_,i) => [i, ...Array(a.length).fill(0)]);
+  for (let j = 0; j <= a.length; j++) m[0][j] = j;
+  for (let i = 1; i <= b.length; i++) for (let j = 1; j <= a.length; j++) m[i][j] = Math.min(m[i-1][j]+1, m[i][j-1]+1, m[i-1][j-1]+(a[j-1]===b[i-1]?0:1));
+  return m[b.length][a.length];
+}
+
+function updateSearchSuggestions() {
+  const term = searchInput.value.trim().toLowerCase();
+  const cand = aplicarFiltrosCompletos();
+  let sug;
+  if (!term) {
+    sug = ordenarEspecies(cand).slice(0, 6).map(e => e.nombre);
+  } else {
+    const comienzan = cand.filter(e => e.nombre.toLowerCase().startsWith(term));
+    if (comienzan.length >= 6) {
+      sug = comienzan.slice(0, 6).map(e => e.nombre);
+    } else {
+      const resto = cand.filter(e => !e.nombre.toLowerCase().startsWith(term)).map(e => ({ nombre:e.nombre, dist:levenshteinDistance(term, e.nombre.toLowerCase()) })).sort((a,b) => a.dist - b.dist);
+      sug = [...comienzan.map(e => e.nombre), ...resto.slice(0, 6 - comienzan.length).map(x => x.nombre)];
+    }
+  }
+  searchDatalist.innerHTML = sug.map(s => `<option value="${s}">`).join('');
+}
+function updateClearSearchState() { clearSearchBtn.classList.toggle("disabled", !searchInput.value.trim()); }
+
+let searchTimeout;
+function onSearchInput() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => { searchTerm = searchInput.value; currentPage = 1; render(); updateClearSearchState(); updateSearchSuggestions(); invalidateBaseCache(); }, 300);
+}
+
+/* ══ Badges y estado de filtros ══════════════════════════ */
+function updateFilterBadges() {
+  const { morfologia:mc, tipo:tc, elemento:ec, avistamiento:ac, ubicacion:uc, epoca:epc, subcategorias:sc } = Object.fromEntries(Object.entries(filtrosState).map(([k,v])=>[k,v.length]));
+  btnMorfologia.title    = `Morfología${mc ? ` (${mc})`:''}`;    actualizarFiltroActivo(btnMorfologia,    mc > 0);
+  btnTipo.title          = `Tipo${tc ? ` (${tc})`:''}`;          actualizarFiltroActivo(btnTipo,          tc > 0);
+  btnElemento.title      = `Elemento${ec ? ` (${ec})`:''}`;      actualizarFiltroActivo(btnElemento,      ec > 0);
+  btnAvistamiento.title  = `Avistamiento${ac ? ` (${ac})`:''}`;  actualizarFiltroActivo(btnAvistamiento,  ac > 0);
+  btnUbicacion.title     = `Ubicación${uc ? ` (${uc})`:''}`;     actualizarFiltroActivo(btnUbicacion,     uc > 0);
+  btnEpoca.title         = `Época${epc ? ` (${epc})`:''}`;       actualizarFiltroActivo(btnEpoca,         epc > 0);
+  btnSubcategorias.title = `Subcategorías${sc ? ` (${sc})`:''}`;  actualizarFiltroActivo(btnSubcategorias, sc > 0);
+  favFilterBtn.classList.toggle('active', onlyFavorites);
+  updateRevFilterBadge(); actualizarBotonLimpiar();
+}
+const actualizarFiltroActivo = (btn, activo) => btn.classList.toggle('active-filter', activo);
+function actualizarBotonLimpiar() {
+  btnLimpiar.disabled = currentOrderedList.length === 0 || !Object.values(filtrosState).some(a => a.length) && !revFilterState.length;
+}
+function updateRevFilterBadge() {
+  const n = revFilterState.length;
+  btnRevFilter.title = n === 0 ? "Filtrar por revisado" : n === 1 ? `Filtrar: ${revFilterState[0]==="revisado"?"Revisado":"No revisado"}` : "Filtrar: revisado y no revisado";
+  actualizarFiltroActivo(btnRevFilter, n > 0);
+}
+
+/* ══ Limpiar filtros ══════════════════════════════════════ */
+function limpiarCategoriaORevisados(cat) {
+  if (cat === 'revisado') { revFilterState = []; saveRevFilterState(); }
+  else { filtrosState[cat] = []; }
+  currentPage = 1; persistState(); invalidateBaseCache();
+  render();
+}
+
+function limpiarTodosFiltros() {
+  if (btnLimpiar.disabled) return;
+  filtrosState = { morfologia:[], tipo:[], elemento:[], avistamiento:[], ubicacion:[], epoca:[], subcategorias:[] };
+  revFilterState = []; saveRevFilterState(); currentPage = 1; persistState(); invalidateBaseCache();
+  render();
+}
+
+/* ══ Modal de detalle ═════════════════════════════════════ */
+function actualizarModal() {
+  if (!currentModalCreature) return;
+  const e = currentModalCreature;
+  modalTitle.innerText = e.nombre; adjustModalTitleFontSize();
+  setImageWithFallback(modalImg, e.nombre, "", true);
+
+  const linksHtml = e.links?.length ? `<div class="links-list">${e.links.map(u => `<a href="${u}" target="_blank" class="link-item" onclick="marcarRevisadoPorLink('${e.id}')">${u}</a>`).join('')}</div>` : "";
+  const subcatsHtml = e.subcategorias ? `<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>` : '';
+  modalInfoScroll.innerHTML = `<div class="info-grid">
+    <div class="info-item"><span class="info-label">Morfología:</span> ${e.morfologia}</div>
+    <div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div>
+    <div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div>
+    <div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div>
+    <div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div>
+    <div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>
+    ${subcatsHtml}
+  </div><div class="modal-description">${e.descripcion}</div>${linksHtml}`;
+
+  const est = revisados.has(e.id);
+  modalRevisadoBtn.innerHTML = est ? "◆" : "◇";
+  modalRevisadoBtn.className = `revisado-icon ${est ? 'revisado' : 'no_revisado'}`;
+  modalRevisadoBtn.style.color = "var(--accent)";
+  modalRevisadoBtn.onclick = () => toggleRevisado(e.id, false);
+  if (modalFavBtn) modalFavBtn.textContent = favoritos.has(e.id) ? "★" : "☆";
+  modalPrevArrow.style.display = modalNextArrow.style.display = navegacionBloqueada ? "none" : "flex";
+  actualizarFlechasModal();
+  requestAnimationFrame(adjustModalTitleFontSize);
+}
+
+function abrirDetalle(e) {
+  currentModalCreature = e; currentModalIndex = currentOrderedList.findIndex(c => c.id === e.id);
+  actualizarModal(); actualizarFlechasModal(); overlayEl.style.display = "flex"; document.body.classList.add("modal-open");
+  setTimeout(() => { overlayEl.classList.add("show"); adjustModalTitleFontSize(); }, 10);
+}
+
+function actualizarFlechasModal() {
+  if (!currentOrderedList.length || navegacionBloqueada) return;
+  modalPrevArrow.classList.toggle("disabled", currentModalIndex === 0);
+  modalNextArrow.classList.toggle("disabled", currentModalIndex === currentOrderedList.length - 1);
+}
+
+function navegarModal(d) {
+  if (navegacionBloqueada || !currentOrderedList.length) return;
+  const ni = Math.max(0, Math.min(currentOrderedList.length - 1, currentModalIndex + d));
+  if (ni !== currentModalIndex) { currentModalIndex = ni; currentModalCreature = currentOrderedList[ni]; actualizarModal(); actualizarFlechasModal(); }
+}
+
+async function closeModal() {
+  const eraAleatorio = navegacionBloqueada; navegacionBloqueada = false;
+  if (!eraAleatorio && currentModalCreature) {
+    const idx = currentOrderedList.findIndex(c => c.id === currentModalCreature.id);
+    if (idx !== -1) {
+      const newPage = Math.floor(idx / perPage) + 1;
+      if (newPage !== currentPage) { currentPage = newPage; await render(); }
+      requestAnimationFrame(() => { document.querySelector(`.card[data-id="${currentModalCreature.id}"]`)?.scrollIntoView({ behavior:'smooth', block:'center' }); });
+    }
+  }
+  overlayEl.classList.remove("show"); document.body.classList.remove("modal-open");
+  setTimeout(() => { if (!overlayEl.classList.contains("show")) overlayEl.style.display = "none"; }, 300);
+}
+
+/* ══ Render principal ═════════════════════════════════════ */
+async function render() {
+  if (!dataLoaded) return;
+  gridDiv.classList.add("fade-out"); await new Promise(r => setTimeout(r, 30));
+  invalidateBaseCache(); opcionesConDatosCache.cache.clear();
+  const filtradas = aplicarFiltrosCompletos(), ordenadas = ordenarEspecies(filtradas);
+  currentOrderedList = ordenadas;
+  const total = ordenadas.length;
+  const favEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
+
+  // Auto-corrección de estados inválidos
+  let reRender = false;
+  if (onlyFavorites && favEnResultados === 0) { onlyFavorites = false; reRender = true; }
+  for (const estado of ["revisado","no_revisado"]) {
+    if (revFilterState.includes(estado) && !revFilterState.includes(estado === "revisado" ? "no_revisado" : "revisado") && contarPorEstado(estado) === 0) {
+      revFilterState = revFilterState.filter(v => v !== estado); saveRevFilterState(); reRender = true;
+    }
+  }
+  if (reRender) { persistState(); render(); return; }
+
+  const tp = Math.max(1, Math.ceil(total / perPage)); if (currentPage > tp) currentPage = tp;
+  const start = (currentPage - 1) * perPage, paginated = ordenadas.slice(start, start + perPage), end = Math.min(start + perPage, total);
+  resultSpan.innerText = `${start+1}-${end} / ${total}`;
+  gridDiv.className = 'grid'; gridDiv.innerHTML = "";
+
+  // Estado de botones
+  const sinResultados = total === 0;
+  document.querySelectorAll('.filtro-boton').forEach(b => { b.disabled = sinResultados; });
+  if (!sinResultados) {
+    btnOrden.disabled = total === 1;
+    favFilterBtn.disabled = favoritos.size === 0 || favEnResultados === 0;
+    btnLimpiar.disabled = !Object.values(filtrosState).some(a => a.length) && !revFilterState.length;
+    actualizarDisabledOtrosFiltros();
+  } else {
+    btnOrden.disabled = true; favFilterBtn.disabled = true; btnLimpiar.disabled = true; configBtn.disabled = true;
+  }
+
+  if (!paginated.length) {
+    const nd = document.createElement("div"); nd.className = "no-results";
+    nd.innerHTML = `<div>🜁 ${especies.length === 0 ? 'No se pudieron cargar los datos desde dtsk/Datos*.json.' : 'No se encontraron criaturas con esos filtros.'}</div><img src="img2/non.jpeg" alt="Sin resultados" loading="lazy">`;
+    gridDiv.appendChild(nd);
+  } else {
+    const frag = document.createDocumentFragment();
+    paginated.forEach((e, i) => frag.appendChild(crearCardGrid(e, i)));
+    gridDiv.appendChild(frag);
+  }
+
+  actualizarPaginacionHeader(tp);
+  gridDiv.classList.remove("fade-out");
+  updateFilterBadges(); regenerarMenus(); updateSearchSuggestions(); adjustTitleFontSize(); actualizarImagenEsquina();
+}
+
+function actualizarContadorYPaginacion() {
+  const total = currentOrderedList.length, tp = Math.max(1, Math.ceil(total / perPage));
+  if (currentPage > tp) currentPage = tp;
+  const start = (currentPage - 1) * perPage, end = Math.min(start + perPage, total);
+  resultSpan.innerText = `${start+1}-${end} / ${total}`;
+  actualizarPaginacionHeader(tp);
+}
+
+/* ══ Ajuste de fuente ═════════════════════════════════════ */
+function adjustTitleFontSize() {
+  const ruler = document.createElement('span');
+  ruler.style.cssText = 'position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none';
+  document.body.appendChild(ruler);
+  document.querySelectorAll('.card b').forEach(t => {
+    const avail = t.clientWidth; if (!avail) return;
+    ruler.textContent = t.textContent; let fs = 0.9;
+    ruler.style.fontSize = fs + 'rem';
+    while (fs > 0.7 && ruler.offsetWidth > avail) { fs -= 0.005; ruler.style.fontSize = fs + 'rem'; }
+    if (ruler.offsetWidth > avail) { t.classList.add('wrap-name'); t.style.fontSize = '0.7rem'; }
+    else { t.classList.remove('wrap-name'); t.style.fontSize = fs + 'rem'; }
+  });
+  ruler.remove();
+}
+
+function adjustModalTitleFontSize() {
+  const h3 = modalTitle; if (!h3) return;
+  const avail = h3.clientWidth; if (!avail) return;
+  const test = document.createElement('span'); test.style.cssText = `position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:${avail}px;display:inline-block;pointer-events:none`;
+  test.textContent = h3.textContent; document.body.appendChild(test);
+  let fs = 1.4;
+  test.style.fontSize = fs + 'rem';
+  while (fs > 0.8 && test.scrollWidth > test.clientWidth) { fs -= 0.05; test.style.fontSize = fs + 'rem'; }
+  if (test.scrollWidth > test.clientWidth) { h3.classList.add('wrap-name'); h3.style.fontSize = '0.8rem'; }
+  else { h3.classList.remove('wrap-name'); h3.style.fontSize = fs + 'rem'; }
+  test.remove();
+}
+
+/* ══ Imagen de esquina ════════════════════════════════════ */
+function actualizarImagenEsquina() {
+  const src = window.innerWidth <= 700 ? 'img2/esquina.png' : 'img2/esquina.gif';
+  if (headerCornerImg.getAttribute('src') !== src) headerCornerImg.src = src;
+  headerCornerImg.onerror  = () => headerCornerImg.style.display = 'none';
+  headerCornerImg.onload   = () => headerCornerImg.style.display = 'block';
+}
+
+/* ══ Debounce ═════════════════════════════════════════════ */
+const debounce = (fn, ms) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; };
+const debouncedAdjustTitle  = debounce(adjustTitleFontSize, 100);
+const debouncedImagenEsquina= debounce(actualizarImagenEsquina, 100);
+
+/* ══ Reposicionamiento de menús ═══════════════════════════ */
+function repositionMenu(menu, button) {
+  if (!menu || !button) return;
+  const r = button.getBoundingClientRect(), mr = menu.getBoundingClientRect();
+  menu.style.top    = mr.height > window.innerHeight - r.bottom && r.top > mr.height ? 'auto' : '110%';
+  menu.style.bottom = menu.style.top === 'auto' ? '110%' : 'auto';
+  menu.style.left   = r.left + mr.width > window.innerWidth ? 'auto' : '0';
+  menu.style.right  = menu.style.left === 'auto' ? '0' : 'auto';
+}
+
+/* ══ Init de menús (event listeners) ═════════════════════ */
+function initMenus() {
+  document.querySelectorAll(".filtro-group").forEach(g => {
+    const b = g.querySelector(".filtro-boton,.config-btn");
+    const m = g.querySelector(".filtro-menu,.config-menu,.orden-menu,.rev-filter-menu");
+    const skipIds = ['btnUbicacion','btnEpoca','btnSubcategorias'];
+    if (b && m && !skipIds.includes(b.id)) {
+      b.addEventListener("click", e => {
+        e.stopPropagation();
+        const wasOpen = m.classList.contains("show"); closeAllMenus();
+        if (!wasOpen) { m.classList.add("show"); createMenuOverlay(199, closeAllMenus); setTimeout(() => repositionMenu(m, b), 10); }
+      });
+    }
+  });
+  btnUbicacion.addEventListener("click",     e => { e.stopPropagation(); abrirModalUbicacion(); });
+  btnEpoca.addEventListener("click",         e => { e.stopPropagation(); abrirModalEpoca(); });
+  btnSubcategorias.addEventListener("click", e => { e.stopPropagation(); abrirModalSubcategorias(); });
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".filtro-group") && !e.target.closest(".temp-floating-menu")) { closeAllMenus(); closeTempMenus(); }
+  });
+}
 initMenus();
-mainTitle.addEventListener("click",()=>{panelVisible=!panelVisible;if(panelVisible)filtrosPanel.classList.remove("oculto");else filtrosPanel.classList.add("oculto");actualizarImagenEsquina()});
-btnLimpiar.onclick=()=>{if(btnLimpiar.disabled)return;const opcionesVisiblesCount=cat=>cat==='revisado'?(contarPorEstado("revisado")>0?1:0)+(contarPorEstado("no_revisado")>0?1:0):cat==='morfologia'?opcionesMorfologia.filter(op=>contarConOpcion('morfologia',op)>0).length:cat==='tipo'?opcionesTipo.filter(op=>contarConOpcion('tipo',op)>0).length:cat==='elemento'?opcionesElemento.filter(op=>contarConOpcion('elemento',op)>0).length:cat==='avistamiento'?opcionesAvistamiento.filter(op=>contarConOpcion('avistamiento',op)>0).length:cat==='ubicacion'?[...new Set(especies.map(e=>e.ubicacion).filter(v=>v))].filter(op=>contarConOpcion('ubicacion',op)>0).length:cat==='epoca'?[...new Set(especies.map(e=>e.epoca).filter(v=>v))].filter(op=>contarConOpcion('epoca',op)>0).length:cat==='subcategorias'?(()=>{const todas=new Set;especies.forEach(e=>{if(e.subcategorias)e.subcategorias.split(',').forEach(s=>{let t=s.trim();if(t)todas.add(t)})});return Array.from(todas).filter(op=>contarConOpcion('subcategorias',op)>0).length})():0;let totalPuntos=0;for(let cat of['morfologia','tipo','elemento','avistamiento','ubicacion','epoca','subcategorias','revisado']){const visibles=opcionesVisiblesCount(cat);if(visibles===0)continue;const seleccionadas=cat==='revisado'?revFilterState.length:filtrosState[cat].length;if(seleccionadas!==0&&seleccionadas!==visibles)totalPuntos++}filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};revFilterState=[];saveRevFilterState();currentPage=1;persistState();invalidateBaseCache();if(totalPuntos>0)render();else{updateFilterBadges();regenerarMenus();updateSearchSuggestions();actualizarContadorYPaginacion();adjustTitleFontSize();actualizarImagenEsquina();actualizarDisabledOtrosFiltros()}};
-favFilterBtn.onclick=()=>{if(!favFilterBtn.disabled){onlyFavorites=!onlyFavorites;currentPage=1;render();persistState();invalidateBaseCache()}};
-searchInput.addEventListener('input',onSearchInput);
-clearSearchBtn.onclick=()=>{if(clearSearchBtn.classList.contains("disabled"))return;searchInput.value='';searchTerm='';currentPage=1;render();updateClearSearchState();updateSearchSuggestions();invalidateBaseCache()};
-cerrarBtn.onclick=closeModal;overlayEl.onclick=e=>{if(e.target===overlayEl)closeModal()};
-modalPrevArrow.onclick=()=>navegarModal(-1);modalNextArrow.onclick=()=>navegarModal(1);
-modalFavBtn.onclick=()=>{if(currentModalCreature)toggleFavorito(currentModalCreature.id,!1)};
-document.addEventListener("keydown",e=>{if(!overlayEl.classList.contains("show"))return;const key=e.key;if(key==="Escape"){closeModal();return}if(navegacionBloqueada)return;if(key==="ArrowLeft"){e.preventDefault();navegarModal(-1)}else if(key==="ArrowRight"){e.preventDefault();navegarModal(1)}else if(key==="f"||key==="F"){e.preventDefault();if(currentModalCreature)toggleFavorito(currentModalCreature.id,!1)}else if(key==="r"||key==="R"){e.preventDefault();if(currentModalCreature)toggleRevisado(currentModalCreature.id,!1)}else if(key==="l"||key==="L"){e.preventDefault();if(currentModalCreature&&currentModalCreature.links&&currentModalCreature.links.length){window.open(currentModalCreature.links[0],'_blank');marcarRevisadoPorLink(currentModalCreature.id)}}});
-modalTitle.closest("#detalle").addEventListener("touchstart",e=>{touchStartX=e.changedTouches[0].screenX});
-modalTitle.closest("#detalle").addEventListener("touchend",e=>{if(navegacionBloqueada)return;const d=e.changedTouches[0].screenX-touchStartX;if(Math.abs(d)>50){navegarModal(d>0?-1:1);e.preventDefault()}});
-function adjustTitleFontSize(){const ruler=document.createElement('span');ruler.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:Cinzel,serif;font-weight:700;padding:0 8px;pointer-events:none';document.body.appendChild(ruler);const minFontSize=0.7;document.querySelectorAll('.card b').forEach(t=>{const a=t.clientWidth;if(a<=0)return;ruler.textContent=t.textContent;let fs=0.9;ruler.style.fontSize=fs+'rem';while(fs>minFontSize&&ruler.offsetWidth>a){fs-=0.005;ruler.style.fontSize=fs+'rem'}if(ruler.offsetWidth>a){t.classList.add('wrap-name');t.style.fontSize=minFontSize+'rem'}else{t.classList.remove('wrap-name');t.style.fontSize=fs+'rem'}});ruler.remove();}
-function adjustModalTitleFontSize(){const h3=modalTitle;if(!h3)return;const availableWidth=h3.clientWidth;if(availableWidth<=0)return;const minFontSize=0.8;const testEl=document.createElement('span');testEl.style.cssText='position:fixed;visibility:hidden;white-space:nowrap;font-family:"Cinzel",serif;font-weight:800;width:'+availableWidth+'px;display:inline-block;pointer-events:none;box-sizing:content-box;';testEl.textContent=h3.textContent;document.body.appendChild(testEl);let fs=1.4;testEl.style.fontSize=fs+'rem';while(fs>minFontSize&&testEl.scrollWidth>testEl.clientWidth){fs-=0.05;testEl.style.fontSize=fs+'rem'}if(testEl.scrollWidth>testEl.clientWidth){h3.classList.add('wrap-name');h3.style.fontSize=minFontSize+'rem'}else{h3.classList.remove('wrap-name');h3.style.fontSize=fs+'rem'}testEl.remove();}
-if(btnResetTotal)btnResetTotal.addEventListener('click',()=>{if(Object.values(filtrosState).some(a=>a.length)||revFilterState.length>0||onlyFavorites||searchTerm){filtrosState={morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[]};revFilterState=[];saveRevFilterState();onlyFavorites=!1;searchInput.value='';searchTerm='';updateClearSearchState();currentPage=1;render();persistState();invalidateBaseCache()}});
-async function cargarArchivosDesdeCarpeta(){let todosLosDatos=[],indice=1,hayError=!1;while(!hayError){try{const respuesta=await fetch(`dtsk/Datos${indice}.json?t=${Date.now()}`,{cache:'no-store'});if(!respuesta.ok){hayError=!0;break}const datos=await respuesta.json();Array.isArray(datos)?todosLosDatos.push(...datos):todosLosDatos.push(datos);indice++}catch(error){hayError=!0;break}}return todosLosDatos}
-async function cargarDatos(){try{let datosCombinados=await cargarArchivosDesdeCarpeta();if(datosCombinados.length===0)throw new Error('No se pudieron cargar datos desde dtsk/Datos*.json');especies=datosCombinados.map((criatura,idx)=>({id:criatura.id||`criatura_${idx}_${Date.now()}_${Math.random()}`,nombre:criatura.nombre||'Sin nombre',morfologia:criatura.morfologia||'Desconocido',tipo:criatura.tipo||'Desconocido',elemento:criatura.elemento||'Desconocido',avistamiento:criatura.avistamiento||'Desconocido',ubicacion:criatura.ubicacion||'',epoca:criatura.epoca||'',subcategorias:criatura.subcategorias||'',descripcion:criatura.descripcion||'',links:criatura.links||[],posX:criatura.posX!==undefined?criatura.posX:(criatura.posx!==undefined?criatura.posx:0),posY:criatura.posY!==undefined?criatura.posY:(criatura.posy!==undefined?criatura.posy:0),zoom:criatura.zoom||1}));dataLoaded=!0;buildIndexes();loadFavoritos();loadRevisados();loadModoRevision();loadPersistedState();updateSearchSuggestions();updateClearSearchState();regenerarMenus();await render();window.addEventListener('resize',()=>{if(dataLoaded){debouncedAdjustTitleFontSize();if(overlayEl.classList.contains("show"))adjustModalTitleFontSize();debouncedActualizarImagenEsquina()}});actualizarImagenEsquina();const hash=window.location.hash.substring(1);if(hash.startsWith("id=")){const id=decodeURIComponent(hash.substring(3)),cr=especies.find(e=>e.id===id);if(cr)setTimeout(()=>abrirDetalle(cr),300)}window.scrollTo({top:0,behavior:'instant'});}catch(err){console.error("Error cargando datos:",err);especies=[];dataLoaded=!0;render()}}
-async function inicializarApp(){await cargarDatos()}
-inicializarApp();
+
+/* ══ Event listeners globales ═════════════════════════════ */
+mainTitle.addEventListener("click", () => {
+  panelVisible = !panelVisible;
+  document.getElementById('filtrosPanel').classList.toggle("oculto", !panelVisible);
+  actualizarImagenEsquina();
+});
+
+btnLimpiar.onclick    = limpiarTodosFiltros;
+favFilterBtn.onclick  = () => { if (!favFilterBtn.disabled) { onlyFavorites = !onlyFavorites; currentPage = 1; render(); persistState(); invalidateBaseCache(); } };
+searchInput.addEventListener('input', onSearchInput);
+clearSearchBtn.onclick= () => { if (clearSearchBtn.classList.contains("disabled")) return; searchInput.value = ''; searchTerm = ''; currentPage = 1; render(); updateClearSearchState(); updateSearchSuggestions(); invalidateBaseCache(); };
+cerrarBtn.onclick     = closeModal;
+overlayEl.onclick     = e => { if (e.target === overlayEl) closeModal(); };
+modalPrevArrow.onclick= () => navegarModal(-1);
+modalNextArrow.onclick= () => navegarModal(1);
+modalFavBtn.onclick   = () => { if (currentModalCreature) toggleFavorito(currentModalCreature.id); };
+
+if (btnResetTotal) {
+  btnResetTotal.addEventListener('click', () => {
+    const hayAlgo = Object.values(filtrosState).some(a => a.length) || revFilterState.length || onlyFavorites || searchTerm;
+    if (!hayAlgo) return;
+    filtrosState = { morfologia:[], tipo:[], elemento:[], avistamiento:[], ubicacion:[], epoca:[], subcategorias:[] };
+    revFilterState = []; saveRevFilterState(); onlyFavorites = false; searchInput.value = ''; searchTerm = '';
+    updateClearSearchState(); currentPage = 1; render(); persistState(); invalidateBaseCache();
+  });
+}
+
+document.addEventListener("keydown", e => {
+  if (!overlayEl.classList.contains("show")) return;
+  if (e.key === "Escape") { closeModal(); return; }
+  if (navegacionBloqueada) return;
+  const acciones = { ArrowLeft:()=>navegarModal(-1), ArrowRight:()=>navegarModal(1), f:()=>currentModalCreature&&toggleFavorito(currentModalCreature.id), F:()=>currentModalCreature&&toggleFavorito(currentModalCreature.id), r:()=>currentModalCreature&&toggleRevisado(currentModalCreature.id), R:()=>currentModalCreature&&toggleRevisado(currentModalCreature.id),
+    l:()=>{if(currentModalCreature?.links?.length){window.open(currentModalCreature.links[0],'_blank');marcarRevisadoPorLink(currentModalCreature.id);}},
+    L:()=>{if(currentModalCreature?.links?.length){window.open(currentModalCreature.links[0],'_blank');marcarRevisadoPorLink(currentModalCreature.id);}}
+  };
+  if (acciones[e.key]) { e.preventDefault(); acciones[e.key](); }
+});
+
+document.getElementById('detalle').addEventListener("touchstart", e => { touchStartX = e.changedTouches[0].screenX; });
+document.getElementById('detalle').addEventListener("touchend",   e => {
+  if (navegacionBloqueada) return;
+  const d = e.changedTouches[0].screenX - touchStartX;
+  if (Math.abs(d) > 50) { navegarModal(d > 0 ? -1 : 1); e.preventDefault(); }
+});
+
+/* ══ Carga de datos ═══════════════════════════════════════ */
+async function cargarArchivosDesdeCarpeta() {
+  const datos = []; let i = 1;
+  while (true) {
+    try {
+      const r = await fetch(`dtsk/Datos${i}.json?t=${Date.now()}`, { cache:'no-store' });
+      if (!r.ok) break;
+      const d = await r.json();
+      datos.push(...(Array.isArray(d) ? d : [d]));
+      i++;
+    } catch { break; }
+  }
+  return datos;
+}
+
+async function cargarDatos() {
+  try {
+    const raw = await cargarArchivosDesdeCarpeta();
+    if (!raw.length) throw new Error('No se pudieron cargar datos desde dtsk/Datos*.json');
+
+    especies = raw.map((c, idx) => ({
+      id:           c.id            || `criatura_${idx}_${Date.now()}_${Math.random()}`,
+      nombre:       c.nombre        || 'Sin nombre',
+      morfologia:   c.morfologia    || 'Desconocido',
+      tipo:         c.tipo          || 'Desconocido',
+      elemento:     c.elemento      || 'Desconocido',
+      avistamiento: c.avistamiento  || 'Desconocido',
+      ubicacion:    c.ubicacion     || '',
+      epoca:        c.epoca         || '',
+      subcategorias:c.subcategorias || '',
+      descripcion:  c.descripcion   || '',
+      links:        c.links         || [],
+      posX:         c.posX ?? c.posx ?? 0,
+      posY:         c.posY ?? c.posy ?? 0,
+      zoom:         c.zoom          || 1
+    }));
+
+    dataLoaded = true;
+    buildIndexes(); loadFavoritos(); loadRevisados(); loadModoRevision(); loadPersistedState();
+    updateSearchSuggestions(); updateClearSearchState(); regenerarMenus(); await render();
+
+    window.addEventListener('resize', () => { if (!dataLoaded) return; debouncedAdjustTitle(); if (overlayEl.classList.contains("show")) adjustModalTitleFontSize(); debouncedImagenEsquina(); });
+    actualizarImagenEsquina();
+
+    const hash = window.location.hash.substring(1);
+    if (hash.startsWith("id=")) {
+      const id = decodeURIComponent(hash.substring(3));
+      const cr = especies.find(e => e.id === id);
+      if (cr) setTimeout(() => abrirDetalle(cr), 300);
+    }
+    window.scrollTo({ top:0, behavior:'instant' });
+  } catch (err) {
+    console.error("Error cargando datos:", err);
+    dataLoaded = true; render();
+  }
+}
+
+cargarDatos();
 </script>
 </body>
 </html>
