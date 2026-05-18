@@ -1193,7 +1193,7 @@ function abrirVentanaAyudaEsquina() {
   closeAllMenus(); closeTempMenus(); $('ayudaEsquinaMenu')?.remove();
   createMenuOverlay(999, () => closeTempMenus());
   const menu = document.createElement('div'); menu.id = 'ayudaEsquinaMenu'; menu.className = 'temp-floating-menu';
-  menu.innerHTML = `<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><p style="text-align:center;color:var(--accent);margin-bottom:12px;">emilianoalern9@gmail.com</p><div style="display:flex;justify-content:center;"><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high" style="max-width:200px;width:100%;height:auto;"></div></div>`;
+  menu.innerHTML = `<div class="temp-header">AYUDA <button id="ayudaEsquinaCerrarBtn" title="Cerrar">✕</button></div><div class="help-content"><p>Los seres místicos merecen un entorno digno y compañía. Si ves errores o tienes sugerencias, escríbeme. También puedes aportar nuevas criaturas con nombre, información o enlaces. Gracias por ayudar.</p><p style="text-align:center;color:var(--accent);margin-bottom:12px;">@gmail.com</p><div style="display:flex;justify-content:center;"><img src="img2/anuncio1.gif" alt="Anuncio" loading="eager" fetchpriority="high" style="max-width:200px;width:100%;height:auto;"></div></div>`;
   document.body.appendChild(menu); menu.classList.add('show');
   menu.querySelector('#ayudaEsquinaCerrarBtn').onclick = () => closeTempMenus();
   menu.addEventListener('click', e => e.stopPropagation());
