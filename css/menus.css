@@ -1,0 +1,377 @@
+/* ═══════════════════════════════════════════════════════════
+   menus.css — Dropdowns, modales flotantes, overlays
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Overlay de cierre de menús ─────────────────────────── */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 199;
+}
+
+/* ── Menús flotantes (dropdown) ─────────────────────────── */
+.filtro-menu,
+.orden-menu,
+.config-menu,
+.rev-filter-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: rgba(14, 10, 26, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 8px 10px;
+  min-width: 190px;
+  z-index: 200;
+  box-shadow: var(--shadow-float);
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.config-menu { min-width: 210px }
+
+.config-submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 6px;
+  background: rgba(14, 10, 26, 0.97);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  min-width: 110px;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 210;
+}
+
+.config-submenu.show,
+.filtro-menu.show,
+.orden-menu.show,
+.config-menu.show,
+.rev-filter-menu.show {
+  display: flex;
+}
+
+/* Items dentro de menús */
+.filtro-menu label,
+.rev-filter-menu label,
+.orden-menu button,
+.config-menu button,
+.config-submenu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 6px 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  gap: 6px;
+  letter-spacing: 0.3px;
+}
+
+@media (hover: hover) {
+  .filtro-menu label:hover:has(input:not(:disabled)),
+  .rev-filter-menu label:hover:has(input:not(:disabled)),
+  .orden-menu button:hover,
+  .config-menu button:hover,
+  .config-submenu button:hover {
+    background: rgba(212, 168, 67, 0.12);
+    color: var(--accent-light);
+  }
+}
+
+.filtro-menu input,
+.rev-filter-menu input {
+  accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.filtro-menu .label-text,
+.rev-filter-menu .label-text {
+  flex-grow: 1;
+  margin-right: 4px;
+}
+
+.filtro-menu span.count,
+.rev-filter-menu span.count {
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  font-family: 'Inter', sans-serif;
+}
+
+.limpiar-categoria {
+  background: rgba(80, 50, 20, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  margin-top: 6px;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.3px;
+}
+
+.limpiar-categoria:hover:not(:disabled) {
+  background: rgba(212, 168, 67, 0.15);
+  color: var(--accent);
+}
+
+/* ── Modales flotantes genéricos ─────────────────────────── */
+.temp-floating-menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(12, 9, 22, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  min-width: 290px;
+  max-width: 92vw;
+  z-index: 1001;
+  box-shadow: var(--shadow-float);
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.temp-floating-menu.show { display: flex }
+
+/* Header del modal flotante */
+.temp-floating-menu .temp-header {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  letter-spacing: 0.8px;
+}
+
+.temp-floating-menu .temp-header button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 8px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.temp-floating-menu .temp-header button:hover { color: var(--text-primary) }
+
+/* Range slider */
+.temp-floating-menu input[type=range] {
+  width: 100%;
+  accent-color: var(--accent);
+  margin: 6px 0;
+}
+
+.temp-floating-menu .slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  padding: 0 2px;
+  margin-bottom: 4px;
+  font-family: 'Cinzel', serif;
+}
+
+.temp-floating-menu .temp-value {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  color: var(--accent);
+  font-size: 0.88rem;
+  margin: 4px 0;
+}
+
+/* Acciones del modal */
+.temp-floating-menu .temp-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.temp-floating-menu .temp-actions button,
+.modal-actions button {
+  flex: 0 0 auto;
+  min-width: 44px;
+  height: 44px;
+  background: rgba(80, 55, 20, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.18s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  padding: 0 12px;
+}
+
+.temp-floating-menu .temp-actions button:hover:not(:disabled),
+.modal-actions button:hover:not(:disabled) {
+  background: rgba(212, 168, 67, 0.2);
+  color: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.temp-floating-menu .temp-actions button:active:not(:disabled),
+.modal-actions button:active:not(:disabled) {
+  transform: scale(0.93);
+}
+
+.temp-floating-menu .temp-actions button:disabled,
+.modal-actions button:disabled {
+  opacity: var(--disabled-op);
+  cursor: not-allowed;
+}
+
+/* ── Grid de checkboxes en modales ──────────────────────── */
+.modal-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 6px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding: 4px 6px;
+  margin-bottom: 14px;
+}
+
+.modal-checkbox-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+  border: 1px solid transparent;
+}
+
+.modal-checkbox-grid label:hover { background: rgba(212, 168, 67, 0.08); color: var(--text-primary); border-color: var(--border) }
+.modal-checkbox-grid label.disabled { opacity: var(--disabled-op); cursor: not-allowed }
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.modal-actions button { font-size: 1.3rem }
+
+/* ── Modal CSV ───────────────────────────────────────────── */
+#csvModal.temp-floating-menu {
+  min-width: 360px;
+  max-height: 82vh;
+  overflow-y: auto;
+}
+
+#csvModal .csv-checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 6px;
+  max-height: 38vh;
+  overflow-y: auto;
+  margin-bottom: 14px;
+  padding-right: 4px;
+}
+
+#csvModal .csv-checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+#csvModal .csv-checkbox-group label:hover {
+  background: rgba(212, 168, 67, 0.08);
+  color: var(--text-primary);
+}
+
+/* ── Contenido de ayuda ──────────────────────────────────── */
+.help-content {
+  font-size: 0.78rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.help-content p {
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.help-content p:hover {
+  background: rgba(212, 168, 67, 0.05);
+  color: var(--text-primary);
+}
+
+.help-content strong { color: var(--accent) }
+
+/* ── Scrollbar personalizado ─────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent) }
+
+/* ── Responsive modales ─────────────────────────────────── */
+@media (max-width: 700px) {
+  .temp-floating-menu {
+    min-width: min(290px, 94vw);
+    max-width: 96vw;
+    padding: 14px 16px;
+  }
+  .modal-checkbox-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    max-height: 44vh;
+  }
+  #csvModal.temp-floating-menu { min-width: min(320px, 96vw) }
+}
