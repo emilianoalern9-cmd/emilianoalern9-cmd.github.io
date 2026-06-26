@@ -1,45 +1,41 @@
 /* ═══════════════════════════════════════════════════════════
    creatures.js — Favoritos, revisados, tarjeta, modal, render
    ═══════════════════════════════════════════════════════════ */
-
 'use strict';
 
 /* ── Favoritos ───────────────────────────────────────────── */
-function toggleFavorito(id, uiOnly = false) {
+function toggleFavorito(id, uiOnly=false) {
   favoritos.has(id) ? favoritos.delete(id) : favoritos.add(id);
-  saveFavoritos();
+  saveFavoritos(); sfx.fav();
   if (!uiOnly) {
     if (onlyFavorites) {
       render();
     } else {
       const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
-      const favIcon = card?.querySelector(".fav-star");
-      if (favIcon) favIcon.textContent = favoritos.has(id) ? "★" : "☆";
+      const fi = card?.querySelector(".fav-star");
+      if (fi) fi.textContent = favoritos.has(id) ? "★" : "☆";
       if (currentModalCreature?.id === id && modalFavBtn)
         modalFavBtn.textContent = favoritos.has(id) ? "★" : "☆";
     }
   }
-  updateFilterBadges();
-  actualizarEstadoFavoritosYBoton();
-  invalidateBaseCache();
+  updateFilterBadges(); actualizarEstadoFavoritosYBoton(); invalidateBaseCache();
 }
 
 /* ── Revisados ───────────────────────────────────────────── */
-function toggleRevisado(id, esAuto = false) {
+function toggleRevisado(id, esAuto=false) {
   const estaba = revisados.has(id);
   if (modoRevision === "bloqueo") {
-    if (!esAuto && estaba && !confirm("¿Estás seguro de marcar como NO revisado?")) return;
+    if (!esAuto && estaba && !confirm("¿Marcar como NO revisado?")) return;
     if (!esAuto && !estaba) return;
   }
   estaba ? revisados.delete(id) : revisados.add(id);
-  saveRevisados();
+  saveRevisados(); sfx.revisado();
   actualizarIconoRevisadoTarjeta(id);
   afterRevisadoToggle();
 }
 
 function afterRevisadoToggle() {
-  invalidateBaseCache();
-  actualizarEstadoBotonRevisado();
+  invalidateBaseCache(); actualizarEstadoBotonRevisado();
   const soloRevFilter = revFilterState.length > 0 && revFilterState.length < 2;
   if (soloRevFilter) {
     render();
@@ -51,46 +47,45 @@ function afterRevisadoToggle() {
 }
 
 function actualizarIconoRevisadoTarjeta(id) {
-  const estado = revisados.has(id);
-  const icono  = estado ? "◆" : "◇";
+  const estado = revisados.has(id); const ico = estado ? "◆" : "◇";
   const card   = document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
   if (card) {
     const ri = card.querySelector(".revisado-icon");
-    if (ri) {
-      ri.innerHTML = icono;
-      ri.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`;
-      ri.title = estado ? "Revisado" : "No revisado";
-    }
+    if (ri) { ri.innerHTML = ico; ri.className = `revisado-icon ${estado?'revisado':'no_revisado'}`; ri.title = estado?"Revisado":"No revisado"; }
   }
   if (currentModalCreature?.id === id && modalRevisadoBtn) {
-    modalRevisadoBtn.innerHTML = icono;
-    modalRevisadoBtn.className = `revisado-icon ${estado ? 'revisado' : 'no_revisado'}`;
-    modalRevisadoBtn.title = estado ? "Revisado" : "No revisado";
+    modalRevisadoBtn.innerHTML = ico;
+    modalRevisadoBtn.className = `revisado-icon ${estado?'revisado':'no_revisado'}`;
+    modalRevisadoBtn.title = estado?"Revisado":"No revisado";
   }
 }
 
 function marcarRevisadoPorLink(id) {
-  if (!revisados.has(id)) toggleRevisado(id, true);
+  // Siempre marca como revisado al abrir enlace, independientemente del modo
+  if (!revisados.has(id)) {
+    revisados.add(id); saveRevisados(); sfx.revisado();
+    actualizarIconoRevisadoTarjeta(id); afterRevisadoToggle();
+  }
 }
 window.marcarRevisadoPorLink = marcarRevisadoPorLink;
 
-/* ── Limpiar filtros ─────────────────────────────────────── */
+/* ── Limpiar ─────────────────────────────────────────────── */
 function limpiarCategoriaORevisados(cat) {
   if (cat === 'revisado') { revFilterState = []; saveRevFilterState(); }
-  else { filtrosState[cat] = []; }
-  currentPage = 1; persistState(); invalidateBaseCache(); render();
+  else filtrosState[cat] = [];
+  currentPage = 1; persistState(); invalidateBaseCache(); render(); sfx.click();
 }
-
 function limpiarTodosFiltros() {
   if (btnLimpiar.disabled) return;
-  filtrosState = { morfologia:[], tipo:[], elemento:[], avistamiento:[], ubicacion:[], epoca:[], subcategorias:[] };
-  revFilterState = []; saveRevFilterState(); currentPage = 1; persistState(); invalidateBaseCache(); render();
+  filtrosState = { morfologia:[],tipo:[],elemento:[],avistamiento:[],ubicacion:[],epoca:[],subcategorias:[] };
+  revFilterState = []; saveRevFilterState(); currentPage = 1; persistState(); invalidateBaseCache(); render(); sfx.close();
 }
 
 /* ── Tarjeta ─────────────────────────────────────────────── */
-function crearCardGrid(e, idx) {
-  const card   = document.createElement("div");
-  card.className = "card";
+function crearCardGrid(e, idx, delay=0) {
+  const card = document.createElement("div");
+  card.className = "card card-enter";
+  card.style.animationDelay = delay + 'ms';
   card.setAttribute("data-id", e.id);
 
   const imgC = document.createElement("div"); imgC.className = "img-container";
@@ -102,24 +97,22 @@ function crearCardGrid(e, idx) {
   const bw     = document.createElement("div"); bw.className = "badges-wrapper";
   crearBadgesRow(e).forEach(b => bw.appendChild(b));
 
-  const ad  = document.createElement("div"); ad.className = "card-actions";
-  const fb  = document.createElement("button"); fb.className = "fav-star";
+  const ad = document.createElement("div"); ad.className = "card-actions";
+  const fb = document.createElement("button"); fb.className = "fav-star";
   fb.textContent = favoritos.has(e.id) ? "★" : "☆";
-  fb.setAttribute('aria-label', 'Marcar como favorito');
+  fb.setAttribute('aria-label','Favorito');
   fb.onclick = ev => { ev.stopPropagation(); toggleFavorito(e.id); };
 
-  const ri  = document.createElement("span"); ri.className = "revisado-icon";
+  const ri = document.createElement("span"); ri.className = "revisado-icon";
   const est = revisados.has(e.id);
   ri.innerHTML = est ? "◆" : "◇";
-  ri.classList.toggle("revisado",    est);
-  ri.classList.toggle("no_revisado", !est);
+  ri.classList.toggle("revisado", est); ri.classList.toggle("no_revisado", !est);
   ri.setAttribute('aria-label', est ? 'Revisado' : 'No revisado');
   ri.onclick = ev => { ev.stopPropagation(); ev.preventDefault(); toggleRevisado(e.id); };
 
-  ad.append(fb, ri);
-  footer.append(bw, ad);
+  ad.append(fb, ri); footer.append(bw, ad);
   card.append(imgC, nombreB, footer);
-  card.onclick = () => abrirDetalle(e);
+  card.onclick = () => { sfx.open(); abrirDetalle(e); };
   return card;
 }
 
@@ -132,49 +125,41 @@ function actualizarPaginacionHeader(tp) {
   };
   const pi = document.createElement("input");
   pi.type = "text"; pi.inputMode = "numeric"; pi.value = currentPage;
-  pi.setAttribute('aria-label', 'Número de página');
+  pi.setAttribute('aria-label','Página');
   const s = document.createElement("span"); s.textContent = `/ ${tp}`;
-
   if (tp <= 1) {
     pi.readOnly = true;
-    paginationControlsDiv.append(mkBtn("«",true), mkBtn("‹",true), pi, s, mkBtn("›",true), mkBtn("»",true));
+    paginationControlsDiv.append(mkBtn("«",true),mkBtn("‹",true),pi,s,mkBtn("›",true),mkBtn("»",true));
     return;
   }
-
   const goTo = v => {
     v = Math.max(1, Math.min(tp, v));
-    if (v !== currentPage) { currentPage = v; render(); window.scrollTo({ top:0, behavior:'smooth' }); }
+    if (v !== currentPage) { currentPage = v; sfx.page(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
     pi.value = currentPage;
   };
-
-  pi.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); goTo(parseInt(pi.value) || currentPage); pi.blur(); } });
+  pi.addEventListener("keydown", e => { if (e.key==="Enter") { e.preventDefault(); goTo(parseInt(pi.value)||currentPage); pi.blur(); } });
   pi.addEventListener("input",   () => { pi.value = pi.value.replace(/[^0-9]/g,''); });
-  pi.addEventListener("blur",    () => goTo(parseInt(pi.value) || currentPage));
-
-  const bf = mkBtn("«", currentPage === 1);
-  const bp = mkBtn("‹", currentPage === 1);
-  const bn = mkBtn("›", currentPage === tp);
-  const bl = mkBtn("»", currentPage === tp);
-  if (tp === 2) { bf.disabled = true; bl.disabled = true; }
-
-  bf.onclick = () => { if (!bf.disabled) goTo(1); };
-  bp.onclick = () => { if (!bp.disabled) goTo(currentPage - 1); };
-  bn.onclick = () => { if (!bn.disabled) goTo(currentPage + 1); };
-  bl.onclick = () => { if (!bl.disabled) goTo(tp); };
-  paginationControlsDiv.append(bf, bp, pi, s, bn, bl);
+  pi.addEventListener("blur",    () => goTo(parseInt(pi.value)||currentPage));
+  const bf=mkBtn("«",currentPage===1), bp=mkBtn("‹",currentPage===1),
+        bn=mkBtn("›",currentPage===tp), bl=mkBtn("»",currentPage===tp);
+  if (tp===2) { bf.disabled=true; bl.disabled=true; }
+  bf.onclick=()=>{ if(!bf.disabled) goTo(1); };
+  bp.onclick=()=>{ if(!bp.disabled) goTo(currentPage-1); };
+  bn.onclick=()=>{ if(!bn.disabled) goTo(currentPage+1); };
+  bl.onclick=()=>{ if(!bl.disabled) goTo(tp); };
+  paginationControlsDiv.append(bf,bp,pi,s,bn,bl);
 }
 
 function actualizarContadorYPaginacion() {
   const total = currentOrderedList.length;
-  const tp    = Math.max(1, Math.ceil(total / perPage));
+  const tp    = Math.max(1, Math.ceil(total/perPage));
   if (currentPage > tp) currentPage = tp;
-  const start = (currentPage - 1) * perPage;
-  const end   = Math.min(start + perPage, total);
-  resultSpan.innerText = `${start + 1}-${end} / ${total}`;
+  const start = (currentPage-1)*perPage, end = Math.min(start+perPage, total);
+  resultSpan.innerText = `${start+1}-${end} / ${total}`;
   actualizarPaginacionHeader(tp);
 }
 
-/* ── Modal de detalle ────────────────────────────────────── */
+/* ── Modal ───────────────────────────────────────────────── */
 function actualizarModal() {
   if (!currentModalCreature) return;
   const e = currentModalCreature;
@@ -182,7 +167,6 @@ function actualizarModal() {
   adjustModalTitleFontSize();
   setImageWithFallback(modalImg, e.nombre, e.foco, true, true);
 
-  // Construir descripción de links con texto truncado visible
   const linksHtml = e.links?.length
     ? `<div class="links-list">${e.links.map(u =>
         `<a href="${u}" target="_blank" rel="noopener noreferrer" class="link-item" onclick="marcarRevisadoPorLink('${CSS.escape(e.id)}')">${u}</a>`
@@ -190,8 +174,7 @@ function actualizarModal() {
     : "";
 
   const subcatsHtml = e.subcategorias
-    ? `<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>`
-    : '';
+    ? `<div class="info-item"><span class="info-label">Subcategorías:</span> ${e.subcategorias}</div>` : '';
 
   modalInfoScroll.innerHTML = `
     <div class="info-grid">
@@ -199,18 +182,17 @@ function actualizarModal() {
       <div class="info-item"><span class="info-label">Tipo:</span> ${e.tipo}</div>
       <div class="info-item"><span class="info-label">Elemento:</span> ${e.elemento}</div>
       <div class="info-item"><span class="info-label">Avistamiento:</span> ${e.avistamiento}</div>
-      <div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion || "?"}</div>
-      <div class="info-item"><span class="info-label">Época:</span> ${e.epoca || "?"}</div>
+      <div class="info-item"><span class="info-label">Ubicación:</span> ${e.ubicacion||"?"}</div>
+      <div class="info-item"><span class="info-label">Época:</span> ${e.epoca||"?"}</div>
       ${subcatsHtml}
     </div>
-    <div class="modal-description">${e.descripcion}</div>
-    ${linksHtml}`;
+    <div class="modal-description">${e.descripcion}</div>${linksHtml}`;
 
   const est = revisados.has(e.id);
-  modalRevisadoBtn.innerHTML = est ? "◆" : "◇";
-  modalRevisadoBtn.className = `revisado-icon ${est ? 'revisado' : 'no_revisado'}`;
+  modalRevisadoBtn.innerHTML = est?"◆":"◇";
+  modalRevisadoBtn.className = `revisado-icon ${est?'revisado':'no_revisado'}`;
   modalRevisadoBtn.onclick   = () => toggleRevisado(e.id, false);
-  if (modalFavBtn) modalFavBtn.textContent = favoritos.has(e.id) ? "★" : "☆";
+  if (modalFavBtn) modalFavBtn.textContent = favoritos.has(e.id)?"★":"☆";
   modalPrevArrow.style.display = modalNextArrow.style.display = navegacionBloqueada ? "none" : "flex";
   actualizarFlechasModal();
   requestAnimationFrame(adjustModalTitleFontSize);
@@ -220,7 +202,6 @@ function abrirDetalle(e) {
   currentModalCreature = e;
   currentModalIndex    = currentOrderedList.findIndex(c => c.id === e.id);
   actualizarModal();
-  actualizarFlechasModal();
   overlayEl.style.display = "flex";
   document.body.classList.add("modal-open");
   setTimeout(() => { overlayEl.classList.add("show"); adjustModalTitleFontSize(); }, 10);
@@ -229,31 +210,29 @@ function abrirDetalle(e) {
 function actualizarFlechasModal() {
   if (!currentOrderedList.length || navegacionBloqueada) return;
   modalPrevArrow.classList.toggle("disabled", currentModalIndex === 0);
-  modalNextArrow.classList.toggle("disabled", currentModalIndex === currentOrderedList.length - 1);
+  modalNextArrow.classList.toggle("disabled", currentModalIndex === currentOrderedList.length-1);
 }
 
 function navegarModal(d) {
   if (navegacionBloqueada || !currentOrderedList.length) return;
-  const ni = Math.max(0, Math.min(currentOrderedList.length - 1, currentModalIndex + d));
+  const ni = Math.max(0, Math.min(currentOrderedList.length-1, currentModalIndex+d));
   if (ni !== currentModalIndex) {
-    currentModalIndex    = ni;
-    currentModalCreature = currentOrderedList[ni];
-    actualizarModal();
-    actualizarFlechasModal();
+    currentModalIndex = ni; currentModalCreature = currentOrderedList[ni];
+    sfx.page(); actualizarModal(); actualizarFlechasModal();
   }
 }
 
 async function closeModal() {
-  const eraAleatorio = navegacionBloqueada;
-  navegacionBloqueada = false;
+  const eraAleatorio = navegacionBloqueada; navegacionBloqueada = false;
+  sfx.close();
   if (!eraAleatorio && currentModalCreature) {
     const idx = currentOrderedList.findIndex(c => c.id === currentModalCreature.id);
     if (idx !== -1) {
-      const newPage = Math.floor(idx / perPage) + 1;
+      const newPage = Math.floor(idx/perPage)+1;
       if (newPage !== currentPage) { currentPage = newPage; await render(); }
       requestAnimationFrame(() => {
         document.querySelector(`.card[data-id="${CSS.escape(currentModalCreature.id)}"]`)
-          ?.scrollIntoView({ behavior:'smooth', block:'center' });
+          ?.scrollIntoView({behavior:'smooth', block:'center'});
       });
     }
   }
@@ -262,12 +241,14 @@ async function closeModal() {
   setTimeout(() => { if (!overlayEl.classList.contains("show")) overlayEl.style.display = "none"; }, 300);
 }
 
-/* ── Render principal ────────────────────────────────────── */
+/* ── Render sin parpadeo ─────────────────────────────────── */
+/* Usamos DOM diffing ligero: sólo añade/quita cards que cambian posición,
+   no destruye y recrea el grid entero en cada cambio mínimo. */
+
+let _lastRenderedIds = [];
+
 async function render() {
   if (!dataLoaded) return;
-
-  gridDiv.classList.add("fade-out");
-  await new Promise(r => setTimeout(r, 25));
 
   invalidateBaseCache();
   opcionesConDatosCache.cache.clear();
@@ -276,63 +257,78 @@ async function render() {
   const ordenadas = ordenarEspecies(filtradas);
   currentOrderedList = ordenadas;
 
-  const total          = ordenadas.length;
-  const favEnResultados = onlyFavorites ? total : ordenadas.filter(e => favoritos.has(e.id)).length;
-
-  // Auto-corrección de estados inválidos
+  // Auto-correcciones silenciosas
   let reRender = false;
-  if (onlyFavorites && favEnResultados === 0) { onlyFavorites = false; reRender = true; }
-
+  if (onlyFavorites && ordenadas.filter(e => favoritos.has(e.id)).length === 0) { onlyFavorites = false; reRender = true; }
   for (const estado of ["revisado","no_revisado"]) {
-    const otro = estado === "revisado" ? "no_revisado" : "revisado";
-    if (revFilterState.includes(estado) && !revFilterState.includes(otro) && contarPorEstado(estado) === 0) {
-      revFilterState = revFilterState.filter(v => v !== estado);
-      saveRevFilterState();
-      reRender = true;
+    const otro = estado==="revisado"?"no_revisado":"revisado";
+    if (revFilterState.includes(estado) && !revFilterState.includes(otro) && contarPorEstado(estado)===0) {
+      revFilterState = revFilterState.filter(v => v!==estado); saveRevFilterState(); reRender = true;
     }
   }
-
   if (reRender) { persistState(); render(); return; }
 
-  const tp    = Math.max(1, Math.ceil(total / perPage));
+  const total = ordenadas.length;
+  const tp    = Math.max(1, Math.ceil(total/perPage));
   if (currentPage > tp) currentPage = tp;
-  const start     = (currentPage - 1) * perPage;
-  const paginated = ordenadas.slice(start, start + perPage);
-  const end       = Math.min(start + perPage, total);
+  const start     = (currentPage-1)*perPage;
+  const paginated = ordenadas.slice(start, start+perPage);
+  const end       = Math.min(start+perPage, total);
+  resultSpan.innerText = `${start+1}-${end} / ${total}`;
 
-  resultSpan.innerText = `${start + 1}-${end} / ${total}`;
-  gridDiv.className    = 'grid';
-  gridDiv.innerHTML    = "";
+  // ── Diffing: calcular si la lista cambió ──
+  const newIds = paginated.map(e => e.id);
+  const changed = newIds.length !== _lastRenderedIds.length || newIds.some((id,i) => id !== _lastRenderedIds[i]);
+
+  if (changed) {
+    // Si hay pocos cambios (≤4 elementos) y mismo tamaño → actualizar individualmente
+    const sameLength = newIds.length === _lastRenderedIds.length && newIds.length > 0;
+    const diffCount  = sameLength ? newIds.filter((id,i) => id !== _lastRenderedIds[i]).length : 999;
+
+    if (diffCount > 0 && diffCount <= 4 && sameLength) {
+      // Actualización quirúrgica: solo reemplaza las tarjetas que cambiaron
+      const existingCards = [...gridDiv.querySelectorAll('.card')];
+      newIds.forEach((id, i) => {
+        if (id !== _lastRenderedIds[i]) {
+          const newCard = crearCardGrid(paginated[i], i, 0);
+          newCard.classList.remove('card-enter'); // sin animación en diff pequeño
+          existingCards[i]?.replaceWith(newCard);
+        }
+      });
+    } else {
+      // Reemplazo completo con animación de entrada suave (sin fade)
+      gridDiv.innerHTML = "";
+      if (!paginated.length) {
+        const nd = document.createElement("div"); nd.className = "no-results";
+        nd.innerHTML = `<div>🜁 ${especies.length===0
+          ? 'No se encontraron datos en dtsk/Datos*.json.'
+          : 'Ninguna criatura coincide con esos filtros.'}</div>
+          <img src="img2/non.jpeg" alt="Sin resultados" loading="lazy">`;
+        gridDiv.appendChild(nd);
+      } else {
+        const frag = document.createDocumentFragment();
+        paginated.forEach((e, i) => frag.appendChild(crearCardGrid(e, i, i * 18)));
+        gridDiv.appendChild(frag);
+      }
+    }
+    _lastRenderedIds = newIds;
+  }
 
   // Estado de botones
   const sinResultados = total === 0;
   document.querySelectorAll('.filtro-boton').forEach(b => { b.disabled = sinResultados; });
   if (!sinResultados) {
-    btnOrden.disabled      = total === 1;
-    favFilterBtn.disabled  = favoritos.size === 0 || favEnResultados === 0;
-    btnLimpiar.disabled    = !Object.values(filtrosState).some(a => a.length) && !revFilterState.length;
+    btnOrden.disabled     = total === 1;
+    favFilterBtn.disabled = favoritos.size === 0 || ordenadas.filter(e => favoritos.has(e.id)).length === 0;
+    btnLimpiar.disabled   = !Object.values(filtrosState).some(a => a.length) && !revFilterState.length;
     actualizarDisabledOtrosFiltros();
   } else {
-    btnOrden.disabled = true; favFilterBtn.disabled = true;
-    btnLimpiar.disabled = true; configBtn.disabled = true;
-  }
-
-  if (!paginated.length) {
-    const nd = document.createElement("div"); nd.className = "no-results";
-    nd.innerHTML = `
-      <div>🜁 ${especies.length === 0
-        ? 'No se pudieron cargar los datos desde dtsk/Datos*.json.'
-        : 'No se encontraron criaturas con esos filtros.'}</div>
-      <img src="img2/non.jpeg" alt="Sin resultados" loading="lazy">`;
-    gridDiv.appendChild(nd);
-  } else {
-    const frag = document.createDocumentFragment();
-    paginated.forEach((e, i) => frag.appendChild(crearCardGrid(e, i)));
-    gridDiv.appendChild(frag);
+    btnOrden.disabled = true; favFilterBtn.disabled = true; btnLimpiar.disabled = true;
   }
 
   actualizarPaginacionHeader(tp);
-  gridDiv.classList.remove("fade-out");
   updateFilterBadges(); regenerarMenus(); updateSearchSuggestions();
-  adjustTitleFontSize(); actualizarImagenEsquina();
+  // Solo ajustar fuente si el DOM cambió
+  if (changed) requestAnimationFrame(adjustTitleFontSize);
+  actualizarImagenEsquina();
 }
