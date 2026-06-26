@@ -6,16 +6,13 @@
   <meta name="description" content="Índice enciclopédico de seres míticos, criptidos y entidades de la tradición oral mundial.">
   <title>Índice de Seres Místicos</title>
 
-  <!-- Favicon -->
   <link rel="icon" href="img2/icono4.png" type="image/png">
 
-  <!-- Preloads críticos -->
   <link rel="preload" as="image" href="img2/anuncio1.gif">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <!-- CSS modular -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/cards.css">
   <link rel="stylesheet" href="css/menus.css">
@@ -24,77 +21,91 @@
 
 <!-- ══ HEADER ═══════════════════════════════════════════════ -->
 <div class="main-header" id="mainHeader">
-  <img id="headerCornerImg" class="header-corner" alt="Abrir ayuda" aria-label="Abrir ayuda" role="button">
+  <img id="headerCornerImg" class="header-corner" alt="Contacto" aria-label="Abrir contacto" role="button">
   <div class="container" id="headerContainer">
 
-    <h2 id="mainTitle" aria-label="Título — clic para mostrar u ocultar filtros">
+    <h2 id="mainTitle" title="Clic para mostrar/ocultar filtros" aria-label="Índice de Seres Místicos">
       ✦ ÍNDICE DE SERES MÍSTICOS ✦
     </h2>
 
     <div class="filtros-panel" id="filtrosPanel">
 
-      <!-- Filtros con submenú inline -->
+      <!-- Morfología -->
       <div class="filtro-group">
-        <button class="filtro-boton" id="btnMorfologia" title="Morfología" aria-label="Filtrar por morfología"></button>
+        <button class="filtro-boton" id="btnMorfologia" aria-label="Filtrar por morfología"></button>
         <div class="filtro-menu" id="menu-morfologia"></div>
       </div>
 
+      <!-- Tipo -->
       <div class="filtro-group">
-        <button class="filtro-boton" id="btnTipo" title="Tipo de ser" aria-label="Filtrar por tipo"></button>
+        <button class="filtro-boton" id="btnTipo" aria-label="Filtrar por tipo"></button>
         <div class="filtro-menu" id="menu-tipo"></div>
       </div>
 
+      <!-- Elemento -->
       <div class="filtro-group">
-        <button class="filtro-boton" id="btnElemento" title="Elemento" aria-label="Filtrar por elemento"></button>
+        <button class="filtro-boton" id="btnElemento" aria-label="Filtrar por elemento"></button>
         <div class="filtro-menu" id="menu-elemento"></div>
       </div>
 
+      <!-- Avistamiento -->
       <div class="filtro-group">
-        <button class="filtro-boton" id="btnAvistamiento" title="Avistamiento" aria-label="Filtrar por avistamiento"></button>
+        <button class="filtro-boton" id="btnAvistamiento" aria-label="Filtrar por avistamiento"></button>
         <div class="filtro-menu" id="menu-avistamiento"></div>
       </div>
 
-      <!-- Filtros con modal flotante -->
+      <!-- Ubicación (modal flotante) -->
       <div class="filtro-group">
         <button class="filtro-boton" id="btnUbicacion" title="Ubicación" aria-label="Filtrar por ubicación">📍</button>
       </div>
+
+      <!-- Época (modal flotante) -->
       <div class="filtro-group">
         <button class="filtro-boton" id="btnEpoca" title="Época" aria-label="Filtrar por época">📅</button>
       </div>
+
+      <!-- Subcategorías (modal flotante) -->
       <div class="filtro-group">
         <button class="filtro-boton" id="btnSubcategorias" title="Subcategorías" aria-label="Filtrar por subcategorías">🏷️</button>
       </div>
 
       <!-- Revisado -->
       <div class="filtro-group">
-        <button class="filtro-boton" id="btnRevFilter" title="Revisado" aria-label="Filtrar por estado de revisión">✅</button>
+        <button class="filtro-boton" id="btnRevFilter" title="Revisado" aria-label="Filtrar por estado de revisión">◆</button>
         <div class="rev-filter-menu" id="menu-rev"></div>
       </div>
 
-      <!-- Acciones -->
-      <button id="btnLimpiar"   class="btn-limpiar"   title="Limpiar filtros"   aria-label="Limpiar filtros activos">🧹</button>
+      <!-- Limpiar filtros -->
+      <button id="btnLimpiar" class="btn-limpiar" title="Limpiar filtros activos" aria-label="Limpiar filtros">🧹</button>
 
+      <!-- Orden -->
       <div class="filtro-group">
         <button class="filtro-boton" id="btnOrden" title="Ordenar" aria-label="Cambiar orden">📊</button>
         <div class="orden-menu" id="ordenMenu"></div>
       </div>
 
-      <button id="favFilterBtn" class="fav-filter-btn" title="Solo favoritos"   aria-label="Mostrar solo favoritos">⭐</button>
-      <button id="btnResetTotal" class="btn-limpiar"   title="Resetear todo"   aria-label="Resetear filtros y búsqueda">♻️</button>
+      <!-- Solo favoritos -->
+      <button id="favFilterBtn" class="fav-filter-btn" title="Solo favoritos" aria-label="Mostrar solo favoritos">⭐</button>
 
+      <!-- Reset total -->
+      <button id="btnResetTotal" class="btn-limpiar" title="Resetear filtros y búsqueda" aria-label="Resetear todo">♻️</button>
+
+      <!-- Configuración -->
       <div class="filtro-group">
         <button class="config-btn" id="configBtn" title="Configuración" aria-label="Abrir configuración">⚙️</button>
         <div id="configMenu" class="config-menu"></div>
       </div>
 
-      <!-- Info & búsqueda -->
+      <!-- Contador -->
       <div class="result-count">
         <span>🐉</span>
         <span id="resultText">0-0 / 0</span>
       </div>
 
+      <!-- Paginación -->
       <div id="paginationControls" class="pagination-controls"></div>
 
+      <!-- Búsqueda -->
       <div class="search-wrapper">
         <input
           type="text"
@@ -116,7 +127,7 @@
 
 <!-- ══ GRID ══════════════════════════════════════════════════ -->
 <div class="grid-wrapper">
-  <div id="grid" class="grid"></div>
+  <div id="grid" class="grid" role="list" aria-label="Catálogo de seres místicos"></div>
 </div>
 
 
@@ -124,15 +135,15 @@
 <div id="overlay" role="dialog" aria-modal="true" aria-label="Detalle del ser">
   <div class="modal-container">
 
-    <button class="modal-arrow prev" id="modalPrevArrow" aria-label="Anterior">‹</button>
+    <button class="modal-arrow prev" id="modalPrevArrow" aria-label="Criatura anterior">‹</button>
 
     <div id="detalle">
       <div class="modal-header">
         <h3 id="modal-title">Nombre</h3>
         <div class="modal-header-actions">
-          <button id="modalFav"      class="fav-star"      title="Favorito"        aria-label="Marcar como favorito">☆</button>
-          <button id="modalRevisado" class="revisado-icon no_revisado" title="Revisado" aria-label="Marcar como revisado">◇</button>
-          <button id="cerrar"        title="Cerrar"        aria-label="Cerrar">✕</button>
+          <button id="modalFav"      class="fav-star"               title="Marcar como favorito"  aria-label="Favorito">☆</button>
+          <button id="modalRevisado" class="revisado-icon no_revisado" title="Marcar como revisado" aria-label="Revisado">◇</button>
+          <button id="cerrar"        title="Cerrar"                  aria-label="Cerrar modal">✕</button>
         </div>
       </div>
 
@@ -144,7 +155,7 @@
       </div>
     </div><!-- /detalle -->
 
-    <button class="modal-arrow next" id="modalNextArrow" aria-label="Siguiente">›</button>
+    <button class="modal-arrow next" id="modalNextArrow" aria-label="Criatura siguiente">›</button>
 
   </div><!-- /modal-container -->
 </div><!-- /overlay -->
